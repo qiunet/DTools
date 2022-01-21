@@ -1,0 +1,47 @@
+html {
+    overflow: hidden;
+}
+
+html, body, #app, .content_area {
+    width: 100%;
+    height: 100%;
+}
+
+#app {
+    top: 0;
+    left: 0;
+    display: flex;
+    position: fixed;
+    background-color: #eceef3;
+}
+
+#toolBox {
+    width: 80px;
+    height: 100%;
+    float: left;
+    background-color: rgb(37, 174, 96);
+}
+
+#content {
+    top: 0;
+    bottom: 0;
+    margin: 2px;
+    width: 100%;
+    height: 100%;
+    float: right;
+}
+
+.content-area-title > * {
+    font: 28px "微软雅黑",bold;
+    color: rgb(37, 174, 96);
+    text-align: left;
+    border-radius: 5px;
+}
+
+.content_area {
+    resize: none;
+    top: 0;
+    bottom: 0;
+    border-radius: 5px;
+    background-color: #313131;
+}

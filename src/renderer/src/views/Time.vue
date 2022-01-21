@@ -1,0 +1,118 @@
+<template>
+  <div>
+    <el-row :gutter="20">
+      <el-col :span="10"><div class="datetime-stamp" id="col-timestamp">{{data.timestamp}}</div></el-col>
+      <el-col :span="2"><div><el-button class="copy-btn" @click="copyToClipboard(data.timestamp)">复制</el-button></div></el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="10"><div class="datetime-stamp" id="col-time-string">{{data.timeString}}</div></el-col>
+      <el-col :span="2"><div><el-button class="copy-btn" @click="copyToClipboard(data.timeString)">复制</el-button></div></el-col>
+    </el-row>
+    <el-divider />
+    <el-row :gutter="50">
+      <el-col :span="8"><el-input v-model="inputTimeStamp" maxlength="13" placeholder="时间戳" ></el-input></el-col>
+      <el-col :span="2">
+        <el-popover
+            placement="right-start"
+            :width="200"
+            trigger="click"
+            :content="data.timestamp_content"
+        >
+          <template #reference>
+            <el-button class="convert-btn" @click="getterDtString">转换格式化时间</el-button>
+          </template>
+        </el-popover>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script lang="ts">
+import {reactive, ref} from "vue";
+import {ElMessage, ElNotification} from "element-plus";
+import {StringUtil} from "../common/StringUtil";
+import {DateUtil} from "../common/DateUtil";
+
+export interface TimeData {
+  /**
+   * 时间戳
+   */
+  timestamp: number;
+  /**
+   * 时间表示法
+   */
+  timeString: string;
+  /**
+   *
+   */
+  timestamp_content: string;
+}
+
+export default {
+  name: "Time",
+  setup() {
+    let data: TimeData = reactive({
+      timestamp : 0,
+      timeString : "",
+      timestamp_content: "",
+    });
+
+    const inputTimeStamp = ref('');
+
+    function getterDtString() {
+      if (! StringUtil.isNumber(inputTimeStamp.value)) {
+        data.timestamp_content = "输入值不是数值类型";
+        return;
+      }
+      let stamp = Number(inputTimeStamp.value);
+      if (inputTimeStamp.value.toString().length < 11) {
+        stamp *= 1000;
+      }
+      data.timestamp_content = DateUtil.dateFormat(new Date(stamp));
+    }
+
+    function refreshDatetime(data: TimeData) {
+      data.timestamp = DateUtil.currentTimeSeconds(),
+          data.timeString = DateUtil.dateFormat(new Date())
+    }
+
+    refreshDatetime(data);
+
+    function copyToClipboard(text: string|number) {
+      navigator.clipboard.writeText(text.toString()).then(() => {
+        ElNotification({
+          title: '复制成功',
+          duration: 1000,
+          message: text.toString(),
+          type: 'success',
+          showClose: false
+        })
+      }).catch(err => {
+        ElMessage.error("复制失败"+ err);
+      });
+    }
+
+    setInterval(() => {
+      refreshDatetime(data)
+    }, 1000);
+
+    return {
+      data,
+      inputTimeStamp,
+      getterDtString,
+      copyToClipboard,
+    }
+  }
+}
+</script>
+
+<style scoped>
+.datetime-stamp {
+  margin-left: 5px;
+  font-size: 32px;
+  color: mediumseagreen;
+}
+button.copy-btn, button.convert-btn {
+  color: mediumseagreen;
+}
+</style>

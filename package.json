@@ -2,11 +2,12 @@
   "name": "dtools",
   "version": "0.0.1",
   "main": "dist/main/index.cjs",
+  "description": "DuoDuo的工具",
   "author": "qiunet",
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/watch.mjs",
-    "build": "vue-tsc --project src/renderer/tsconfig.json --noEmit && node scripts/build.mjs && electron-builder"
+    "build": "node scripts/build.mjs && electron-builder"
   },
   "engines": {
     "node": ">=14.17.0"

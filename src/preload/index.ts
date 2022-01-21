@@ -1,12 +1,13 @@
+import { contextBridge, ipcRenderer } from 'electron'
+import ToolApi from "./api/ToolApi";
 import fs from 'fs'
-import { contextBridge, ipcRenderer, IpcRenderer } from 'electron'
-
-const isDev = process.env.NODE_ENV === 'development'
 
 
-// --------- Expose some API to Renderer process. ---------
-contextBridge.exposeInMainWorld('fs', fs)
+console.log("==========preload==========")
+
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
+contextBridge.exposeInMainWorld("tool_api",ToolApi);
+contextBridge.exposeInMainWorld('path', fs)
 
 // `exposeInMainWorld` can not detect `prototype` attribute and methods, manually patch it.
 function withPrototype(obj: Record<string, any>) {

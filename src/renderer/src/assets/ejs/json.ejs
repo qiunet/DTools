@@ -1,0 +1,9 @@
+[
+<%_ rows.forEach(function (row, rIndex){ _%>
+    {
+    <%_ row.cells.forEach(function (cell, cIndex) { _%>
+        "<%= cell.name %>": <% if (cell.isStringType()) {%>"<% }%><%=cell.val%><% if (cell.isStringType()) {%>"<% }%><% if(cIndex < row.cells.length - 1) { %>,<% } %>
+     <%_}); _%>
+    }<% if(rIndex < rows.length - 1) { %>,<% } %>
+<%_ }); _%>
+]

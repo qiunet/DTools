@@ -1,6 +1,9 @@
 import os from 'os'
 import path from 'path'
 import { app, BrowserWindow } from 'electron'
+import {ToolsConstants} from "../preload/utils/ToolsConstants";
+import * as fs from "fs";
+import { env } from 'process';
 
 // https://stackoverflow.com/questions/42524606/how-to-get-windows-version-using-node-js
 const isWin7 = os.release().startsWith('6.1')
@@ -11,10 +14,18 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0)
 }
 
+if (app.isPackaged && (os.platform() === 'darwin' || os.platform() === 'linux')) {
+  // 类linux特殊环境变量设定.
+  env.PATH = "/usr/local/bin:" + env.PATH;
+}
+
 let win: BrowserWindow | null = null
 
 async function createWindow() {
   win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    title: "DTools",
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.cjs'),
     },
@@ -31,7 +42,7 @@ async function createWindow() {
   }
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => ToolsConstants.initTools()).then(createWindow);
 
 app.on('window-all-closed', () => {
   win = null
