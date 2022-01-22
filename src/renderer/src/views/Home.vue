@@ -13,7 +13,7 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside id="tools-sidebar" width="200px" style="border-radius: 2px;">
+      <el-aside id="tools-sidebar" width="250px" style="border-radius: 2px;">
         <el-input v-model="filterText" placeholder="过滤" />
         <el-tree
             style="height: 100%;"

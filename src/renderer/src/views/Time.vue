@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="20">
+    <el-row :gutter="20" style="padding-top: 15px">
       <el-col :span="10"><div class="datetime-stamp" id="col-timestamp">{{data.timestamp}}</div></el-col>
       <el-col :span="2"><div><el-button class="copy-btn" @click="copyToClipboard(data.timestamp)">复制</el-button></div></el-col>
     </el-row>

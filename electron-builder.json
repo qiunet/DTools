@@ -9,6 +9,7 @@
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
+    "icon": "icon/icon.png",
     "target": [
       "dmg"
     ]
