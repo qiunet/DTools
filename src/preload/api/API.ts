@@ -9,6 +9,21 @@ import {Role} from "../utils/ExcelToCfg";
  */
 export interface API {
     /**
+     * 是否是文件夹
+     * @param path
+     */
+    isDir: (path: string) => boolean;
+    /**
+     * 增加cfg path
+     * @param path
+     */
+    useCfgPath: (path: string) => boolean;
+    /**
+     * 增加配置 path
+     * @param path
+     */
+    useProjectPath: (path: string) => boolean;
+    /**
      * 获得配置文件
      */
     setting: () => DToolsSetting;

@@ -1,17 +1,34 @@
 import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {SettingManager} from "../utils/SettingManager";
-import {FileNode, FileUtil} from "../../renderer/src/common/FileUtil";
+import {FileUtil} from "../../renderer/src/common/FileUtil";
 import Path from "path";
 import {ToolsConstants} from "../utils/ToolsConstants";
 import * as electron from "electron";
 import {IFileNode} from "../../renderer/src/common/IFileNode";
 import {SvnEvent} from "../../renderer/src/common/Enums";
 import {SvnClient} from "../utils/SvnClient";
-import setting from "../../renderer/src/views/Setting.vue";
 import {Role} from "../utils/ExcelToCfg";
 import {API} from "./API";
+import * as fs from "fs";
 
 const ToolApi = {
+
+    isDir: (path: string): boolean => {
+        try {
+            return fs.statSync(path).isDirectory();
+        }catch (e) {
+            return false;
+        }
+    },
+
+    useCfgPath: (path: string): boolean => {
+        return SettingManager.useCfgPath(path);
+    },
+
+    useProjectPath: (path: string): boolean => {
+        return SettingManager.useProjectPath(path);
+    },
+
     convert: (path: string, logger: (info: string) => void): void  => {
         SettingManager.convert(path, logger);
     },

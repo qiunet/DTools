@@ -31,32 +31,48 @@ export class SettingManager {
     }
 
     /**
-     * 添加路径
+     * 使用该路径
      * @param path
+     * @return 是否是新增
      */
-    public static addCfgPath(path: string): void {
-        if (SettingManager._setting.getCfgPaths().find((str, index, objs) => {
+    public static useCfgPath(path: string): boolean {
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length - 1);
+        }
+        let newPath = false;
+        if (! SettingManager._setting.getCfgPaths().find((str, index, objs) => {
             if (str === path) {
                 return true;
             }
         })) {
-            return;
+            SettingManager._setting.getCfgPaths().push(path);
+            newPath = true;
         }
-        SettingManager._setting.getCfgPaths().push(path);
+        SettingManager._setting.currCfgPath = path;
+        SettingManager.save();
+        return newPath;
     }
     /**
-     * 添加路径
+     * 使用该路径
      * @param path
+     * @return 是否是新增
      */
-    public static addProjectPath(path: string): void {
-        if (SettingManager._setting.getProjectPaths().find((str, index, objs) => {
+    public static useProjectPath(path: string): boolean {
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length - 1);
+        }
+        let newPath = false;
+        if (! SettingManager._setting.getProjectPaths().find((str, index, objs) => {
             if (str === path) {
                 return true;
             }
         })) {
-            return;
+            SettingManager._setting.getProjectPaths().push(path);
+            newPath = true;
         }
-        SettingManager._setting.getProjectPaths().push(path);
+        SettingManager._setting.currProjectPath = path;
+        SettingManager.save();
+        return newPath;
     }
 
     /**
@@ -76,6 +92,7 @@ export class SettingManager {
                 SettingManager._setting.setCurrCfgPath("");
             }
         });
+        SettingManager.save();
     }
     /**
      * 删除某个path
@@ -94,6 +111,7 @@ export class SettingManager {
                 SettingManager._setting.setCurrProjectPath("");
             }
         });
+        SettingManager.save();
     }
 
     /**
