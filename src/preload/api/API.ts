@@ -1,7 +1,12 @@
 import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {IFileNode} from "../../renderer/src/common/IFileNode";
 import {SvnEvent} from "../../renderer/src/common/Enums";
+import {Role} from "../utils/ExcelToCfg";
 
+/**
+ * API 还是有必要的.
+ * 可以更好的让ide推断类型.
+ */
 export interface API {
     /**
      * 获得配置文件
@@ -33,4 +38,9 @@ export interface API {
      * @param logger
      */
     convert: (path: string, logger: (info:string) => void) => void;
+    /**
+     * 角色变动
+     * @param role
+     */
+    roleChange: (role: Role) => Promise<void>;
 }

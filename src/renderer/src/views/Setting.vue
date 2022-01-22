@@ -3,7 +3,7 @@
     <el-row style="padding-top: 20px">
       <el-col :span="5">职业:</el-col>
       <el-col :span="17">
-        <el-select class="setting-el-select" v-model="data.setting.role" placeholder="选择职业" size="small">
+        <el-select class="setting-el-select" v-model="data.setting.role" placeholder="选择职业" size="small" @change="data.roleChange">
           <el-option
               v-for="item in data.roles"
               :key="item.name"
@@ -72,8 +72,6 @@
         </el-upload>
       </el-col>
     </el-row>
-    <el-divider></el-divider>
-    <div class="setting-save"><el-button>保存</el-button></div>
   </div>
 </template>
 
@@ -102,6 +100,18 @@ export default {
       }],
       setting: window.tool_api.setting(),
 
+      roleChange: function (index: number) {
+        window.tool_api.roleChange(data.roles[index].role).then(() => {
+          data.setting.role = data.roles[index].role;
+          ElNotification({
+            title: '更新成功',
+            duration: 1000,
+            message: Role[data.setting.role].toString(),
+            type: 'success',
+            showClose: false
+          })
+        });
+      },
       /**
        * 上传文件
        * @param file

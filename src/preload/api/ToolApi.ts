@@ -3,12 +3,13 @@ import {SettingManager} from "../utils/SettingManager";
 import {FileNode, FileUtil} from "../../renderer/src/common/FileUtil";
 import Path from "path";
 import {ToolsConstants} from "../utils/ToolsConstants";
-import {API} from "./API";
 import * as electron from "electron";
 import {IFileNode} from "../../renderer/src/common/IFileNode";
 import {SvnEvent} from "../../renderer/src/common/Enums";
 import {SvnClient} from "../utils/SvnClient";
 import setting from "../../renderer/src/views/Setting.vue";
+import {Role} from "../utils/ExcelToCfg";
+import {API} from "./API";
 
 const ToolApi = {
     convert: (path: string, logger: (info: string) => void): void  => {
@@ -46,6 +47,14 @@ const ToolApi = {
         }
         throw new Error("not support");
     },
+
+    roleChange: (role: Role): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            SettingManager.getSetting().role = role;
+            SettingManager.save();
+            resolve();
+        });
+    }
 } as API;
 
 export default ToolApi;

@@ -122,4 +122,11 @@ export class SettingManager {
         let excelToCfg = new ExcelToCfg(SettingManager._setting.getRole(),relativePath , SettingManager._setting.getCurrCfgPath(), SettingManager._setting.getCurrProjectPath(), logger);
         excelToCfg.convert();
     }
+
+    /**
+     * 保存现有的setting
+     */
+    public static save(): void {
+        ToolsConstants.saveSetting(SettingManager._setting);
+    }
 }
