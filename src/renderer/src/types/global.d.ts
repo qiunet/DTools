@@ -1,4 +1,3 @@
-import {DToolsSetting} from "../common/DToolsSetting";
 import {API} from "../../../preload/api/API";
 
 export { }
