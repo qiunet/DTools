@@ -3,7 +3,7 @@
     <el-row style="padding-top: 20px">
       <el-col :span="5">职业:</el-col>
       <el-col :span="17">
-        <el-select class="setting-el-select" v-model="data.setting.role" placeholder="选择职业" size="small" @change="data.roleChange">
+        <el-select class="setting-el-select" v-model="data.setting.role" placeholder="选择职业" size="large" @change="data.roleChange">
           <el-option
               v-for="item in data.roles"
               :key="item.name"
@@ -22,19 +22,22 @@
             class="setting-el-select"
             v-model="data.setting.currCfgPath"
             filterable
+            size="large"
             allow-create
+            :clearable="true"
             default-first-option
-            @change="data.cfgSelectChange"
             :reserve-keyword="false"
+            @clear="data.cfgPathClear"
+            @change="data.cfgSelectChange"
             no-data-text="需要填入配置文件夹绝对路径"
+            placeholder="需要填入配置文件夹绝对路径"
         >
           <el-option
               v-for="item in data.setting.cfgPaths"
               :key="item"
               :label="item"
               :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -42,22 +45,25 @@
       <el-col :span="5">项目路径:</el-col>
       <el-col :span="12">
         <el-select
+            size="large"
             class="setting-el-select"
             v-model="data.setting.currProjectPath"
             filterable
             allow-create
+            :clearable="true"
             default-first-option
-            @change="data.projectPathChange"
             :reserve-keyword="false"
+            @clear="data.projectPathClear()"
+            @change="data.projectPathChange"
             no-data-text="需要填入输出文件夹绝对路径"
+            placeholder="需要填入输出文件夹绝对路径"
         >
           <el-option
               v-for="item in data.setting.projectPaths"
               :key="item"
               :label="item"
               :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -75,7 +81,7 @@
             :before-upload="data.uploadFile">
           <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
           <div class="el-upload__text">
-            拖拽文件到这里 或者 <em>点击上传</em>
+            拖拽ejs模板文件到这里 或者 <em>点击上传</em>
           </div>
           <template #tip>
             <div class="el-upload__tip">
@@ -89,23 +95,18 @@
 </template>
 
 <script lang="ts">
-import {reactive} from "vue";
+import {getCurrentInstance, reactive} from "vue";
 import { UploadFilled, Close, Plus } from "@element-plus/icons-vue";
 import {ElNotification} from "element-plus/es";
 import {Role} from "../common/Enums";
 import {ElMessage} from "element-plus";
-let element = document.getElementsByClassName("el-upload__input")
-for (let index = 0; index < element.length; index ++) {
-    let item:any = element.item(index);
-    item.webkitdirectory = true;
-}
+import {StringUtil} from "../common/StringUtil";
 
 export default {
-  name: "Setting",
-
   components: {UploadFilled, Close, Plus},
 
   setup() {
+    const internalInstance:any = getCurrentInstance()
     let data = reactive({
       roles: [{
         "role": Role.CLIENT,
@@ -119,33 +120,25 @@ export default {
       }],
       setting: window.tool_api.setting(),
 
+      /**
+       * 路径变更
+       * @param val
+       */
       cfgSelectChange: function (val: any) {
-        if (! window.tool_api.isDir(val)) {
-          ElMessage.error("["+val+"]不是一个文件夹!");
-          return false;
-        }
-        data.setting.currCfgPath = val;
-        if (window.tool_api.useCfgPath(val)) {
-          data.setting.cfgPaths.push(val);
-          ElMessage.success("保存成功!");
-        }else {
-          ElMessage.success("切换成功!");
-        }
+        pathChange('cfg', val);
+      },
+      projectPathChange: function (val: any) {
+        pathChange('project', val);
       },
 
-      projectPathChange: function (val: any) {
-        if (! window.tool_api.isDir(val)) {
-          ElMessage.error("["+val+"]不是一个文件夹!");
-          return false;
-        }
+      cfgPathClear() {
+        window.tool_api.removeSettingCurrPath('cfg');
+        data.setting = window.tool_api.setting();
+      },
 
-        data.setting.currProjectPath = val;
-        if (window.tool_api.useProjectPath(val)) {
-          data.setting.projectPaths.push(val);
-          ElMessage.success("保存成功!");
-        } else {
-          ElMessage.error("切换成功!");
-        }
+      projectPathClear() {
+        window.tool_api.removeSettingCurrPath('project');
+        data.setting = window.tool_api.setting();
       },
 
       roleChange: function (index: number) {
@@ -172,6 +165,32 @@ export default {
       },
 
     });
+
+    /**
+     * 路径变动
+     * @param type
+     * @param val
+     */
+    function pathChange(type: string, val: any) {
+      if (StringUtil.isEmpty(val)) {
+        return;
+      }
+
+      if (! window.tool_api.isDir(val)) {
+        ElMessage.error("["+val+"]不是一个文件夹!");
+        return false;
+      }
+
+      let isCfgType = type === 'cfg';
+      isCfgType ? data.setting.currCfgPath = val : data.setting.currProjectPath = val;
+      let fn = isCfgType ? window.tool_api.useCfgPath : window.tool_api.useProjectPath;
+      if (fn(val)) {
+        (isCfgType ? data.setting.cfgPaths : data.setting.projectPaths).push(val);
+        ElMessage.success("保存成功!");
+      }else {
+        ElMessage.success("切换成功!");
+      }
+    }
 
     return {
       data,

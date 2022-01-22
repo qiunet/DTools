@@ -1,5 +1,5 @@
 <template>
-  <el-container class="root-container">
+  <el-container class="root-container" @click="closeMenu">
     <el-header height="100px">
       <div style="padding: 10px; font-size: 22px; color: gray">
         <el-row :gutter="5">
@@ -22,6 +22,7 @@
             :data="data.files"
             class="filter-tree"
             default-expand-all
+            @node-click="closeMenu"
             @node-contextmenu="openMenu"
             :props="data.defaultProps"
             :highlight-current="true"
@@ -91,18 +92,32 @@ export default {
     });
 
     let currNode = ref<IFileNode>();
-    const internalInstance:any = getCurrentInstance() // 有效
+    const internalInstance:any = getCurrentInstance()
+
+    /**
+     * 关闭右键菜单
+     */
     function closeMenu() {
       let refs:any = internalInstance.refs;
       refs.contextmenu.hide();
     }
+
+    /**
+     * 打开菜单
+     * @param event
+     * @param node
+     * @param data
+     */
     function openMenu(event: PointerEvent, node: any, data: any) {
       currNode.value = (data.data);
       let refs:any = internalInstance.refs;
       refs.contextmenu.show({ top: event.clientY, left: event.clientX});
-      // document.addEventListener('click', closeMenu());
     }
 
+    /**
+     * 点击菜单项
+     * @param event
+     */
     function menuClick(event: string){
       let node = currNode.value;
       if (node === undefined) {

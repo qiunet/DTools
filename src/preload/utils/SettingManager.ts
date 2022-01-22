@@ -79,39 +79,41 @@ export class SettingManager {
      * 删除某个path
      * @param path
      */
-    public static removeCfgPath(path: string) {
+    public static removeCfgPath(path: string): string {
         let currPath: string = SettingManager._setting.getCurrCfgPath();
         SettingManager._setting.getCfgPaths().forEach((val, index, arr) => {
             if (val !== path) {
                 return;
             }
             arr.splice(index, 1);
-            if (currPath === path && arr.length > 1) {
+            if (currPath === path && arr.length >= 1) {
                 SettingManager._setting.setCurrCfgPath(arr[0]);
             }else {
                 SettingManager._setting.setCurrCfgPath("");
             }
         });
         SettingManager.save();
+        return SettingManager._setting.getCurrCfgPath();
     }
     /**
      * 删除某个path
      * @param path
      */
-    public static removeProjectPath(path: string) {
+    public static removeProjectPath(path: string):string {
         let currPath: string = SettingManager._setting.getCurrProjectPath();
         SettingManager._setting.getProjectPaths().forEach((val, index, arr) => {
             if (val !== path) {
                 return;
             }
             arr.splice(index, 1);
-            if (currPath === path && arr.length > 1) {
+            if (currPath === path && arr.length >= 1) {
                 SettingManager._setting.setCurrProjectPath(arr[0]);
             }else {
                 SettingManager._setting.setCurrProjectPath("");
             }
         });
         SettingManager.save();
+        return SettingManager._setting.getCurrProjectPath();
     }
 
     /**

@@ -21,6 +21,14 @@ const ToolApi = {
         }
     },
 
+    removeSettingCurrPath: (type: string): string => {
+        if (type === 'cfg') {
+            return SettingManager.removeCfgPath(SettingManager.getSetting().currCfgPath);
+        }else {
+            return SettingManager.removeProjectPath(SettingManager.getSetting().currProjectPath);
+        }
+    },
+
     useCfgPath: (path: string): boolean => {
         return SettingManager.useCfgPath(path);
     },

@@ -24,6 +24,13 @@ export interface API {
      */
     useProjectPath: (path: string) => boolean;
     /**
+     * 删除setting中的路径.
+     * @param type 类型. cfg project
+     * @param path
+     * @return 新的当前路径
+     */
+    removeSettingCurrPath: (type: string) => string;
+    /**
      * 获得配置文件
      */
     setting: () => DToolsSetting;
