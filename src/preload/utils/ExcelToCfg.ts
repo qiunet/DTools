@@ -3,6 +3,7 @@ import * as Excel from 'exceljs';
 import ejs from "ejs";
 import os from "os";
 import fs from "fs";
+import {StringUtil} from "../../renderer/src/common/StringUtil";
 
 /**
  * 跟 common/Enums/Role 同步.
@@ -234,6 +235,11 @@ export class ExcelToCfg {
      * 转换并生成文件
      */
     public convert(): void {
+        if (StringUtil.isEmpty(this._outputDirPath)) {
+            this.logger("项目输出路径为空. 转化终止!\n")
+            return
+        }
+
         if (! this._fileRelativePath.endsWith(".xlsx")) {
             this._logger(this._fileRelativePath + "不是xlsx文件");
             throw new Error(this._fileRelativePath + "不是xlsx文件");

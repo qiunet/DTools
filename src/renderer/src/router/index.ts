@@ -1,4 +1,6 @@
-import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router';
+import {createRouter, createWebHashHistory, RouteLocationNormalized, RouteRecordRaw} from 'vue-router';
+import {StringUtil} from "../common/StringUtil";
+import {ElMessage} from "element-plus";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -44,5 +46,15 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach(async (to, from) => {
+  function canAccess(to: RouteLocationNormalized): boolean {
+    return to.path === '/Setting' || !StringUtil.isEmpty(window.tool_api.setting().currCfgPath)
+  }
+
+  if (!canAccess(to)) {
+    ElMessage.success("请先进行工具的基本设置!")
+    return '/Setting'
+  }
+})
 
 export default router;
