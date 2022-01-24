@@ -176,16 +176,16 @@ export class ExcelToCfg {
      *
      * @private
      */
-    private readonly _outputDirPath: string;
+    private readonly _outputDirPaths: string[];
     /**
      * 记录日志
      * @private
      */
     private readonly _logger: (info: string) => void;
 
-    constructor(role: Role, fileRelativePath: string, configDir: string, outputDirPath: string, logger?: (info: string) => void) {
+    constructor(role: Role, fileRelativePath: string, configDir: string, outputDirPaths:string[], logger?: (info: string) => void) {
         this._fileRelativePath = fileRelativePath;
-        this._outputDirPath = outputDirPath;
+        this._outputDirPaths = outputDirPaths;
         this._configDir = configDir;
         this._role = role;
         if (logger) {
@@ -227,15 +227,15 @@ export class ExcelToCfg {
         return this._configDir;
     }
 
-    get outputDirPath(): string {
-        return this._outputDirPath;
+    get outputDirPaths(): string[] {
+        return this._outputDirPaths;
     }
 
     /**
      * 转换并生成文件
      */
     public convert(): void {
-        if (StringUtil.isEmpty(this._outputDirPath)) {
+        if (this._outputDirPaths === null || this._outputDirPaths.length === 0) {
             this.logger("项目输出路径为空. 转化终止!\n")
             return
         }
@@ -513,19 +513,21 @@ class ExcelSheet {
                     return;
                 }
                 let fileName: string =  this.cfgConfig.getCfgPrefix() + "_" + this.sheet.name + "."+key;
-                let filePath = Path.join(this.cfgConfig.outputDirPath, Path.dirname(this.cfgConfig.fileRelativePath), fileName);
-                if (!fs.existsSync(Path.dirname(filePath))) {
-                    fs.mkdirSync(Path.dirname(filePath), { recursive: true });
-                }
-                fs.writeFile(filePath, content, (err) => {
-                    if (err) {
-                        console.error(err);
+                this.cfgConfig.outputDirPaths.forEach((outputDir) => {
+                    let filePath = Path.join(outputDir, Path.dirname(this.cfgConfig.fileRelativePath), fileName);
+                    if (!fs.existsSync(Path.dirname(filePath))) {
+                        fs.mkdirSync(Path.dirname(filePath), { recursive: true });
                     }
+                    fs.writeFile(filePath, content, (err) => {
+                        if (err) {
+                            console.error(err);
+                        }
+                    });
                 });
             }));
         });
     }
 }
 //
-// let excelToCfg = new ExcelToCfg(Role.SERVER, "G全局表_global_setting.xlsx", __dirname, __dirname);
+// let excelToCfg = new ExcelToCfg(Role.SERVER, "G全局表_global_setting.xlsx", __dirname, [__dirname]);
 // excelToCfg.convert()

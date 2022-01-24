@@ -139,7 +139,7 @@ export class SettingManager {
 
         let relativePath: string = path.substring(SettingManager._setting.getCurrCfgPath().length + 1);
 
-        let excelToCfg = new ExcelToCfg(SettingManager._setting.getRole(),relativePath , SettingManager._setting.getCurrCfgPath(), SettingManager._setting.getCurrProjectPath(), logger);
+        let excelToCfg = new ExcelToCfg(SettingManager._setting.getRole(),relativePath , SettingManager._setting.getCurrCfgPath(), [SettingManager._setting.getCurrProjectPath()], logger);
         excelToCfg.convert();
     }
 
