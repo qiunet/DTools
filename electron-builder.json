@@ -1,6 +1,8 @@
 {
   "appId": "qiunet@163.com",
   "asar": true,
+  "productName": "DTools",
+  "artifactName": "DTools",
   "directories": {
     "output": "release/${version}"
   },
