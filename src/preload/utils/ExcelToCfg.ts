@@ -3,7 +3,6 @@ import * as Excel from 'exceljs';
 import ejs from "ejs";
 import os from "os";
 import fs from "fs";
-import {StringUtil} from "../../renderer/src/common/StringUtil";
 
 /**
  * 跟 common/Enums/Role 同步.
@@ -254,6 +253,32 @@ export class ExcelToCfg {
                 new ExcelSheet(this, worksheet).handlerSheet();
             }
         });
+    }
+
+    /**
+     * 服务器脚本调用.
+     * 转换整个文件夹.
+     * @param configPath
+     * @param outDirs
+     * @param logger
+     */
+    public static convertDir(configPath: string, outDirs: string[], logger?: (info: string) => void) {
+        this.convertDir0(configPath, '/', outDirs);
+    }
+    private static convertDir0(path: string, relativePath: string, outDirs: string[], logger?: (info: string) => void): void {
+        if (! fs.statSync(path).isDirectory()) {
+            throw new Error("not a directory!")
+        }
+
+        for (const file of fs.readdirSync(path)) {
+            let rPath = Path.join(relativePath, file);
+            if (fs.statSync(file).isDirectory()) {
+                this.convertDir0(path, rPath, outDirs);
+                continue;
+            }
+            let excelToCfg = new ExcelToCfg(Role.SERVER, rPath, path, outDirs, logger)
+            excelToCfg.convert();
+        }
     }
 
 }
