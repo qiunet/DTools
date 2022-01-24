@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="80px">
+    <el-aside id="toolBox" width="80px">
       <v-side-bar />
     </el-aside>
     <el-main>
@@ -8,8 +8,8 @@
         <el-header height="30px">
           <el-divider class="content-area-title" content-position="left">{{ this.$route.meta.title }}</el-divider>
         </el-header>
-        <el-main>
-          <div id="content">
+        <el-main style="overflow-y: hidden">
+          <div id="content" >
             <router-view />
           </div>
         </el-main>

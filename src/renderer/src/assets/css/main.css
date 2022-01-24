@@ -16,9 +16,7 @@ html, body, #app, .content_area {
 }
 
 #toolBox {
-    width: 80px;
     height: 100%;
-    float: left;
     background-color: rgb(37, 174, 96);
 }
 
