@@ -5,9 +5,8 @@ import Path from "path";
 import {ToolsConstants} from "../utils/ToolsConstants";
 import * as electron from "electron";
 import {IFileNode} from "../../renderer/src/common/IFileNode";
-import {SvnEvent} from "../../renderer/src/common/Enums";
+import {SvnEvent, Role} from "../../renderer/src/common/Enums";
 import {SvnClient} from "../utils/SvnClient";
-import {Role} from "../utils/ExcelToCfg";
 import {API} from "./API";
 import * as fs from "fs";
 

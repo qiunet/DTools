@@ -4,9 +4,9 @@
 import * as os from "os";
 import * as Path from "path";
 import * as fs from "fs";
-import {Constants} from "./ExcelToCfg";
 import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {FileUtil} from "../../renderer/src/common/FileUtil";
+import {Constants} from "excel_to_cfg/lib";
 
 export class ToolsConstants {
     /**

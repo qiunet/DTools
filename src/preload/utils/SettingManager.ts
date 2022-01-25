@@ -3,9 +3,8 @@ import {IFileNode} from "../../renderer/src/common/IFileNode";
 import {ToolsConstants} from "./ToolsConstants";
 import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {FileNode, FileUtil} from "../../renderer/src/common/FileUtil";
-import {ExcelToCfg} from "./ExcelToCfg";
 import fs from "fs";
-import {log} from "util";
+import {ExcelToCfg} from "excel_to_cfg/lib";
 
 export class SettingManager {
     private static readonly _setting: DToolsSetting = ToolsConstants.settingJson();

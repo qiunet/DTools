@@ -1,7 +1,6 @@
 import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {IFileNode} from "../../renderer/src/common/IFileNode";
-import {SvnEvent} from "../../renderer/src/common/Enums";
-import {Role} from "../utils/ExcelToCfg";
+import {Role, SvnEvent} from "../../renderer/src/common/Enums";
 
 /**
  * API 还是有必要的.
