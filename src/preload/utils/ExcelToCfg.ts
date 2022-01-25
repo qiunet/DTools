@@ -530,26 +530,39 @@ class ExcelSheet {
      * @param useTypes
      */
     public output(data: ExcelCfg, useTypes: Set<string>) {
-        useTypes.forEach(key => {
-            const templateFilePath:string = Path.join(Constants.ejsTemplateDir(), key + ".ejs");
+        useTypes.forEach(postfix => {
+            if (postfix === 'json') {
+                return this.output0(JSON.stringify(data, null, '\t'), postfix);
+            }
+            const templateFilePath:string = Path.join(Constants.ejsTemplateDir(), postfix + ".ejs");
             ejs.renderFile(templateFilePath, data, ((err, content) => {
                 if (err) {
                     console.error(err);
                     return;
                 }
-                let fileName: string =  this.cfgConfig.getCfgPrefix() + "_" + this.sheet.name + "."+key;
-                this.cfgConfig.outputDirPaths.forEach((outputDir) => {
-                    let filePath = Path.join(outputDir, Path.dirname(this.cfgConfig.fileRelativePath), fileName);
-                    if (!fs.existsSync(Path.dirname(filePath))) {
-                        fs.mkdirSync(Path.dirname(filePath), { recursive: true });
-                    }
-                    fs.writeFile(filePath, content, (err) => {
-                        if (err) {
-                            console.error(err);
-                        }
-                    });
-                });
+                this.output0(content, postfix);
             }));
+        });
+    }
+
+    /**
+     * 往文件输出内容
+     * @param content
+     * @param postfix
+     * @private
+     */
+    private output0(content: string, postfix: string): void {
+        let fileName: string =  this.cfgConfig.getCfgPrefix() + "_" + this.sheet.name + "."+postfix;
+        this.cfgConfig.outputDirPaths.forEach((outputDir) => {
+            let filePath = Path.join(outputDir, Path.dirname(this.cfgConfig.fileRelativePath), fileName);
+            if (!fs.existsSync(Path.dirname(filePath))) {
+            fs.mkdirSync(Path.dirname(filePath), { recursive: true });
+            }
+            fs.writeFile(filePath, content, (err) => {
+                if (err) {
+                    console.error(err);
+                }
+            });
         });
     }
 }
