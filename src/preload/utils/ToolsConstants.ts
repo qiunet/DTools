@@ -67,7 +67,7 @@ export class ToolsConstants {
             "<%_ rows.forEach(function (row, rIndex){ _%>\n" +
             "    {\n" +
             "    <%_ row.cells.forEach(function (cell, cIndex) { _%>\n" +
-            "        \"<%= cell.name %>\": <% if (cell.isStringType()) {%>\"<% }%><%=cell.val%><% if (cell.isStringType()) {%>\"<% }%><% if(cIndex < row.cells.length - 1) { %>,<% } %>\n" +
+            "        \"<%= cell.name %>\": <% if (cell.isStringType()) {%>\"<% }%><%-cell.val%><% if (cell.isStringType()) {%>\"<% }%><% if(cIndex < row.cells.length - 1) { %>,<% } %>\n" +
             "     <%_}); _%>\n" +
             "    }<% if(rIndex < rows.length - 1) { %>,<% } %>\n" +
             "<%_ }); _%>\n" +
