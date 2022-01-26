@@ -42,7 +42,7 @@
           <el-container style="height: 100%">
             <el-header height="22px"><el-divider content-position="left" border-style="color: #324157;">控制台</el-divider></el-header>
             <el-main>
-              <div style="padding: 15px 5px 5px 10px; height: 96%; float: bottom; color: darkgray; font-size: 16px" v-html="data.consoleContent"/>
+              <textarea id="console-content-area" disabled style="padding: 15px 5px 5px 10px; height: 96%; width: 98%; float: bottom; color: darkgray; resize: none; font-size: 16px" v-html="data.consoleContent"></textarea>
             </el-main>
           </el-container>
         </div>
@@ -76,9 +76,11 @@ export default {
       setting: window.tool_api.setting(),
       files: window.tool_api.cfgFileNode(),
       consoleAppend: (content: string) => {
-        content = content.replaceAll("\n", "<br />");
         data.consoleContent += (content);
+        let element: any = document.getElementById("console-content-area");
+        element.scrollTop = element.scrollHeight + 500;
       },
+
       filterNode : (value: string, data: IFileNode) => {
         if (!value) return true
         return data.name.indexOf(value) !== -1

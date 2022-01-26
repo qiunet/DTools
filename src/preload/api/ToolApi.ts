@@ -37,7 +37,8 @@ const ToolApi = {
     },
 
     convert: (path: string, logger: (info: string) => void): void  => {
-        SettingManager.convert(path, logger);
+        let relativePath: string = path.substring(SettingManager.getSetting().getCurrCfgPath().length + 1);
+        SettingManager.convert(relativePath, logger);
     },
 
     copyToEjsDir: (filePath: string) : Promise<void>  => {

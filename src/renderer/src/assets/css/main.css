@@ -43,3 +43,9 @@ html, body, #app, .content_area {
     border-radius: 5px;
     background-color: #313131;
 }
+
+ #console-content-area {
+    border: 0;
+    user-select: none;
+    background-color: #313131;
+}

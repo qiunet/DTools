@@ -5,6 +5,7 @@ import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {FileNode, FileUtil} from "../../renderer/src/common/FileUtil";
 import fs from "fs";
 import {ExcelToCfg} from "excel_to_cfg/lib";
+import Path from "path";
 
 export class SettingManager {
     private static readonly _setting: DToolsSetting = ToolsConstants.settingJson();
@@ -117,26 +118,26 @@ export class SettingManager {
 
     /**
      * 转换文件夹
-     * @param path
+     * @param relativePath
      * @param logger
      */
-    public static convertDir(path: string, logger: (info: string) => void): void {
-        let files = fs.readdirSync(path);
+    public static convertDir(relativePath:string, logger: (info: string) => void): void {
+        let files = fs.readdirSync(Path.join(this.getSetting().currCfgPath, relativePath));
         for (let file of files) {
-            this.convert(file, logger);
+            this.convert(Path.join(relativePath, file), logger);
         }
     }
     /**
      * 转换文件
-     * @param path
+     * @param cfgPath
+     * @param relativePath
      * @param logger
      */
-    public static convert(path: string, logger: (info: string) => void): void {
-        if (fs.statSync(path).isDirectory()) {
-            return this.convertDir(path, logger);
+    public static convert(relativePath: string, logger: (info: string) => void): void {
+        let filePath = Path.join(this.getSetting().currCfgPath, relativePath);
+        if (fs.statSync(filePath).isDirectory()) {
+            return this.convertDir(relativePath, logger);
         }
-
-        let relativePath: string = path.substring(SettingManager._setting.getCurrCfgPath().length + 1);
 
         let excelToCfg = new ExcelToCfg(SettingManager._setting.getRole(),relativePath , SettingManager._setting.getCurrCfgPath(), [SettingManager._setting.getCurrProjectPath()], logger);
         excelToCfg.convert();
