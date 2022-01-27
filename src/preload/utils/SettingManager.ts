@@ -117,30 +117,13 @@ export class SettingManager {
     }
 
     /**
-     * 转换文件夹
-     * @param relativePath
-     * @param logger
-     */
-    public static convertDir(relativePath:string, logger: (info: string) => void): void {
-        let files = fs.readdirSync(Path.join(this.getSetting().currCfgPath, relativePath));
-        for (let file of files) {
-            this.convert(Path.join(relativePath, file), logger);
-        }
-    }
-    /**
      * 转换文件
      * @param cfgPath
      * @param relativePath
      * @param logger
      */
     public static convert(relativePath: string, logger: (info: string) => void): void {
-        let filePath = Path.join(this.getSetting().currCfgPath, relativePath);
-        if (fs.statSync(filePath).isDirectory()) {
-            return this.convertDir(relativePath, logger);
-        }
-
-        let excelToCfg = new ExcelToCfg(SettingManager._setting.getRole(),relativePath , SettingManager._setting.getCurrCfgPath(), [SettingManager._setting.getCurrProjectPath()], logger);
-        excelToCfg.convert();
+     ExcelToCfg.roleConvert(SettingManager._setting.getRole(), SettingManager._setting.getCurrCfgPath(), relativePath , [SettingManager._setting.getCurrProjectPath()], logger);
     }
 
     /**
