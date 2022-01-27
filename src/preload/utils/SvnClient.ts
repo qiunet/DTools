@@ -1,5 +1,8 @@
 
 import * as process from "child_process";
+import fs from "fs";
+import Path from "path";
+import {StringUtil} from "../../renderer/src/common/StringUtil";
 /**
  * svn 客户端
  */
@@ -62,12 +65,29 @@ export class SvnClient {
      * 提交
      */
     public static commit(path: string): Promise<string> {
+        if (fs.statSync(path).isDirectory()) {
+            return this.commitDir(path);
+        }
+
         return this.info(path).then(str => {
-            return this.cmd("commit", path);
+            return this.cmd("commit", path, "-m dTools commit");
         }).catch(str => {
             return this.cmd("add", path).then(str => {
-                return this.cmd("commit", path);
+                return this.cmd("commit", path, "-m dTools commit");
             });
+        });
+    }
+
+    private static commitDir(path: string) :Promise<string>{
+        return this.status(path).then(str => {
+            str.split("\n").forEach(line => {
+                if (StringUtil.isEmpty(line)) {
+                    return;
+                }
+                let strings = line.split("       ");
+                this.cmd("add", strings[1]).catch();
+            })
+            return this.cmd("commit", path, "-m dTools commit");
         });
     }
     /**
