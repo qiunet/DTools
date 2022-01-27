@@ -40,7 +40,15 @@ export default {
     padding-top: 10px;
   }
   .button-icon {
-    padding-top: 10px;
+    padding-top: 15px;
+    padding-left: 4px;
+    width: 70px;
+    height: 70px;
+  }
+
+  .button-icon > svg {
+    width: 70px;
+    height: 70px;
   }
   .button-icon:hover {
     color: gray;
