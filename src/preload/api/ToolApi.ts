@@ -9,6 +9,9 @@ import {SvnEvent, Role} from "../../renderer/src/common/Enums";
 import {SvnClient} from "../utils/SvnClient";
 import {API} from "./API";
 import * as fs from "fs";
+import {AiConfigManager, IAIConfig} from "../utils/AiConfig";
+import {XmlUtil} from "../utils/XmlUtil";
+import {RootExecutor} from "../utils/BehaviorTree";
 
 const ToolApi = {
 
@@ -20,24 +23,51 @@ const ToolApi = {
         }
     },
 
-    removeSettingCurrPath: (type: string): string => {
-        if (type === 'cfg') {
-            return SettingManager.removeCfgPath(SettingManager.getSetting().currCfgPath);
-        }else {
-            return SettingManager.removeProjectPath(SettingManager.getSetting().currProjectPath);
+    fileExists: (filePath: string): boolean => {
+        return fs.existsSync(filePath);
+    },
+
+    createAiXmlFile: (fileName: string, desc: string): boolean => {
+        let xmlFilePath = Path.join(SettingManager.setting.aiCfgPathSelect.current, fileName + ".xml");
+        if (fs.existsSync(xmlFilePath)) {
+            return false;
         }
+        let executor = new RootExecutor({name: desc});
+        XmlUtil.writeXmlFile(executor.toXmlObject(), xmlFilePath);
+        return true;
+    },
+
+    aiConfigFilePath: (): string => {
+      return ToolsConstants.aiConfigFilePath();
+    },
+
+    removeAiCfgPath: () => {
+        return SettingManager.setting.aiCfgPathSelect.removePath(SettingManager.setting.aiCfgPathSelect.current);
+    },
+
+    removeProjectCurrPath: (): string => {
+        return SettingManager.setting.projectPathSelect.removePath(SettingManager.setting.projectPathSelect.current);
+    },
+
+
+    removeCfgCurrPath: (): string => {
+            return SettingManager.setting.cfgPathSelect.removePath(SettingManager.setting.cfgPathSelect.current);
+    },
+
+    useAiConfigPath: (path: string): boolean => {
+        return SettingManager.setting.aiCfgPathSelect.usePath(path);
     },
 
     useCfgPath: (path: string): boolean => {
-        return SettingManager.useCfgPath(path);
+        return SettingManager.setting.cfgPathSelect.usePath(path);
     },
 
     useProjectPath: (path: string): boolean => {
-        return SettingManager.useProjectPath(path);
+        return SettingManager.setting.projectPathSelect.usePath(path);
     },
 
     convert: (path: string, logger: (info: string) => void): void  => {
-        let relativePath: string = path.substring(SettingManager.getSetting().getCurrCfgPath().length + 1);
+        let relativePath: string = path.substring(SettingManager.setting.cfgPathSelect.current.length + 1);
         SettingManager.convert(relativePath, logger);
     },
 
@@ -45,8 +75,12 @@ const ToolApi = {
         return FileUtil.copy(filePath, Path.join(ToolsConstants.ejsTemplateDir(), Path.basename(filePath)));
     },
 
+    copyToAiCfgDir: (filePath: string) : Promise<void>  => {
+        return FileUtil.copy(filePath, Path.join(ToolsConstants.aiConfigDir(), Path.basename(filePath)));
+    },
+
     setting: (): DToolsSetting => {
-        return SettingManager.getSetting();
+        return SettingManager.setting;
     },
 
     openPath: (filePath: string): Promise<string> => {
@@ -56,6 +90,12 @@ const ToolApi = {
     cfgFileNode: (): Array<IFileNode> => {
         let arr: Array<IFileNode> = [];
         arr.push(SettingManager.getFileNodes());
+        return arr;
+    },
+
+    aiCfgFileNode: (): Array<IFileNode> => {
+        let arr: Array<IFileNode> = [];
+        arr.push(SettingManager.aiCfgFileNodes());
         return arr;
     },
 
@@ -75,11 +115,33 @@ const ToolApi = {
 
     roleChange: (role: Role): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            SettingManager.getSetting().role = role;
+            SettingManager.setting.role = role;
             SettingManager.save();
             resolve();
         });
-    }
+    },
+
+    /**
+     * 得到 aiConfig 的内容.
+     */
+    aiConfigJson: (): IAIConfig =>  {
+        return AiConfigManager.aiConfig;
+    },
+    /**
+     * 读取到的 xml object
+     * @param xmlFilePath
+     */
+    xmlObject: (xmlFilePath: string) : any => {
+        return XmlUtil.readXmlFile(xmlFilePath);
+    },
+    /**
+     * 保存xml object 到 地址.
+     * @param xmlObject
+     * @param xmlFilePath
+     */
+    saveToXml: (xmlObject: any, xmlFilePath: string) : void => {
+        XmlUtil.writeXmlFile(xmlObject, xmlFilePath);
+    },
 } as API;
 
 export default ToolApi;

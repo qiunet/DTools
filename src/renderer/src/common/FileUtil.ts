@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as Path from "path";
 import {IFileNode} from "./IFileNode";
+import {CommonUtil} from "./CommonUtil";
 
 /**
  * 文件工具集合
@@ -8,11 +9,14 @@ import {IFileNode} from "./IFileNode";
 export class FileUtil {
     /**
      * 复制文件到对应的目录
-     * @param filePath
-     * @param distDir
+     * @param srcFilePath
+     * @param distFilePath
      */
-    public static async copy(filePath: string, distDir: string) {
-        fs.copyFileSync(filePath, distDir);
+    public static async copy(srcFilePath: string, distFilePath: string) {
+        if (! fs.existsSync(Path.dirname(distFilePath))) {
+            fs.mkdirSync(Path.dirname(distFilePath), { recursive: true });
+        }
+        fs.copyFileSync(srcFilePath, distFilePath);
     }
 
     /**
@@ -60,8 +64,9 @@ export class FileUtil {
      * 列出文件夹类容
      * @param dirPath
      * @param filter
+     * @param nameGetter name 获取
      */
-    public static listDir(dirPath: string, filter: (file:string) => boolean) : FileNode {
+    public static listDir(dirPath: string, filter: (file:string) => boolean, nameGetter = (filePath: string) => Path.basename(filePath)) : FileNode {
         let obj = new FileNode(dirPath, true);
         let files = fs.readdirSync(dirPath, "utf-8");
         for (let file0 of files) {
@@ -69,13 +74,13 @@ export class FileUtil {
             let stats = fs.statSync(file);
             if (stats.isFile()) {
                 if (filter(file)) {
-                    obj.addChild(new FileNode(file, false));
+                    obj.addChild(new FileNode(file, false, nameGetter(file)));
                 }
             }else if (stats.isDirectory()) {
                 if (file0.startsWith(".")) {
                     continue;
                 }
-                obj.addChild(this.listDir(file, filter));
+                obj.addChild(this.listDir(file, filter, nameGetter));
             }
         }
         return obj;
@@ -89,11 +94,15 @@ export class FileNode implements IFileNode {
     name: string;
     children: Array<IFileNode>;
 
-    constructor(fullPath: string, dir: boolean) {
+    constructor(fullPath: string, dir: boolean, name ?:string) {
         this.dir = dir;
         this.children = [];
         this.fullPath = fullPath;
-        this.name = Path.basename(fullPath);
+        if (name === undefined) {
+            this.name = Path.basename(fullPath);
+        }else {
+            this.name = name;
+        }
     }
 
     public addChild(node: IFileNode) {

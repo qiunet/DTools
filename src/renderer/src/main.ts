@@ -12,9 +12,3 @@ createApp(App)
     .use(Menus)
     .use(ElementPlus)
     .mount('#app')
-
-// window.tool_api.convert('/Users/qiunet/doc/xf3d/client/Config/content/B背包_backpack.xlsx', (str) => {
-//     console.log("main.ts getter", str)
-// });
-//
-// console.log(window.tool_api.setting())

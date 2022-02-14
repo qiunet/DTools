@@ -4,11 +4,11 @@
       <div style="padding: 10px; font-size: 22px; color: gray">
         <el-row :gutter="5">
           <el-col :span="4">配置目录:</el-col>
-          <el-col :span="17" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{ data.setting.currCfgPath }}</el-col>
+          <el-col :span="17" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{ data.setting.cfgPathSelect.current }}</el-col>
         </el-row>
         <el-row :gutter="2" style="padding-top: 10px">
           <el-col :span="4">项目目录:</el-col>
-          <el-col :span="17" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{data.setting.currProjectPath }}</el-col>
+          <el-col :span="17" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{data.setting.projectPathSelect.current }}</el-col>
         </el-row>
       </div>
     </el-header>

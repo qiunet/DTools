@@ -4,9 +4,9 @@
 import * as os from "os";
 import * as Path from "path";
 import * as fs from "fs";
-import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {FileUtil} from "../../renderer/src/common/FileUtil";
 import {Constants} from "excel_to_cfg/lib";
+import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 
 export class ToolsConstants {
     /**
@@ -17,6 +17,15 @@ export class ToolsConstants {
      * 存放ejs的目录
      */
     private static readonly EJS_TEMPLATE_DIR = Constants.EJS_TEMPLATE_DIR;
+    /**
+     * ai 行为树的配置存放目录
+     */
+    private static readonly AI_CONFIG_DIR = "ai";
+    /**
+     * ai config file name
+     * @private
+     */
+    private static readonly AI_CONFIG_NAME = "AiConfig.json";
 
     /**
      * 配置名称
@@ -46,12 +55,25 @@ export class ToolsConstants {
     }
 
     /**
+     * 获得 ai 行为树 路径
+     */
+    public static aiConfigDir(): string {
+        return Path.join(this.settingDir(), this.AI_CONFIG_DIR);
+    }
+
+    /**
+     * 获得 ai 行为树 路径
+     */
+    public static aiConfigFilePath(): string {
+        return Path.join(this.aiConfigDir(), this.AI_CONFIG_NAME);
+    }
+
+    /**
      * 返回对象
      */
     static settingJson(): DToolsSetting {
-        let content = FileUtil.readFile(this.settingFilePath());
-        let data = JSON.parse(content);
-         return DToolsSetting.valueOf(data);
+        const content = FileUtil.readFile(this.settingFilePath());
+        return DToolsSetting.valueOf(JSON.parse(content));
     }
 
     /**

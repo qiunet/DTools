@@ -9,7 +9,7 @@
           <el-divider class="content-area-title" content-position="left">{{ this.$route.meta.title }}</el-divider>
         </el-header>
         <el-main style="overflow-y: hidden">
-          <div id="content" >
+          <div id="content" style="padding-top: 15px">
             <router-view />
           </div>
         </el-main>

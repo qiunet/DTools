@@ -20,7 +20,7 @@
       <el-col :span="12">
         <el-select
             class="setting-el-select"
-            v-model="data.setting.currCfgPath"
+            v-model="data.setting.cfgPathSelect.current"
             filterable
             size="large"
             allow-create
@@ -33,7 +33,7 @@
             placeholder="需要填入配置文件夹绝对路径"
         >
           <el-option
-              v-for="item in data.setting.cfgPaths"
+              v-for="item in data.setting.cfgPathSelect.list"
               :key="item"
               :label="item"
               :value="item"
@@ -47,7 +47,7 @@
         <el-select
             size="large"
             class="setting-el-select"
-            v-model="data.setting.currProjectPath"
+            v-model="data.setting.projectPathSelect.current"
             filterable
             allow-create
             :clearable="true"
@@ -59,7 +59,7 @@
             placeholder="需要填入输出文件夹绝对路径"
         >
           <el-option
-              v-for="item in data.setting.projectPaths"
+              v-for="item in data.setting.projectPathSelect.list"
               :key="item"
               :label="item"
               :value="item"
@@ -132,12 +132,12 @@ export default {
       },
 
       cfgPathClear() {
-        window.tool_api.removeSettingCurrPath('cfg');
+        window.tool_api.removeCfgCurrPath();
         data.setting = window.tool_api.setting();
       },
 
       projectPathClear() {
-        window.tool_api.removeSettingCurrPath('project');
+        window.tool_api.removeProjectCurrPath();
         data.setting = window.tool_api.setting();
       },
 
@@ -182,10 +182,10 @@ export default {
       }
 
       let isCfgType = type === 'cfg';
-      isCfgType ? data.setting.currCfgPath = val : data.setting.currProjectPath = val;
+      isCfgType ? data.setting.cfgPathSelect.current = val : data.setting.projectPathSelect.current = val;
       let fn = isCfgType ? window.tool_api.useCfgPath : window.tool_api.useProjectPath;
       if (fn(val)) {
-        (isCfgType ? data.setting.cfgPaths : data.setting.projectPaths).push(val);
+        (isCfgType ? data.setting.cfgPathSelect.list : data.setting.projectPathSelect.list).push(val);
         ElMessage.success("保存成功!");
       }else {
         ElMessage.success("切换成功!");

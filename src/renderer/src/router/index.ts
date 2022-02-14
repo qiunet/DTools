@@ -39,6 +39,22 @@ const routes: Array<RouteRecordRaw> = [
     },
     component: () => import('../views/Setting.vue')
   },
+  {
+    path: '/Bht',
+    name: 'BehaviorTree',
+    meta: {
+      title: "行为树配置"
+    },
+    component: () => import('../views/BehaviorTree.vue')
+  },
+  {
+    path: '/BhtEdit/:file',
+    name: 'BehaviorTreeEdit',
+    meta: {
+      title: "行为树编辑"
+    },
+    component: () => import('../views/BehaviorTreeEdit.vue')
+  },
 ]
 
 const router = createRouter({
@@ -48,7 +64,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   function canAccess(to: RouteLocationNormalized): boolean {
-    return to.path === '/Setting' || !StringUtil.isEmpty(window.tool_api.setting().currCfgPath)
+    return to.path === '/Setting' || !StringUtil.isEmpty(window.tool_api.setting().cfgPathSelect.current)
   }
 
   if (!canAccess(to)) {

@@ -4,7 +4,7 @@ export class JsonUtil {
      * 将字符串转为json对象
      * @param jsonString json 字符串
      */
-    public static stringToJson(jsonString:string): JSON {
+    public static stringToJson(jsonString:string): any {
         return JSON.parse(jsonString);
     }
 
