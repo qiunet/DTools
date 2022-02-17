@@ -76,7 +76,10 @@ const ToolApi = {
     },
 
     copyToAiCfgDir: (filePath: string) : Promise<void>  => {
-        return FileUtil.copy(filePath, Path.join(ToolsConstants.aiConfigDir(), Path.basename(filePath)));
+         return FileUtil.copy(filePath, Path.join(ToolsConstants.aiConfigDir(), Path.basename(filePath)))
+         .then(res => {
+             AiConfigManager.reload();
+         });
     },
 
     setting: (): DToolsSetting => {

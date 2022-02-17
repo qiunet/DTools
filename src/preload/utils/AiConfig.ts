@@ -71,8 +71,12 @@ export class AiConfigManager {
      */
     static get aiConfig(): IAIConfig {
         if (this._aiConfig == null) {
-            this._aiConfig = JsonUtil.stringToJson(FileUtil.readFile(ToolsConstants.aiConfigFilePath()));
+           this.reload();
         }
         return this._aiConfig;
+    }
+
+    static reload() {
+        this._aiConfig = JsonUtil.stringToJson(FileUtil.readFile(ToolsConstants.aiConfigFilePath()));
     }
 }

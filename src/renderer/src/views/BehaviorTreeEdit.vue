@@ -1,19 +1,272 @@
 <template>
-
-<!-- sequence  <svg t="1644921161679" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18676" width="128" height="128"><path d="M797.275 966.132l-44.446-43.634 16.495-15.953 0-0.244-16.495 16.197L575.044 747.936l44.446-43.634 149.888 147.152 0.433-549.39 53.818-0.325-0.461 552.802 156.388-151.079 44.446 43.634L797.275 966.132zM37.463 112.118l785.841 0.515 0.542 53.818-785.001-0.515L37.463 112.118zM633.493 410.214 38.492 409.7l-1.11-53.818 595.678 0.515L633.493 410.214zM526.047 653.978l-487.799-0.515-0.921-53.818 488.367 0.515L526.047 653.978zM416.922 897.742l-378.917-0.515-0.704-53.818 379.351 0.515L416.922 897.742z" p-id="18677"></path></svg> -->
-<!-- selector  <svg t="1644921124384" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="16114" width="128" height="128"><path d="M597.333333 469.802667h213.333334a85.333333 85.333333 0 0 0 85.333333-85.333334v-213.333333a85.333333 85.333333 0 0 0-85.333333-85.333333h-213.333334a85.333333 85.333333 0 0 0-85.333333 85.333333v213.333333a85.333333 85.333333 0 0 0 85.333333 85.333334z m0-256a42.666667 42.666667 0 0 1 42.666667-42.666667h128a42.666667 42.666667 0 0 1 42.666667 42.666667v128a42.666667 42.666667 0 0 1-42.666667 42.666666h-128a42.666667 42.666667 0 0 1-42.666667-42.666666v-128z m328.789334 739.114666l-72.064-72.064A234.666667 234.666667 0 1 0 426.666667 747.093333c0 7.168 0.426667 14.208 1.066666 21.248l85.632-7.808c-0.426667-4.48-1.365333-8.832-1.365333-13.44a149.333333 149.333333 0 1 1 149.333333 149.333334 148.48 148.48 0 0 1-61.696-13.653334l-35.370666 77.824a233.386667 233.386667 0 0 0 230.826666-20.821333l72.064 72.064a41.728 41.728 0 0 0 58.965334-58.922667zM298.666667 85.76H85.333333a85.333333 85.333333 0 0 0-85.333333 85.333333v213.333334a85.333333 85.333333 0 0 0 85.333333 85.333333h213.333334a85.333333 85.333333 0 0 0 85.333333-85.333333v-213.333334a85.333333 85.333333 0 0 0-85.333333-85.333333z m0 256a42.666667 42.666667 0 0 1-42.666667 42.666667H128a42.666667 42.666667 0 0 1-42.666667-42.666667v-128a42.666667 42.666667 0 0 1 42.666667-42.666667h128a42.666667 42.666667 0 0 1 42.666667 42.666667v128z m0 256.042667H85.333333a85.333333 85.333333 0 0 0-85.333333 85.333333v213.333333a85.333333 85.333333 0 0 0 85.333333 85.333334h213.333334a85.333333 85.333333 0 0 0 85.333333-85.333334v-213.333333a85.333333 85.333333 0 0 0-85.333333-85.333333z m0 256a42.666667 42.666667 0 0 1-42.666667 42.666666H128a42.666667 42.666667 0 0 1-42.666667-42.666666v-128a42.666667 42.666667 0 0 1 42.666667-42.666667h128a42.666667 42.666667 0 0 1 42.666667 42.666667v128z m187.562666-29.696a42.666667 42.666667 0 1 0 42.709334 73.898666 42.666667 42.666667 0 0 0-42.709334-73.898666z" p-id="16115" fill="#2c2c2c"></path></svg> -->
-<!-- parallel  <svg t="1644921237202" class="icon" viewBox="0 0 1066 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="20210" width="128" height="128"><path d="M361.258667 481.834667A85.333333 85.333333 0 1 1 240.64 602.453333a85.333333 85.333333 0 0 1 120.661333-120.661333zM602.581333 240.469333a85.333333 85.333333 0 1 1-120.661333 120.704 85.333333 85.333333 0 0 1 120.704-120.704zM662.954667 542.165333a85.333333 85.333333 0 1 1-120.704 120.661334 85.333333 85.333333 0 0 1 120.704-120.661334z" fill="#FFFFFF" p-id="20211"></path><path d="M270.677333 632.704L210.346667 693.034667l-60.330667-60.330667 60.330667-60.373333 60.330666 60.373333zM512 391.338667l-120.704 120.746666-60.330667-60.373333 120.746667-120.746667L512 391.381333zM693.034667 210.346667l-60.330667 60.330666-60.373333-60.330666 60.373333-60.330667 60.330667 60.330667z" fill="#585E71" p-id="20212"></path><path d="M270.677333 512a42.666667 42.666667 0 1 0 60.330667 60.330667A42.666667 42.666667 0 0 0 270.677333 512zM210.346667 632.746667a128 128 0 1 1 180.992-181.034667 128 128 0 0 1-180.992 181.034667zM512 270.634667a42.666667 42.666667 0 1 1 60.373333 60.373333 42.666667 42.666667 0 0 1-60.330666-60.373333z m-60.288 120.704a128 128 0 1 0 180.992-181.034667 128 128 0 0 0-180.992 181.034667zM572.416 692.992l-181.034667 181.034667L331.093333 813.653333l181.034667-181.034666 60.330667 60.330666zM874.112 391.296l-181.034667 181.034667-60.330666-60.373334 181.034666-180.992 60.330667 60.330667z" fill="#585E71" p-id="20213"></path><path d="M572.416 572.330667a42.666667 42.666667 0 1 0 60.330667 60.330666 42.666667 42.666667 0 0 0-60.330667-60.330666z m-60.330667 120.661333A128 128 0 1 1 693.077333 512a128 128 0 0 1-180.992 181.034667z" fill="#585E71" p-id="20214"></path></svg>-->
-<!-- random  <svg t="1644921269126" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="21692" width="128" height="128"><path d="M960 698L757.1 562.7v84.5h-145l-88.8-108.6-65.5 80.1 91 111.3c9.6 11.8 24 18.6 39.2 18.6h169v84.6L960 698zM283.8 275.3H114.7C86.7 275.3 64 298 64 326c0 28 22.7 50.7 50.7 50.7h145l88.8 108.5 65.5-80.1-91-111.3c-9.6-11.6-24-18.5-39.2-18.5" p-id="21693"></path><path d="M960 326L757.1 190.8v84.5h-169c-15.3 0-29.6 6.8-39.2 18.6L259.7 647.2h-145c-28 0-50.7 22.7-50.7 50.7 0 28 22.7 50.7 50.7 50.7h169.1c15.2 0 29.6-6.8 39.3-18.6l289-353.3h145v84.6L960 326z" p-id="21694"></path></svg>-->
-  ===-={{ $route.params.file }}====
+  <el-container style="height: 100%">
+    <el-aside width="250px">
+      <el-tree
+          style="height: 100%;"
+          ref="treeRef"
+          node-key="id"
+          :data="treeData.files"
+          class="filter-tree"
+          @node-click="treeNodeClick"
+          @node-contextmenu="rightClick"
+          default-expand-all
+          :props="treeData.defaultProps"
+          :highlight-current="true"
+          :allow-drag="allowDrag"
+          :allow-drop="dragDrop"
+          draggable
+      >
+        <template #default="{ node, data }">
+        <span class="custom-tree-node">
+          <span><el-icon size="16" v-html="data.icon()"></el-icon></span>
+          <span>&nbsp;&nbsp;</span>
+          <span>{{ node.label }}</span>
+        </span>
+        </template>
+      </el-tree>
+      <el-dialog v-model="newActionVisible" title="新建行为节点">
+        <el-form :model="newActionForm">
+          <el-form-item label="选择行为类型:" label-width="140px">
+            <el-select style="width: 400px" v-model="newActionForm.clazz" placeholder="选择一个行为类型">
+              <el-option
+                  v-for="item in aiConfig.actionDocs"
+                  :key="item.desc"
+                  :label="item.desc"
+                  :value="item.name"
+              />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="newActionVisible = false">取消</el-button>
+              <el-button type="primary" @click="newActionForm.commit">确定</el-button>
+            </span>
+        </template>
+      </el-dialog>
+      <vue3-menus :open="open" :event="event" :menus="menus">
+        <template #label="{menu, index, activeIndex}">{{ menu.label }}</template>
+      </vue3-menus>
+    </el-aside>
+    <el-main>
+      <el-container style="height: 100%">
+        <el-main>
+          <template v-if="currData !== undefined">
+            <el-container style="height: 100%">
+              <el-header height="50px;" style="margin-left: 20px">
+                <el-row :gutter="2">
+                  <el-col :span="2">名称: </el-col>
+                  <el-col :span="5">{{ currData.name }}<!--&nbsp;<el-button type="text" >编辑</el-button>--></el-col>
+                </el-row>
+              </el-header>
+              <el-main style="margin: 20px">
+                <v-condition-edit :currData="currData" />
+              </el-main>
+            </el-container>
+          </template>
+        </el-main>
+        <el-footer height="100px" style="margin-right: 50px;">
+          <el-row :gutter="2" justify="end" style="width: 100%;">
+            <el-col :span="4"><el-button @click="$router.push('/Bht')" style="width: 100px; float: right" plain>取消</el-button></el-col>
+            <el-col :span="4"><el-button @click="saveConfig" style="width: 100px; float: right" type="success" plain>保存</el-button></el-col>
+          </el-row>
+        </el-footer>
+      </el-container>
+    </el-main>
+  </el-container>
 </template>
 
-<script>
-import {defineComponent} from "vue";
+<script lang="ts">
+import {TreeNode} from "element-plus/es/components/tree-v2/src/types";
+import {
+  BehaviorAction,
+  BHTNode, ParallelExecutor,
+  RandomExecutor,
+  RootExecutor,
+  SelectorExecutor,
+  SequenceExecutor
+} from "../../../preload/utils/BehaviorTree";
+import {defineComponent, nextTick, reactive, ref} from "vue";
+import {ElMessage, ElMessageBox, ElTree} from "element-plus";
+import {RClickMenu} from "../common/RClickMenu";
+import {useRoute} from "vue-router";
+import {IConditionConfig} from "../../../preload/utils/AiConfig";
+import vConditionEdit from './../components/ConditionEdit.vue';
 
 export default defineComponent({
-  name: "BehaviorTreeEdit",
+
+  components: {
+    vConditionEdit
+  },
+
+  setup() {
+    const route = useRoute();
+    const filename: string = <string> route.params.file;
+
+    const xmlFilePath = window.path.join(window.tool_api.setting().aiCfgPathSelect.current, filename);
+    let executor = RootExecutor.parse(window.tool_api.xmlObject(xmlFilePath));
+
+    const treeData = reactive({
+      files: [executor],
+
+      defaultProps : {
+        children: 'children',
+        label: 'name',
+      },
+    });
+
+    let currNode: TreeNode;
+    let currData = ref();
+    const open = ref(false);
+    const event = ref({});
+
+    function treeNodeClick(node: any, data: TreeNode) {
+      currNode = data;
+      open.value = false;
+      currData.value = currNode.data;
+    }
+
+    function rightClick(e: PointerEvent, node: any, data: TreeNode) {
+      open.value = false;
+      nextTick(() => {
+        currNode = data;
+        event.value = e;
+        open.value = true;
+        e.preventDefault();
+      });
+    }
+
+    const aiConfig = ref(window.tool_api.aiConfigJson());
+
+    const menus = ref([
+        new RClickMenu("编辑", "编辑节点",
+            () => {currData.value = currNode.data;},
+            '<svg class="icon" viewBox="0 0 1024 1024"xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M699.733333 597.333333v34.133334a34.133333 34.133333 0 0 1-34.133333 34.133333H358.4a34.133333 34.133333 0 0 1-34.133333-34.133333v-34.133334h375.466666z" fill="#2c2c2c" p-id="2049"></path><path d="M614.4 85.333333a34.133333 34.133333 0 0 1 2.56 68.164267L614.4 153.6H204.8v716.8h614.4V363.264a34.133333 34.133333 0 0 1 68.181333-2.56l0.085334 2.56V870.4a68.266667 68.266667 0 0 1-64.853334 68.181333L819.2 938.666667H204.8a68.266667 68.266667 0 0 1-68.181333-64.853334L136.533333 870.4V153.6a68.266667 68.266667 0 0 1 64.853334-68.181333L204.8 85.333333h409.6z" fill="#2c2c2c" p-id="2050"></path><path d="M821.077333 111.616a34.133333 34.133333 0 0 1 49.117867 47.325867l-2.048 2.116266-349.696 332.629334a34.133333 34.133333 0 0 1-49.083733-47.325867l2.048-2.133333L821.077333 111.616z" fill="#2c2c2c" p-id="2051"></path></svg>',
+            () => false, true,),
+
+        new RClickMenu("新建顺序执行器", "顺序执行器",
+            () => {
+              createExecutor("顺序执行器", (name) => new SequenceExecutor({name: name}))
+            }, RootExecutor.SEQUENCE_ICON,
+            (): boolean => {
+              return currNode.data.nodeName === 'action';
+            }
+        ),
+      new RClickMenu("新建选择执行器", "选择执行器",
+          () => {
+            createExecutor("选择执行器", (name) => new SelectorExecutor({name: name}))
+          }, RootExecutor.SELECTOR_ICON,
+          (): boolean => {
+            return currNode.data.nodeName === 'action';
+          }
+      ),
+      new RClickMenu("新建随机执行器", "随机执行器",
+          () => {
+            createExecutor("随机执行器", (name) => new RandomExecutor({name: name}))
+          }, RootExecutor.RANDOM_ICON,
+          (): boolean => {
+            return currNode.data.nodeName === 'action';
+          }
+      ),
+      new RClickMenu("新建并行执行器", "并行执行器",
+          () => {
+            createExecutor("并行执行器", (name) => new ParallelExecutor({name: name}))
+          }, RootExecutor.PARALLEL_ICON,
+          (): boolean => {
+            return currNode.data.nodeName === 'action'
+          },
+          true
+      ),
+      new RClickMenu("新建行为", "新建行为节点",
+          () => {newActionVisible.value = true;}, RootExecutor.ACTION_ICON,
+          (): boolean => {
+            return currNode.data.nodeName === 'action';
+          }, true
+      ),
+        new RClickMenu('删除', '删除该节点以及子节点',
+            () => {
+              ElMessageBox.confirm('确定删除节点及其子节点吗?')
+                  .then(() => {
+                    let parent: TreeNode | undefined = currNode.parent;
+                    if (parent === undefined) {
+                      return;
+                    }
+                    const arr: any[] = parent.data.children;
+                    const index = arr.findIndex(d => d.id === currNode.data.id) ;
+                    parent.data.children.splice(index, 1);
+                  }).catch(() => {
+                // catch error
+              });
+            },
+            '<svg class="icon" width="1em" height="1em" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M341.312 85.312l64-85.312h213.376l64 85.312H960v85.376H64V85.312h277.312zM170.688 256h682.624v768H170.688V256zM256 341.312v597.376h512V341.312H256z m213.312 85.376v426.624H384V426.688h85.312z m170.688 0v426.624H554.688V426.688H640z" fill="#2c2c2c" p-id="2045"></path></svg>',
+            (): boolean => {
+              return currNode.data.nodeName === 'root';
+            }
+        ),
+    ]);
+
+    function createExecutor(nodeName: string, create: (name: string) => BHTNode) {
+      ElMessageBox.prompt('请输入节点名称, 不能与现有重复!', `新建${nodeName}节点`, {confirmButtonText: '创建', cancelButtonText: '取消',}).then(({ value }) => {
+        currNode.data.children.push(create(value));
+        ElMessage({type: 'success', message: `创建 ${value} 成功`,})
+      }).catch((err) => {
+        console.error(err);
+        ElMessage({type: 'info', message: '取消...',})
+      })
+    }
+
+    function allowDrag(node: any) {
+      // root 不让调动
+      return node.data.nodeName !== 'root';
+    }
+
+    function dragDrop(node: any, next: any, type: string): boolean {
+      if (node === next) {
+        return false;
+      }
+
+      if(next.data.nodeName === 'root' && type !== 'inner') {
+        return false;
+      }
+
+      if (next.data.nodeName == 'action' && type === 'inner') {
+        return false;
+      }
+
+      return true;
+    }
+
+    function saveConfig() {
+      window.tool_api.saveToXml(executor.toXmlObject(), xmlFilePath)
+      ElMessage.success("保存成功")
+    }
+    const newActionVisible = ref(false);
+    const newActionForm = reactive({
+      clazz : '',
+      commit: () => {
+        currNode.data.children.push(new BehaviorAction({clazz: newActionForm.clazz}));
+        ElMessage({type: 'success', message: `创建成功`,})
+        newActionVisible.value = false;
+      },
+    });
 
 
+    return {
+      open,
+      event,
+      menus,
+      aiConfig,
+      dragDrop,
+      treeData,
+      currData,
+      allowDrag,
+      saveConfig,
+      rightClick,
+      treeNodeClick,
+      newActionForm,
+      newActionVisible
+    }
+  }
 });
 </script>
 

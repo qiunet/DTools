@@ -1,13 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import ToolApi from "./api/ToolApi";
-import fs from 'fs'
+import Path from "path";
 
 
 console.log("==========preload==========")
 
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
 contextBridge.exposeInMainWorld("tool_api",ToolApi);
-contextBridge.exposeInMainWorld('path', fs)
+contextBridge.exposeInMainWorld('path', Path)
 
 // `exposeInMainWorld` can not detect `prototype` attribute and methods, manually patch it.
 function withPrototype(obj: Record<string, any>) {

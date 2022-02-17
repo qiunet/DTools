@@ -184,11 +184,16 @@ export default {
       treeRef.value!.filter(val)
     })
 
-    let currNode: IFileNode;
+    let currNode: IFileNode | any = null;
     const open = ref(false);
     const event = ref({});
 
+
     function rightClick(e: PointerEvent, node: any, data: any) {
+      if (! data.data.fullPath.endsWith(".xml")) {
+        return false;
+      }
+
       open.value = false;
       nextTick(() => {
         currNode = (data.data);
@@ -203,12 +208,13 @@ export default {
       {
         label: "编辑",
         tip: "编辑AI逻辑",
+        hidden: currNode != null && currNode.isDir(),
         click: () => {
           if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
             ElMessage.error("AiConfig.json 没有上传!")
             return false;
           }
-          router.push("/BhtEdit/"+currNode.name)
+          router.push("/BhtEdit/"+ currNode.name)
         }
       },
     ]);
