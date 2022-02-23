@@ -7,6 +7,8 @@ export abstract class BHTNode {
     public static SELECTOR_ICON = "<svg class=\"icon\" width=\"1em\" height=\"1em\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M597.333333 469.802667h213.333334a85.333333 85.333333 0 0 0 85.333333-85.333334v-213.333333a85.333333 85.333333 0 0 0-85.333333-85.333333h-213.333334a85.333333 85.333333 0 0 0-85.333333 85.333333v213.333333a85.333333 85.333333 0 0 0 85.333333 85.333334z m0-256a42.666667 42.666667 0 0 1 42.666667-42.666667h128a42.666667 42.666667 0 0 1 42.666667 42.666667v128a42.666667 42.666667 0 0 1-42.666667 42.666666h-128a42.666667 42.666667 0 0 1-42.666667-42.666666v-128z m328.789334 739.114666l-72.064-72.064A234.666667 234.666667 0 1 0 426.666667 747.093333c0 7.168 0.426667 14.208 1.066666 21.248l85.632-7.808c-0.426667-4.48-1.365333-8.832-1.365333-13.44a149.333333 149.333333 0 1 1 149.333333 149.333334 148.48 148.48 0 0 1-61.696-13.653334l-35.370666 77.824a233.386667 233.386667 0 0 0 230.826666-20.821333l72.064 72.064a41.728 41.728 0 0 0 58.965334-58.922667zM298.666667 85.76H85.333333a85.333333 85.333333 0 0 0-85.333333 85.333333v213.333334a85.333333 85.333333 0 0 0 85.333333 85.333333h213.333334a85.333333 85.333333 0 0 0 85.333333-85.333333v-213.333334a85.333333 85.333333 0 0 0-85.333333-85.333333z m0 256a42.666667 42.666667 0 0 1-42.666667 42.666667H128a42.666667 42.666667 0 0 1-42.666667-42.666667v-128a42.666667 42.666667 0 0 1 42.666667-42.666667h128a42.666667 42.666667 0 0 1 42.666667 42.666667v128z m0 256.042667H85.333333a85.333333 85.333333 0 0 0-85.333333 85.333333v213.333333a85.333333 85.333333 0 0 0 85.333333 85.333334h213.333334a85.333333 85.333333 0 0 0 85.333333-85.333334v-213.333333a85.333333 85.333333 0 0 0-85.333333-85.333333z m0 256a42.666667 42.666667 0 0 1-42.666667 42.666666H128a42.666667 42.666667 0 0 1-42.666667-42.666666v-128a42.666667 42.666667 0 0 1 42.666667-42.666667h128a42.666667 42.666667 0 0 1 42.666667 42.666667v128z m187.562666-29.696a42.666667 42.666667 0 1 0 42.709334 73.898666 42.666667 42.666667 0 0 0-42.709334-73.898666z\" p-id=\"16115\" fill=\"#2c2c2c\"></path></svg> ";
     public static PARALLEL_ICON = "<svg class=\"icon\" width=\"1em\" height=\"1em\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M256 256a42.666667 42.666667 0 0 1 5.802667 84.935111L256 341.333333H113.777778a42.666667 42.666667 0 0 1-5.802667-84.935111L113.777778 256h142.222222zM938.666667 256a42.666667 42.666667 0 0 1 5.802666 84.935111L938.666667 341.333333H568.888889a42.666667 42.666667 0 0 1-5.802667-84.935111L568.888889 256h369.777778zM540.444444 711.111111a42.666667 42.666667 0 0 1 5.802667 84.935111L540.444444 796.444444H113.777778a42.666667 42.666667 0 0 1-5.802667-84.935111L113.777778 711.111111h426.666666zM938.666667 711.111111a42.666667 42.666667 0 0 1 5.802666 84.935111L938.666667 796.444444H853.333333a42.666667 42.666667 0 0 1-5.802666-84.935111L853.333333 711.111111h85.333334z\" fill=\"#2c2c2c\" p-id=\"15303\"></path><path d=\"M412.444444 128a170.666667 170.666667 0 1 0 0 341.333333 170.666667 170.666667 0 0 0 0-341.333333z m0 85.333333a85.333333 85.333333 0 1 1 0 170.666667 85.333333 85.333333 0 0 1 0-170.666667zM696.888889 583.111111a170.666667 170.666667 0 1 0 0 341.333333 170.666667 170.666667 0 0 0 0-341.333333z m0 85.333333a85.333333 85.333333 0 1 1 0 170.666667 85.333333 85.333333 0 0 1 0-170.666667z\" fill=\"#2c2c2c\" p-id=\"15304\"></path></svg>";
     public static ACTION_ICON = "<svg class=\"icon\" width=\"1em\" height=\"1em\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M213.333333 640v213.333333a42.666667 42.666667 0 0 1-85.333333 0V170.666667a42.666667 42.666667 0 0 1 85.034667-4.992L213.333333 170.666667h341.333334a85.333333 85.333333 0 0 1 85.12 78.933333L640 256h170.666667a85.333333 85.333333 0 0 1 85.333333 85.333333v341.333334a85.333333 85.333333 0 0 1-85.333333 85.333333h-341.333334a85.333333 85.333333 0 0 1-85.333333-85.333333v-42.666667H213.333333z m341.333334-384H213.333333v298.666667h341.333334V256z m85.333333 298.666667a85.333333 85.333333 0 0 1-85.333333 85.333333h-85.333334v42.666667h341.333334V341.333333h-170.666667v213.333334z\" p-id=\"5017\" fill=\"#2c2c2c\"></path></svg>";
+    public static INVERT_ICON = "<svg class=\"icon\" width=\"1em\" height=\"1em\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M329.142857 365.714286m36.571429 0l548.571428 0q36.571429 0 36.571429 36.571428l0 329.142857q0 36.571429-36.571429 36.571429l-548.571428 0q-36.571429 0-36.571429-36.571429l0-329.142857q0-36.571429 36.571429-36.571428Z\" fill=\"#2c2c2c\" p-id=\"9793\"></path><path d=\"M834.706286 438.857143c23.771429 0 43.008 20.845714 43.008 46.555428v418.889143C877.714286 930.011429 858.441143 950.857143 834.706286 950.857143H189.293714C165.522286 950.857143 146.285714 930.011429 146.285714 904.301714V485.412571C146.285714 459.702857 165.558857 438.857143 189.293714 438.857143h645.412572zM804.571429 512H219.428571v365.714286h585.142858V512zM477.476571 73.142857c139.849143-0.109714 271.433143 58.587429 354.486858 158.134857a35.364571 35.364571 0 0 1 5.632 39.131429c-6.253714 12.982857-19.968 21.942857-35.84 23.478857-15.835429 1.499429-31.378286-4.681143-40.594286-16.164571-66.486857-79.689143-171.776-126.646857-283.684572-126.537143-111.104 0-213.577143 45.714286-282.843428 125.184l-12.068572 11.300571h96.512c23.296 0.036571 42.569143 16.128 43.958858 36.754286 1.353143 20.589714-15.652571 38.582857-38.802286 41.033143L279.04 365.714286H80.164571l-2.633142-0.109715 3.145142 0.109715a48.64 48.64 0 0 1-25.161142-6.948572 43.52 43.52 0 0 1-5.046858-3.657143l3.693715 2.779429a43.593143 43.593143 0 0 1-3.291429-2.450286L50.468571 355.145143a40.557714 40.557714 0 0 1-9.398857-11.337143 36.278857 36.278857 0 0 1-4.205714-12.544l-0.073143-0.768a34.779429 34.779429 0 0 1-0.146286-1.645714L36.571429 326.692571v-175.542857c0-20.626286 18.212571-37.668571 41.508571-38.875428 23.296-1.206857 43.593143 13.824 46.372571 34.340571l0.292572 4.534857V228.571429l2.779428-2.633143C207.835429 133.12 331.044571 77.056 463.140571 73.398857L477.476571 73.142857z\" fill=\"#2c2c2c\" p-id=\"9794\"></path></svg>";
+    public static REPEAT_ICON = "<svg class=\"icon\"  width=\"1em\" height=\"1em\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M853.333333 707.669333l55.168-55.168a42.666667 42.666667 0 0 1 60.330667 60.330667l-128 128a42.666667 42.666667 0 0 1-60.330667 0l-128-128a42.666667 42.666667 0 0 1 60.330667-60.330667L768 707.669333V256h-341.333333a42.666667 42.666667 0 1 1 0-85.333333h384a42.666667 42.666667 0 0 1 42.666666 42.666666v494.336zM170.666667 316.330667L115.498667 371.498667a42.666667 42.666667 0 0 1-60.330667-60.330667l128-128a42.666667 42.666667 0 0 1 60.330667 0l128 128a42.666667 42.666667 0 0 1-60.330667 60.330667L256 316.330667V768h341.333333a42.666667 42.666667 0 0 1 0 85.333333H213.333333a42.666667 42.666667 0 0 1-42.666666-42.666666V316.330667z\" p-id=\"2017\" fill=\"#2c2c2c\"></path></svg>";
     /**
      * 一个分配ID的
      * @private
@@ -18,7 +20,7 @@ export abstract class BHTNode {
      * name
      * @private
      */
-    name: string = "";
+    protected _name: string = "";
     /**
      * 子类
      * @private
@@ -43,12 +45,16 @@ export abstract class BHTNode {
         }
 
         if (attrs.name !== undefined) {
-            this.name = attrs.name;
+            this._name = attrs.name;
         }
 
         if (attrs.condition !== undefined && attrs.condition !== "") {
             this.buildConditions(attrs.condition);
         }
+    }
+
+    public get name() {
+        return this._name;
     }
 
     private buildConditions(data: string) {
@@ -66,6 +72,10 @@ export abstract class BHTNode {
         this.conditions.push(conditions);
     }
 
+    public get canAddChild(): boolean{
+        return this.nodeName !== 'action';
+    }
+
     /**
      * 删除组
      * @param conditions
@@ -78,16 +88,28 @@ export abstract class BHTNode {
     }
 
     public getName(): string {
-        return this.name;
+        return this._name;
     }
 
     public addChild(child: BHTNode): void {
         this.children.push(child);
     }
 
+    /**
+     * 是否需要添加到xml 父类组件
+     * @protected
+     */
+    protected addToXmlParent(): boolean {
+        return true;
+    }
+
     protected toXmlObject(): any {
         let arr = [];
         for (let child of this.children) {
+            if (! child.addToXmlParent()) {
+                continue;
+            }
+
             arr.push(child.toXmlObject())
         }
         let obj:any = {":@": this.toXmlParamObject()};
@@ -97,10 +119,10 @@ export abstract class BHTNode {
 
     protected toXmlParamObject(): any {
         let obj:any = {};
-        if (this.nodeName !== "action" && undefined !== this.name) {
-            obj.name = this.name;
+        if (this.nodeName !== "action" && undefined !== this._name) {
+            obj.name = this._name;
         }
-        if (this.nodeName !== 'root') {
+        if (this.nodeName !== 'root' && ! (this instanceof DecoratorNode)) {
             let condition = '';
             for (let i = 0; i < this.conditions.length; i++) {
                 condition += this.conditions[i].toString()
@@ -160,6 +182,10 @@ export class RootExecutor extends BHTNode {
             node = new SelectorExecutor(attrs);
         }else if ((childData = data.parallel) !== undefined) {
             node = new ParallelExecutor(attrs);
+        }else if ((childData = data.repeat) !== undefined) {
+            node = new RepeatNode(attrs);
+        }else if ((childData = data.invert) !== undefined) {
+            node = new InvertNode(attrs);
         }else if( data.action !== undefined) {
             node = new BehaviorAction(attrs);
         }else {
@@ -218,20 +244,105 @@ export class ParallelExecutor extends BHTNode {
     }
 }
 
+abstract class DecoratorNode extends BHTNode {
+    /**
+     * 装饰节点
+     */
+    readonly decorator: boolean = true;
+
+    protected constructor(nodeName: string, attrs: any){
+        super(nodeName, attrs)
+    }
+
+    public get canAddChild(): boolean{
+        return super.canAddChild && this.children.length == 0;
+    }
+
+    protected addToXmlParent(): boolean {
+        return this.children.length === 1;
+    }
+
+    addChild(child: BHTNode) {
+        if (this.children.length >= 1) {
+            throw new Error("Decorator node has more than one child!");
+        }
+        super.addChild(child);
+    }
+}
+
+export class InvertNode extends DecoratorNode {
+
+    constructor(attrs: any) {
+        super("invert", attrs);
+    }
+
+    public icon(): string {
+        return BHTNode.INVERT_ICON;
+    }
+
+    public get name() {
+        return "反转结果装饰节点";
+    }
+}
+
+export class RepeatNode extends DecoratorNode {
+    count: number;
+    constructor(attrs: any) {
+        super("repeat", attrs);
+
+        this.count = attrs.count;
+    }
+
+    public icon(): string {
+        return BHTNode.REPEAT_ICON;
+    }
+
+    public get name() {
+        return "重复"+this.count+"次装饰节点";
+    }
+
+    protected toXmlParamObject(): any {
+        const obj = super.toXmlParamObject();
+        obj.count = this.count;
+        return obj;
+    }
+}
+
 
 export class BehaviorAction extends BHTNode {
 
-    private readonly clazz: string;
+    readonly clazz: string;
 
-    readonly name:string;
+    readonly params: Record<string, string>;
 
     constructor(attrs: any) {
         super("action", attrs);
         this.clazz = attrs.clazz;
-       ;
+        if (typeof attrs.params === "string") {
+            this.params = JSON.parse(attrs.params.replaceAll("'", "\""));
+        }else {
+            this.params = attrs.params;
+        }
+        if (this.params === undefined) {
+            this.params = {};
+        }
+    }
+
+    public getParam(key: string): string {
+        return this.params[key];
+    }
+
+    public setParam(key: string, value: string){
+        this.params[key] = value;
+    }
+
+    public get name() {
+        if (this._name !== '') {
+            return this._name;
+        }
+
         if (window.tool_api === undefined) {
-            this.name = 'unknown';
-            return;
+            this._name = 'unknown';
         }
 
         const aiConfig: IAIConfig = window.tool_api.aiConfigJson();
@@ -239,10 +350,11 @@ export class BehaviorAction extends BHTNode {
             return value.name === this.clazz;
         });
         if (find !== undefined) {
-            this.name = find.desc;
+            this._name = find.desc;
         }else {
-            this.name = 'unknown';
+            this._name = 'unknown';
         }
+        return this._name;
     }
 
     public icon(): string {
@@ -256,6 +368,9 @@ export class BehaviorAction extends BHTNode {
     protected toXmlParamObject(): any {
         let obj = super.toXmlParamObject();
         obj.clazz = this.clazz;
+        if (this.params !== undefined) {
+            obj.params = JSON.stringify(this.params).replaceAll("\"", "'");
+        }
         return obj;
     }
 }

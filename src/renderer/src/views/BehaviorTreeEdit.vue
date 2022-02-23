@@ -24,10 +24,10 @@
         </span>
         </template>
       </el-tree>
-      <el-dialog v-model="newActionVisible" title="新建行为节点">
+      <el-dialog v-model="newActionForm.newActionVisible" title="新建行为节点">
         <el-form :model="newActionForm">
           <el-form-item label="选择行为类型:" label-width="140px">
-            <el-select style="width: 400px" v-model="newActionForm.clazz" placeholder="选择一个行为类型">
+            <el-select style="width: 70%" v-model="newActionForm.clazz" placeholder="选择一个行为类型" @change="newActionForm.clazzChange">
               <el-option
                   v-for="item in aiConfig.actionDocs"
                   :key="item.desc"
@@ -36,10 +36,16 @@
               />
             </el-select>
           </el-form-item>
+          <template v-for="doc in newActionForm.paramsDoc">
+            <el-form-item :label="doc.desc" label-width="140px">
+              <el-input-number style="width: 70%" clearable v-model="newActionForm.params[doc.name]" v-if="isNumberType(doc.type)"></el-input-number>
+              <el-input clearable v-model="newActionForm.params[doc.name]" v-else style="width: 70%"></el-input>
+            </el-form-item>
+          </template>
         </el-form>
         <template #footer>
             <span class="dialog-footer">
-              <el-button @click="newActionVisible = false">取消</el-button>
+              <el-button @click="newActionForm.newActionVisible = false">取消</el-button>
               <el-button type="primary" @click="newActionForm.commit">确定</el-button>
             </span>
         </template>
@@ -53,15 +59,15 @@
         <el-main>
           <template v-if="currData !== undefined">
             <el-container style="height: 100%">
-              <el-header height="50px;" style="margin-left: 20px">
-                <el-row :gutter="2">
-                  <el-col :span="2">名称: </el-col>
-                  <el-col :span="5">{{ currData.name }}<!--&nbsp;<el-button type="text" >编辑</el-button>--></el-col>
-                </el-row>
+              <el-header height="200px">
+                <el-divider content-position="left">{{ currData.name }}</el-divider>
+                <v-bht-node-param-edit v-if="currData.nodeName === 'action'" :curr-data="currData" />
               </el-header>
+
               <el-main style="margin: 20px">
                 <v-condition-edit :currData="currData" />
               </el-main>
+
             </el-container>
           </template>
         </el-main>
@@ -80,8 +86,8 @@
 import {TreeNode} from "element-plus/es/components/tree-v2/src/types";
 import {
   BehaviorAction,
-  BHTNode, ParallelExecutor,
-  RandomExecutor,
+  BHTNode, InvertNode, ParallelExecutor,
+  RandomExecutor, RepeatNode,
   RootExecutor,
   SelectorExecutor,
   SequenceExecutor
@@ -90,13 +96,16 @@ import {defineComponent, nextTick, reactive, ref} from "vue";
 import {ElMessage, ElMessageBox, ElTree} from "element-plus";
 import {RClickMenu} from "../common/RClickMenu";
 import {useRoute} from "vue-router";
-import {IConditionConfig} from "../../../preload/utils/AiConfig";
 import vConditionEdit from './../components/ConditionEdit.vue';
+import vBhtNodeParamEdit from './../components/BhtNodeParamEdit.vue';
+import {IAIConfig, IBhtActionConfig, IBhtActionParam} from "../../../preload/utils/AiConfig";
+import {StringUtil} from "../common/StringUtil";
 
 export default defineComponent({
 
   components: {
-    vConditionEdit
+    vConditionEdit,
+    vBhtNodeParamEdit
   },
 
   setup() {
@@ -149,7 +158,7 @@ export default defineComponent({
               createExecutor("顺序执行器", (name) => new SequenceExecutor({name: name}))
             }, RootExecutor.SEQUENCE_ICON,
             (): boolean => {
-              return currNode.data.nodeName === 'action';
+              return ! currNode.data.canAddChild;
             }
         ),
       new RClickMenu("新建选择执行器", "选择执行器",
@@ -157,7 +166,7 @@ export default defineComponent({
             createExecutor("选择执行器", (name) => new SelectorExecutor({name: name}))
           }, RootExecutor.SELECTOR_ICON,
           (): boolean => {
-            return currNode.data.nodeName === 'action';
+            return ! currNode.data.canAddChild;
           }
       ),
       new RClickMenu("新建随机执行器", "随机执行器",
@@ -165,7 +174,7 @@ export default defineComponent({
             createExecutor("随机执行器", (name) => new RandomExecutor({name: name}))
           }, RootExecutor.RANDOM_ICON,
           (): boolean => {
-            return currNode.data.nodeName === 'action';
+            return ! currNode.data.canAddChild;
           }
       ),
       new RClickMenu("新建并行执行器", "并行执行器",
@@ -173,14 +182,40 @@ export default defineComponent({
             createExecutor("并行执行器", (name) => new ParallelExecutor({name: name}))
           }, RootExecutor.PARALLEL_ICON,
           (): boolean => {
-            return currNode.data.nodeName === 'action'
+            return ! currNode.data.canAddChild
+          },
+          true
+      ), new RClickMenu("新建反转装饰节点", "反转装饰节点",
+          () => {
+            currNode.data.children.push(new InvertNode({}))
+          }, RootExecutor.INVERT_ICON,
+          (): boolean => {
+            return ! currNode.data.canAddChild
+          },
+          false
+      ), new RClickMenu("新建重复装饰节点", "重复装饰节点",
+          () => {
+            ElMessageBox.prompt('请输入重复次数!', `新建重复装饰节点`,
+            {confirmButtonText: '创建', cancelButtonText: '取消', inputPattern: /[0-9]+/, inputErrorMessage: '请输入数字类型'}
+            ).then(({ value }) => {
+              if ( parseInt(value) < 2) {
+                return ElMessage.error("请输入大于1的数值");
+              }
+              currNode.data.children.push(new RepeatNode({count: value}));
+              ElMessage({type: 'success', message: `创建成功`,})
+            }).catch((err) => {
+              if (typeof err !== 'string')console.error(err);
+            })
+          }, RootExecutor.REPEAT_ICON,
+          (): boolean => {
+            return ! currNode.data.canAddChild
           },
           true
       ),
       new RClickMenu("新建行为", "新建行为节点",
-          () => {newActionVisible.value = true;}, RootExecutor.ACTION_ICON,
+          () => {newActionForm.newActionVisible = true;}, RootExecutor.ACTION_ICON,
           (): boolean => {
-            return currNode.data.nodeName === 'action';
+            return ! currNode.data.canAddChild;
           }, true
       ),
         new RClickMenu('删除', '删除该节点以及子节点',
@@ -215,6 +250,10 @@ export default defineComponent({
       })
     }
 
+    function isNumberType(type: string): boolean {
+      return StringUtil.isJavaNumberType(type);
+    }
+
     function allowDrag(node: any) {
       // root 不让调动
       return node.data.nodeName !== 'root';
@@ -240,14 +279,25 @@ export default defineComponent({
       window.tool_api.saveToXml(executor.toXmlObject(), xmlFilePath)
       ElMessage.success("保存成功")
     }
-    const newActionVisible = ref(false);
     const newActionForm = reactive({
+      newActionVisible: false,
       clazz : '',
+      params: {},
+      paramsDoc: [] as Array<IBhtActionParam>,
       commit: () => {
-        currNode.data.children.push(new BehaviorAction({clazz: newActionForm.clazz}));
+        currNode.data.children.push(new BehaviorAction({clazz: newActionForm.clazz, params: newActionForm.params}));
         ElMessage({type: 'success', message: `创建成功`,})
-        newActionVisible.value = false;
+        newActionForm.newActionVisible = false;
       },
+
+      clazzChange: () => {
+        const config:IAIConfig = window.tool_api.aiConfigJson();
+        const find: IBhtActionConfig|undefined = config.actionDocs.find((action) => action.name === newActionForm.clazz);
+        if (find === undefined) {
+          return;
+        }
+        newActionForm.paramsDoc = find.params;
+      }
     });
 
 
@@ -262,9 +312,9 @@ export default defineComponent({
       allowDrag,
       saveConfig,
       rightClick,
+      isNumberType,
       treeNodeClick,
-      newActionForm,
-      newActionVisible
+      newActionForm
     }
   }
 });

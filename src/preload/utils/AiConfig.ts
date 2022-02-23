@@ -20,12 +20,22 @@ export interface IConditionParam {
     type: string;
 }
 
+export interface IBhtActionParam {
+    name: string;
+    desc: string
+    type: string;
+    regex: string;
+    min: number;
+    max: number;
+}
+
 /**
  * 一个行为树 action的配置描述接口
  */
 export interface IBhtActionConfig {
     desc: string;
     name: string;
+    params: Array<IBhtActionParam>;
 }
 
 /**

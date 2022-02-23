@@ -25,4 +25,21 @@ export class StringUtil {
     public static fixedNumber(val: number, length: number) : string{
         return (Array(length).join("0") + val).slice(-length);
     }
+
+    /**
+     * 是否是java的数字类型
+     * @param javaType
+     */
+    public static isJavaNumberType(javaType: string): boolean {
+        return javaType === 'int' || javaType === 'long';
+    }
+
+    /**
+     * 正则校验
+     * @param val
+     * @param regex
+     */
+    public static regexTest(val: string, regex: string): boolean {
+        return new RegExp(regex).test(val);
+    }
 }

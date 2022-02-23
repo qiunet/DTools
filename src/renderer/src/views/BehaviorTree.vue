@@ -23,7 +23,7 @@
           </vue3-menus>
         </el-main>
         <el-footer height="50px">
-          <el-button style="width: 249px" @click="newAiFormVisible = true">新建</el-button>
+          <el-button type="success" style="width: 249px" @click="newAiFormVisible = true">新建</el-button>
 
           <el-dialog v-model="newAiFormVisible" title="新建ai行为树xml文件">
             <el-form :model="newAiForm">
@@ -105,6 +105,7 @@ import {IFileNode} from "../common/IFileNode";
 import {ElTree} from "element-plus/es";
 import {StringUtil} from "../common/StringUtil";
 import {useRouter} from "vue-router";
+import {RClickMenu} from "../common/RClickMenu";
 
 export default {
   components: {UploadFilled},
@@ -205,18 +206,15 @@ export default {
 
     const router = useRouter();
     const menus = ref([
-      {
-        label: "编辑",
-        tip: "编辑AI逻辑",
-        hidden: currNode != null && currNode.isDir(),
-        click: () => {
+        new RClickMenu("编辑", "编辑AI逻辑", () => {
           if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
             ElMessage.error("AiConfig.json 没有上传!")
             return false;
           }
           router.push("/BhtEdit/"+ currNode.name)
-        }
-      },
+        }, '', () => {
+          return currNode != null && currNode.dir;
+        })
     ]);
     const newAiFormVisible = ref(false)
     const newAiForm = reactive({
