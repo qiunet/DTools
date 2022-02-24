@@ -46,29 +46,9 @@
     </el-aside>
     <el-main>
       <el-row :gutter="5">
-        <el-col :span="5" style="padding: 8px 0 0 20px;">行为树配置文件夹:</el-col>
+        <el-col :span="5" style="padding: 8px 0 0 20px;">AI XML配置:</el-col>
         <el-col :span="12">
-          <el-select
-              class="setting-el-select"
-              v-model="data.setting.aiCfgPathSelect.current"
-              filterable
-              size="large"
-              allow-create
-              :clearable="true"
-              default-first-option
-              :reserve-keyword="false"
-              @clear="data.aiCfgPathClear"
-              @change="data.aiCfgSelectChange"
-              no-data-text="需要填入配置文件夹绝对路径"
-              placeholder="需要填入配置文件夹绝对路径"
-          >
-            <el-option
-                v-for="item in data.setting.aiCfgPathSelect.list"
-                :key="item"
-                :label="item"
-                :value="item"
-            />
-          </el-select>
+          <v-choice-selector :del-select="data.aiCfgPathClear" :use-func="data.aiCfgSelectChange" :select="data.setting.aiCfgPathSelect" />
         </el-col>
       </el-row>
       <el-divider></el-divider>
@@ -103,12 +83,11 @@ import {ElMessage, ElNotification} from "element-plus";
 import {UploadFilled} from "@element-plus/icons-vue";
 import {IFileNode} from "../common/IFileNode";
 import {ElTree} from "element-plus/es";
-import {StringUtil} from "../common/StringUtil";
 import {useRouter} from "vue-router";
 import {RClickMenu} from "../common/RClickMenu";
-
+import vChoiceSelector from "../components/ChoiceSelector.vue";
 export default {
-  components: {UploadFilled},
+  components: {UploadFilled, vChoiceSelector},
 
   mounted() {
     if (window.tool_api.setting().aiCfgPathSelect.current === '') {
@@ -133,23 +112,9 @@ export default {
       },
 
       aiCfgSelectChange(val: string) {
-        if (StringUtil.isEmpty(val)) {
-          return;
-        }
-
-        if (! window.tool_api.isDir(val)) {
-          ElMessage.error("["+val+"]不是一个文件夹!");
-          return false;
-        }
-
-        if (window.tool_api.useAiConfigPath(val)) {
-          data.setting.aiCfgPathSelect.list.push(val);
-          ElMessage.success("保存成功!");
-        }else {
-          ElMessage.success("切换成功!");
-        }
-
+        const ret = window.tool_api.useAiConfigPath(val);
         data.files = window.tool_api.aiCfgFileNode();
+        return ret;
       },
 
       defaultProps : {
