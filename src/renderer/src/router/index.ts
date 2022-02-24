@@ -16,20 +16,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/Home.vue')
   },
   {
-    path: '/Time',
-    name: 'time',
+    path: '/Tools',
+    name: 'Tools',
     meta: {
-      title: "时间工具"
+      title: "工具集合"
     },
-    component: () => import('../views/Time.vue')
-  },
-  {
-    path: '/Json',
-    name: 'json',
-    meta: {
-      title: "Json工具"
-    },
-    component: () => import('../views/Json.vue')
+    component: () => import('../views/Tools.vue')
   },
   {
     path: '/Setting',

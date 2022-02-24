@@ -44,7 +44,7 @@ import {reactive, ref} from 'vue'
 import JsonViewer from 'vue-json-viewer';
 import {Upload} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
-import {StringUtil} from "../common/StringUtil";
+import {StringUtil} from "../../common/StringUtil";
 
 export default {
   name: "Json",

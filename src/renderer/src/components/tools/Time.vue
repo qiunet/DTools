@@ -30,8 +30,8 @@
 <script lang="ts">
 import {reactive, ref} from "vue";
 import {ElMessage, ElNotification} from "element-plus";
-import {StringUtil} from "../common/StringUtil";
-import {DateUtil} from "../common/DateUtil";
+import {StringUtil} from "../../common/StringUtil";
+import {DateUtil} from "../../common/DateUtil";
 
 export interface TimeData {
   /**
