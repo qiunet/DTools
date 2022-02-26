@@ -19,6 +19,7 @@
     "excel_to_cfg": "^1.0.51",
     "fast-xml-parser": "^4.0.2",
     "install": "^0.13.0",
+    "moment": "^2.29.1",
     "npm": "^8.4.1",
     "tslib": "^2.3.1",
     "vue-json-viewer": "^3.0.2",

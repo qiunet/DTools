@@ -10,16 +10,22 @@
     </el-row>
     <el-divider />
     <el-row :gutter="50">
-      <el-col :span="8"><el-input v-model="inputTimeStamp" maxlength="13" placeholder="时间戳" ></el-input></el-col>
+      <el-col :span="8"><el-input style="width: 250px" v-model="data.inputTimeStamp" maxlength="13" placeholder="时间戳" ></el-input></el-col>
       <el-col :span="2">
         <el-popover
-            placement="right-start"
-            :width="200"
-            trigger="click"
-            :content="data.timestamp_content"
-        >
+            placement="right-start" :width="200" trigger="click" :content="data.timestamp_content">
           <template #reference>
-            <el-button class="convert-btn" @click="getterDtString">转换格式化时间</el-button>
+            <el-button class="convert-btn" @click="getterDtString">格式化时间</el-button>
+          </template>
+        </el-popover>
+      </el-col>
+    </el-row>
+    <el-row :gutter="50">
+      <el-col :span="8"><el-date-picker style="width: 250px" v-model="data.inputDateTime" type="datetime" placeholder="选择日期和时间"/></el-col>
+      <el-col :span="2">
+        <el-popover placement="right-start" :width="200" trigger="click" :content="data.datetime_content">
+          <template #reference>
+            <el-button class="convert-btn" @click="getterDateTimeStamp">转换时间戳</el-button>
           </template>
         </el-popover>
       </el-col>
@@ -33,50 +39,43 @@ import {ElMessage, ElNotification} from "element-plus";
 import {StringUtil} from "../../common/StringUtil";
 import {DateUtil} from "../../common/DateUtil";
 
-export interface TimeData {
-  /**
-   * 时间戳
-   */
-  timestamp: number;
-  /**
-   * 时间表示法
-   */
-  timeString: string;
-  /**
-   *
-   */
-  timestamp_content: string;
-}
-
 export default {
   name: "Time",
   setup() {
-    let data: TimeData = reactive({
-      timestamp : 0,
+    let data = reactive({
+      inputTimeStamp : "",
+      inputDateTime: new Date(),
+      timestamp : "",
       timeString : "",
       timestamp_content: "",
+      datetime_content: "",
     });
 
-    const inputTimeStamp = ref('');
-
     function getterDtString() {
-      if (! StringUtil.isNumber(inputTimeStamp.value)) {
+      console.log(data.inputTimeStamp)
+      if (data.inputTimeStamp === '' || ! StringUtil.isNumber(data.inputTimeStamp)) {
         data.timestamp_content = "输入值不是数值类型";
         return;
       }
-      let stamp = Number(inputTimeStamp.value);
-      if (inputTimeStamp.value.toString().length < 11) {
+      let stamp = Number(data.inputTimeStamp);
+      if (data.inputTimeStamp.length < 11) {
         stamp *= 1000;
       }
+
       data.timestamp_content = DateUtil.dateFormat(new Date(stamp));
     }
 
-    function refreshDatetime(data: TimeData) {
-      data.timestamp = DateUtil.currentTimeSeconds(),
-          data.timeString = DateUtil.dateFormat(new Date())
+    function getterDateTimeStamp() {
+      data.datetime_content = ""+(~~(data.inputDateTime.getTime() / 1000));
     }
 
-    refreshDatetime(data);
+
+    function refreshDatetime() {
+      data.timestamp = DateUtil.currentTimeSeconds() + "";
+      data.timeString = DateUtil.dateFormat(new Date())
+    }
+
+    refreshDatetime();
 
     function copyToClipboard(text: string|number) {
       navigator.clipboard.writeText(text.toString()).then(() => {
@@ -93,14 +92,14 @@ export default {
     }
 
     setInterval(() => {
-      refreshDatetime(data)
+      refreshDatetime()
     }, 1000);
 
     return {
-      data,
-      inputTimeStamp,
+      getterDateTimeStamp,
       getterDtString,
       copyToClipboard,
+      data,
     }
   }
 }

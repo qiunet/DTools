@@ -1,4 +1,5 @@
 import {StringUtil} from "./StringUtil";
+import moment from "moment";
 
 export class DateUtil {
     /**
@@ -24,5 +25,15 @@ export class DateUtil {
     public static dateFormat(date: Date): string {
         return StringUtil.fixedNumber(date.getFullYear(), 4)+"-"+StringUtil.fixedNumber((date.getMonth() + 1), 2)+"-"+StringUtil.fixedNumber(date.getDate(), 2) +
             " "+StringUtil.fixedNumber(date.getHours(), 2)+":"+StringUtil.fixedNumber(date.getMinutes(), 2)+":"+StringUtil.fixedNumber(date.getSeconds(), 2);
+    }
+
+    /**
+     * string to Date
+     * @param dateString
+     * @param format
+     */
+    public static stringToDate(dateString: string, format: string = 'yyyy-MM-dd HH:mm:ss'): Date {
+        console.log(moment(dateString, format).toDate());
+        return moment(dateString, format).toDate();
     }
 }
