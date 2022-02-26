@@ -54,15 +54,15 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from) => {
-  function canAccess(to: RouteLocationNormalized): boolean {
-    return to.path === '/Setting' || !StringUtil.isEmpty(window.tool_api.setting().cfgPathSelect.current)
-  }
-
-  if (!canAccess(to)) {
-    ElMessage.success("请先进行工具的基本设置!")
-    return '/Setting'
-  }
-})
+// router.beforeEach(async (to, from) => {
+//   function canAccess(to: RouteLocationNormalized): boolean {
+//     return to.path === '/Setting' || !StringUtil.isEmpty(window.tool_api.setting().cfgPathSelect.current)
+//   }
+//
+//   if (!canAccess(to)) {
+//     ElMessage.success("请先进行工具的基本设置!")
+//     return '/Setting'
+//   }
+// })
 
 export default router;

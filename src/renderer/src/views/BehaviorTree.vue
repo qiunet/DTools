@@ -23,9 +23,9 @@
           </vue3-menus>
         </el-main>
         <el-footer height="50px">
-          <el-button type="success" style="width: 249px" @click="newAiFormVisible = true">新建</el-button>
+          <el-button type="success" style="width: 249px" @click="newAiForm.newAiFormVisible = true">新建</el-button>
 
-          <el-dialog v-model="newAiFormVisible" title="新建ai行为树xml文件">
+          <el-dialog v-model="newAiForm.newAiFormVisible" title="新建ai行为树xml文件">
             <el-form :model="newAiForm">
               <el-form-item label="文件名" label-width="140px">
                 <el-input maxlength="13" placeholder="文件名" v-model="newAiForm.filename" autocomplete="off"></el-input>
@@ -36,8 +36,8 @@
             </el-form>
             <template #footer>
             <span class="dialog-footer">
-              <el-button @click="newAiFormVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="newAiForm.editAiFile">Confirm</el-button>
+              <el-button @click="newAiForm.newAiFormVisible = false">Cancel</el-button>
+              <el-button type="primary" @click="newAiForm.editAiFile">Submit</el-button>
             </span>
             </template>
           </el-dialog>
@@ -48,7 +48,7 @@
       <el-row :gutter="5">
         <el-col :span="5" style="padding: 8px 0 0 20px;">AI XML配置:</el-col>
         <el-col :span="12">
-          <v-choice-selector :del-select="data.aiCfgPathClear" :use-func="data.aiCfgSelectChange" :select="data.setting.aiCfgPathSelect" />
+          <v-choice-selector :del-select="aiCfgPathClear" :use-func="aiCfgSelectChange" :select="data.setting.aiCfgPathSelect" />
         </el-col>
       </el-row>
       <el-divider></el-divider>
@@ -77,7 +77,7 @@
   </el-container>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {nextTick, reactive, ref, watch} from "vue";
 import {ElMessage, ElNotification} from "element-plus";
 import {UploadFilled} from "@element-plus/icons-vue";
@@ -86,140 +86,119 @@ import {ElTree} from "element-plus/es";
 import {useRouter} from "vue-router";
 import {RClickMenu} from "../common/RClickMenu";
 import vChoiceSelector from "../components/ChoiceSelector.vue";
-export default {
-  components: {UploadFilled, vChoiceSelector},
 
-  mounted() {
-    if (window.tool_api.setting().aiCfgPathSelect.current === '') {
-      ElMessage.warning("请先设置项目中AI配置的路径文件夹")
-    }
+let currNode: IFileNode | any = null;
+const open = ref(false);
+const event = ref({});
+
+const router = useRouter();
+const data = reactive({
+  setting: window.tool_api.setting(),
+  files: window.tool_api.aiCfgFileNode(),
+
+
+
+  defaultProps : {
+    children: 'children',
+    label: 'name',
   },
+});
 
-  setup() {
-    const data = reactive({
-      setting: window.tool_api.setting(),
-      files: window.tool_api.aiCfgFileNode(),
-
-      filterNode : (value: string, data: IFileNode) => {
-        if (!value) return true
-        return data.name.indexOf(value) !== -1
-      },
-
-      aiCfgPathClear() {
-        window.tool_api.removeAiCfgPath();
-        data.setting = window.tool_api.setting();
-        data.files = window.tool_api.aiCfgFileNode();
-      },
-
-      aiCfgSelectChange(val: string) {
-        const ret = window.tool_api.useAiConfigPath(val);
-        data.files = window.tool_api.aiCfgFileNode();
-        return ret;
-      },
-
-      defaultProps : {
-        children: 'children',
-        label: 'name',
-      },
-      /**
-       * 上传文件
-       * @param file
-       */
-      uploadFile: function(file: any):boolean {
-        if (! file.path.endsWith("AiConfig.json")) {
-          ElMessage.error("仅支持AiConfig.json文件!");
-          return false;
-        }
-
-        window.tool_api.copyToAiCfgDir(file.path).then(() => {
-          ElNotification({
-            title: '上传成功',
-            duration: 1000,
-            message: file.name,
-            type: 'success',
-            showClose: false
-          })
-        });
-        return false;
-      }
-    });
-    const filterText = ref('');
-    const treeRef = ref<InstanceType<typeof ElTree>>()
-
-    watch(filterText, (val) => {
-      treeRef.value!.filter(val)
-    })
-
-    let currNode: IFileNode | any = null;
-    const open = ref(false);
-    const event = ref({});
-
-
-    function rightClick(e: PointerEvent, node: any, data: any) {
-      if (! data.data.fullPath.endsWith(".xml")) {
-        return false;
-      }
-
-      open.value = false;
-      nextTick(() => {
-        currNode = (data.data);
-        event.value = e;
-        open.value = true;
-      })
-      e.preventDefault();
-    }
-
-    const router = useRouter();
-    const menus = ref([
-        new RClickMenu("编辑", "编辑AI逻辑", () => {
-          if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
-            ElMessage.error("AiConfig.json 没有上传!")
-            return false;
-          }
-          router.push("/BhtEdit/"+ currNode.name)
-        }, '', () => {
-          return currNode != null && currNode.dir;
-        })
-    ]);
-    const newAiFormVisible = ref(false)
-    const newAiForm = reactive({
-      filename: '',
-      rootDesc: '',
-
-      editAiFile() {
-        if (newAiForm.filename === '' || newAiForm.rootDesc === '') {
-          ElMessage.error("文件名和描述不能为空!")
-          return false;
-        }
-
-        if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
-          ElMessage.error("AiConfig.json 没有上传!")
-          return false;
-        }
-
-        if (! window.tool_api.createAiXmlFile(newAiForm.filename, newAiForm.rootDesc)) {
-          ElMessage.error(newAiForm.filename + "已经存在!")
-          return false;
-        }
-
-        router.push("/BhtEdit/"+newAiForm.filename + ".xml")
-        newAiFormVisible.value = false;
-      },
-    });
-
-    return {
-      data,
-      open,
-      event,
-      menus,
-      treeRef,
-      newAiForm,
-      filterText,
-      rightClick,
-      newAiFormVisible
-    };
-  },
+function filterNode(value: string, data: IFileNode) {
+  if (!value) return true
+  return data.name.indexOf(value) !== -1
 }
+
+function aiCfgPathClear() {
+  window.tool_api.removeAiCfgPath();
+  data.setting = window.tool_api.setting();
+  data.files = window.tool_api.aiCfgFileNode();
+}
+
+function aiCfgSelectChange(val: string) {
+  const ret = window.tool_api.useAiConfigPath(val);
+  data.files = window.tool_api.aiCfgFileNode();
+  return ret;
+}
+/**
+* 上传文件
+* @param file
+*/
+function uploadFile(file: any):boolean {
+  if (! file.path.endsWith("AiConfig.json")) {
+    ElMessage.error("仅支持AiConfig.json文件!");
+    return false;
+  }
+
+  window.tool_api.copyToAiCfgDir(file.path).then(() => {
+    ElNotification({
+      title: '上传成功',
+      duration: 1000,
+      message: file.name,
+      type: 'success',
+      showClose: false
+    })
+  });
+  return false;
+}
+const filterText = ref('');
+const treeRef = ref<InstanceType<typeof ElTree>>()
+
+watch(filterText, (val) => {
+  treeRef.value!.filter(val)
+})
+
+function rightClick(e: PointerEvent, node: any, data: any) {
+  if (! data.data.fullPath.endsWith(".xml")) {
+    return false;
+  }
+
+  open.value = false;
+  nextTick(() => {
+    currNode = (data.data);
+    event.value = e;
+    open.value = true;
+  })
+  e.preventDefault();
+}
+
+const menus = ref([
+    new RClickMenu("编辑", "编辑AI逻辑", () => {
+      if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
+        ElMessage.error("AiConfig.json 没有上传!")
+        return false;
+      }
+      router.push("/BhtEdit/"+ currNode.name)
+    }, '', () => {
+      return currNode != null && currNode.dir;
+    })
+]);
+
+const newAiForm = reactive({
+  newAiFormVisible: false,
+  filename: '',
+  rootDesc: '',
+
+  editAiFile() {
+    if (newAiForm.filename === '' || newAiForm.rootDesc === '') {
+      ElMessage.error("文件名和描述不能为空!")
+      return false;
+    }
+
+    if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
+      ElMessage.error("AiConfig.json 没有上传!")
+      return false;
+    }
+
+    if (! window.tool_api.createAiXmlFile(newAiForm.filename, newAiForm.rootDesc)) {
+      ElMessage.error(newAiForm.filename + "已经存在!")
+      return false;
+    }
+
+    router.push("/BhtEdit/"+newAiForm.filename + ".xml")
+    newAiForm.newAiFormVisible = false;
+  },
+});
 </script>
 
 <style scoped>

@@ -20,7 +20,7 @@
 
         <template #footer>
           <span class="dialog-footer">
-            <el-button type="primary" @click="data.handleClose">确定</el-button>
+            <el-button type="primary" @click="handleClose">确定</el-button>
           </span>
         </template>
       </el-dialog>
@@ -39,49 +39,33 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {reactive, ref} from 'vue'
 import JsonViewer from 'vue-json-viewer';
 import {Upload} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 import {StringUtil} from "../../common/StringUtil";
+  const showJsonView = ref(false);
+  let data = reactive({
+    jsonData : '',
+    jsonString: '',
+    dialogVisible: false,
+  });
 
-export default {
-  name: "Json",
-  components: {
-    JsonViewer,
-    Upload
-  },
+  function handleClose() {
+    if (StringUtil.isEmpty(data.jsonString)) {
+      ElMessage.warning("Json内容为空");
+      return;
+    }
 
-  setup() {
-    let data = reactive({
-      jsonData : '',
-      jsonString: '',
-      dialogVisible: false,
-
-      handleClose: function() {
-        if (StringUtil.isEmpty(data.jsonString)) {
-          ElMessage.warning("Json内容为空");
-          return;
-        }
-
-        showJsonView.value = true;
-        try {
-          data.jsonData = JSON.parse(data.jsonString)
-          data.dialogVisible = false
-        }catch (e) {
-          ElMessage.error('Json格式错误:'+ e)
-        }
-      },
-    });
-
-    const showJsonView = ref(false);
-    return {
-      showJsonView,
-      data
+    showJsonView.value = true;
+    try {
+      data.jsonData = JSON.parse(data.jsonString)
+      data.dialogVisible = false
+    }catch (e) {
+      ElMessage.error('Json格式错误:'+ e)
     }
   }
-}
 </script>
 
 <style scoped>

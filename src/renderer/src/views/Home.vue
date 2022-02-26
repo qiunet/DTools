@@ -2,13 +2,17 @@
   <el-container class="root-container">
     <el-header height="100px">
       <div style="padding: 10px; font-size: 22px; color: gray">
-        <el-row :gutter="5">
-          <el-col :span="4">配置目录:</el-col>
-          <el-col :span="17" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{ data.setting.cfgPathSelect.current }}</el-col>
+        <el-row>
+          <el-col :span="3">配置路径:</el-col>
+          <el-col :span="19">
+            <v-choice-selector :select="data.setting.cfgPathSelect" :use-func="cfgSelectChange" :del-select="cfgPathClear" :styleData="{width: '100%'}" />
+          </el-col>
         </el-row>
-        <el-row :gutter="2" style="padding-top: 10px">
-          <el-col :span="4">项目目录:</el-col>
-          <el-col :span="17" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{data.setting.projectPathSelect.current }}</el-col>
+        <el-row  style="width: 100%; margin-top: 10px" :gutter="2">
+          <el-col :span="3">项目路径:</el-col>
+          <el-col :span="19">
+            <v-choice-selector :select="data.setting.projectPathSelect" :use-func="projectPathChange" :del-select="projectPathClear" :styleData="{width: '100%'}" />
+          </el-col>
         </el-row>
       </div>
     </el-header>
@@ -26,7 +30,7 @@
             default-expand-all
             :props="data.defaultProps"
             :highlight-current="true"
-            :filter-node-method="data.filterNode"
+            :filter-node-method="filterNode"
         >
         </el-tree>
         <vue3-menus :open="open" :event="event" :menus="menus">
@@ -48,29 +52,17 @@
 
 </template>
 
-<script lang="ts">
-import {getCurrentInstance, reactive, nextTick, ref, watch} from "vue";
-import {ElMessage, ElTree} from "element-plus";
+<script lang="ts" setup>
+import {reactive, nextTick, ref, watch} from "vue";
+import {ElTree} from "element-plus";
 import {IFileNode} from "../common/IFileNode";
 import {SvnEvent} from "../common/Enums";
 import {RClickMenu} from "../common/RClickMenu";
+import vChoiceSelector from "../components/ChoiceSelector.vue";
 
-export default {
-  setup() {
-    let data = reactive({
+    const data = reactive({
       setting: window.tool_api.setting(),
       files: window.tool_api.cfgFileNode(),
-      consoleAppend: (content: string) => {
-        data.consoleContent += (content);
-        let element: any = document.getElementById("console-content-area");
-        element.scrollTop = element.scrollHeight + 500;
-      },
-
-      filterNode : (value: string, data: IFileNode) => {
-        if (!value) return true
-        return data.name.indexOf(value) !== -1
-      },
-
       consoleContent: "",
       defaultProps : {
         children: 'children',
@@ -78,6 +70,16 @@ export default {
       },
     });
 
+    function consoleAppend(content: string) {
+      data.consoleContent += (content);
+      let element: any = document.getElementById("console-content-area");
+      element.scrollTop = element.scrollHeight + 500;
+    }
+
+    function filterNode(value: string, data: IFileNode) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    }
 
     const filterText = ref('');
     const treeRef = ref<InstanceType<typeof ElTree>>()
@@ -111,38 +113,49 @@ export default {
       new RClickMenu("转换", "转换配置文件",
           () => {
             window.tool_api.convert(currNode.fullPath, (str: string) => {
-              data.consoleAppend(str);
+              consoleAppend(str);
             });
           },
           '<svg focusable="false" class="icon" data-icon="sync" width="1em" height="1em" fill="currentColor" aria-hidden="true" viewBox="64 64 896 896"><path d="M512 149.333333c200.298667 0 362.666667 162.368 362.666667 362.666667s-162.368 362.666667-362.666667 362.666667S149.333333 712.298667 149.333333 512 311.701333 149.333333 512 149.333333z m0 64c-164.949333 0-298.666667 133.717333-298.666667 298.666667s133.717333 298.666667 298.666667 298.666667 298.666667-133.717333 298.666667-298.666667-133.717333-298.666667-298.666667-298.666667z m86.997333 137.450667l116.117334 116.16-45.269334 45.248-61.845333-61.866667v242.709334h-64V373.546667l0.810667-5.76c1.152-7.210667 2.304-8.746667 8.64-17.024l7.168-3.925334c15.914667-8.469333 18.282667-7.168 38.378666 3.946667zM480.448 341.333333v319.488l-0.832 5.76c-1.130667 7.210667-2.282667 8.725333-8.618667 17.024l-7.168 3.904c-15.936 8.490667-18.282667 7.189333-38.4-3.925333L309.333333 567.424l45.269334-45.248 61.845333 61.866667V341.333333h64z" p-id="5021" fill="#515151"></path></svg>',
-          () => currNode.dir
+          () => false
       ),
       new RClickMenu("更新", 'SVN更新',
           () => {
-            window.tool_api.svnClient(SvnEvent.UPDATE, currNode.fullPath).then(data.consoleAppend).catch(data.consoleAppend);
+            window.tool_api.svnClient(SvnEvent.UPDATE, currNode.fullPath).then(consoleAppend).catch(consoleAppend);
           },
           '<svg focusable="false" class="icon" data-icon="sync" width="1em" height="1em" fill="currentColor" aria-hidden="true" viewBox="64 64 896 896"><path d="M549.546667 320v176.64l124.586666 124.586667a21.333333 21.333333 0 0 1 0 30.293333l-22.613333 22.613333a21.333333 21.333333 0 0 1-30.293333 0l-140.373334-140.373333a22.613333 22.613333 0 0 1-6.4-14.933333V320a21.333333 21.333333 0 0 1 21.333334-21.333333h32.426666a21.333333 21.333333 0 0 1 21.333334 21.333333z m346.453333 85.333333v-213.333333a21.333333 21.333333 0 0 0-21.333333-21.333333h-12.373334a20.906667 20.906667 0 0 0-15.36 6.4l-63.573333 63.573333A384 384 0 1 0 896 534.613333a21.333333 21.333333 0 0 0-5.546667-15.786666 22.186667 22.186667 0 0 0-15.36-6.826667h-42.666666a21.333333 21.333333 0 0 0-21.333334 20.053333A298.666667 298.666667 0 1 1 512 213.333333a295.68 295.68 0 0 1 210.346667 88.32l-75.946667 75.946667a20.906667 20.906667 0 0 0-6.4 15.36v12.373333a21.333333 21.333333 0 0 0 21.333333 21.333334h213.333334a21.333333 21.333333 0 0 0 21.333333-21.333334z" p-id="4024" fill="#515151"></path></svg>',
-          () => currNode.dir
+          () => false
       ),
       new RClickMenu( "提交", 'SVN提交',
           () => {
-            window.tool_api.svnClient(SvnEvent.COMMIT, currNode.fullPath).then(data.consoleAppend).catch(data.consoleAppend);
+            window.tool_api.svnClient(SvnEvent.COMMIT, currNode.fullPath).then(consoleAppend).catch(consoleAppend);
           },
           '<svg focusable="false" class="icon" data-icon="sync" width="1em" height="1em" fill="currentColor" aria-hidden="true" viewBox="64 64 896 896"><path d="M865.04 831.061l-416-128 416-480-544 480-320-128 1024-544-160 800z m-416 192v-224l128 64-128 160z" p-id="5857" fill="#515151"></path></svg>',
           () => currNode.dir
       )
     ]);
+/**
+ * 路径变更
+ * @param val
+ */
+function cfgSelectChange(val: any) {
+  window.tool_api.useCfgPath(val);
+  data.files = window.tool_api.cfgFileNode();
+}
 
-    return {
-      data,
-      open,
-      event,
-      menus,
-      treeRef,
-      filterText,
-      rightClick
-    }
-  }
+function projectPathChange(val: any) {
+  window.tool_api.useProjectPath(val);
+}
+
+function cfgPathClear() {
+  window.tool_api.removeCfgCurrPath();
+  data.setting = window.tool_api.setting();
+  data.files = window.tool_api.cfgFileNode();
+}
+
+function projectPathClear() {
+  window.tool_api.removeProjectCurrPath();
+  data.setting = window.tool_api.setting();
 }
 </script>
 

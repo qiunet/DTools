@@ -33,15 +33,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {reactive, ref} from "vue";
 import {ElMessage, ElNotification} from "element-plus";
 import {StringUtil} from "../../common/StringUtil";
 import {DateUtil} from "../../common/DateUtil";
-
-export default {
-  name: "Time",
-  setup() {
     let data = reactive({
       inputTimeStamp : "",
       inputDateTime: new Date(),
@@ -63,10 +59,16 @@ export default {
       }
 
       data.timestamp_content = DateUtil.dateFormat(new Date(stamp));
+      navigator.clipboard.writeText(data.timestamp_content).then(() => {
+        ElMessage.success("复制成功");
+      });
     }
 
     function getterDateTimeStamp() {
       data.datetime_content = ""+(~~(data.inputDateTime.getTime() / 1000));
+      navigator.clipboard.writeText(data.datetime_content).then(() => {
+        ElMessage.success("复制成功");
+      });
     }
 
 
@@ -74,8 +76,6 @@ export default {
       data.timestamp = DateUtil.currentTimeSeconds() + "";
       data.timeString = DateUtil.dateFormat(new Date())
     }
-
-    refreshDatetime();
 
     function copyToClipboard(text: string|number) {
       navigator.clipboard.writeText(text.toString()).then(() => {
@@ -94,15 +94,7 @@ export default {
     setInterval(() => {
       refreshDatetime()
     }, 1000);
-
-    return {
-      getterDateTimeStamp,
-      getterDtString,
-      copyToClipboard,
-      data,
-    }
-  }
-}
+    refreshDatetime();
 </script>
 
 <style scoped>

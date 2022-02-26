@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/watch.mjs",
-    "build": "node scripts/build.mjs && electron-builder",
-    "buildWM": "node scripts/build.mjs && electron-builder -wm"
+    "build": "rm -rf ./release && node scripts/build.mjs && electron-builder",
+    "buildWM": "rm -rf ./release && node scripts/build.mjs && electron-builder -wm"
   },
   "engines": {
     "node": ">=14.17.0"

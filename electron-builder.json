@@ -4,19 +4,20 @@
   "productName": "DTools",
   "artifactName": "DTools",
   "directories": {
-    "output": "release/${version}"
+    "output": "release"
   },
   "files": [
     "dist"
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "icon": "icon/Application.icns",
+    "icon": "icon/icon_512x512.png",
     "target": [
       "dmg"
     ]
   },
   "win": {
+    "icon": "icon/icon_512x512.png",
     "target": [
       {
         "target": "nsis",

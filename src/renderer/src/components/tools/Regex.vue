@@ -19,9 +19,8 @@
     <el-form-item label="输入需匹配字符:">
       <el-input  clearable autosize type="textarea" @input="regexData.inputEvent" v-model="regexData.inputContent" placeholder="输入需匹配字符" />
     </el-form-item>
-    <el-form-item label="表达式匹配结果:">
+    <el-divider>表达式匹配结果</el-divider>
       <div class="regex-match-text" v-if="regexData.matchText !== ''" v-html="regexData.matchText"></div>
-    </el-form-item>
   </el-form>
 </template>
 

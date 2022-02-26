@@ -2,7 +2,7 @@
   <el-select
       size="large"
       class="setting-el-select"
-      style="width:500px;"
+      :style="props.styleData"
       v-model="props.select.current"
       filterable
       allow-create
@@ -27,10 +27,6 @@
 import {defineProps} from "vue";
 import {StringUtil} from "../common/StringUtil";
 import {ElMessage} from "element-plus";
-  declare interface ISelectSetting {
-
-  }
-
   const props = defineProps(
       {
         select: {
@@ -44,6 +40,12 @@ import {ElMessage} from "element-plus";
         delSelect: {
           required: true,
           type: Function,
+        },
+
+        styleData: {
+          type: Object,
+          required: false,
+          default: {width: '500px'}
         }
       }
   );
@@ -74,5 +76,7 @@ import {ElMessage} from "element-plus";
 </script>
 
 <style scoped>
-
+.el-input__inner {
+  width: 100%;
+}
 </style>

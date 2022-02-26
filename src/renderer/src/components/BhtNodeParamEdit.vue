@@ -32,21 +32,19 @@
   </template>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {defineComponent, reactive, ref} from "vue";
 import { BHTNode} from "../../../preload/utils/BehaviorTree";
 import {IAIConfig, IBhtActionParam} from "../../../preload/utils/AiConfig";
 import {StringUtil} from "../common/StringUtil";
 import {ElMessage} from "element-plus";
 
-export default defineComponent({
-  name: "BhtNodeParamEdit",
-  props: {
+  const props = defineProps({
     currData: {
       required: true,
     },
-  },
-  setup(props) {
+  });
+
     function updateActionParam(doc: IBhtActionParam) {
       editDataForm.doc = doc;
       editDataForm.attrs = {};
@@ -96,15 +94,6 @@ export default defineComponent({
         editDataForm.editActionParamVisible = false;
       }
     });
-
-    return {
-      updateActionParam,
-      editDataForm,
-      tableData,
-      props,
-    }
-  }
-});
 </script>
 
 <style scoped>
