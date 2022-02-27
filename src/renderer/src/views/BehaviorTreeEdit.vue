@@ -262,6 +262,14 @@ function dragDrop(node: any, next: any, type: string): boolean {
   if (next.data.nodeName == 'action' && type === 'inner') {
     return false;
   }
+  if (next.data.decorator && type === 'inner' && next.data.children.length >= 1) {
+    return false;
+  }
+
+  console.log(next.data)
+  if (! next.data.decorator && next.parent.data.decorator && type !== 'inner') {
+    return false;
+  }
 
   return true;
 }
