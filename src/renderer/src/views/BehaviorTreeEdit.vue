@@ -266,7 +266,6 @@ function dragDrop(node: any, next: any, type: string): boolean {
     return false;
   }
 
-  console.log(next.data)
   if (! next.data.decorator && next.parent.data.decorator && type !== 'inner') {
     return false;
   }

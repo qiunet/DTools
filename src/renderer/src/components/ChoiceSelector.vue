@@ -46,24 +46,34 @@ import {ElMessage} from "element-plus";
           type: Object,
           required: false,
           default: {width: '500px'}
+        },
+
+
+        // 新值校验
+        newValCheck: {
+          type: Function,
+          required: false,
+          default: (val: string) => window.tool_api.isDir(val)
         }
       }
   );
-
+  let currentVal = props.select.current;
   function clear() {
     props.delSelect()
   }
 
   function change(val: string) {
     if (StringUtil.isEmpty(val)) {
+      props.select.current = currentVal;
       return;
     }
 
-    if (! window.tool_api.isDir(val)) {
-      ElMessage.error("["+val+"]不是一个文件夹!");
+    if (!props.newValCheck(val)) {
+      ElMessage.error("["+val+"]值错误!");
+      props.select.current = currentVal;
       return false;
     }
-
+    currentVal = val;
     props.select.current = val;
     if (props.useFunc(val)) {
       props.select.list.push(val);
