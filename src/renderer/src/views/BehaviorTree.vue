@@ -48,7 +48,7 @@
       <el-row :gutter="5">
         <el-col :span="5" style="padding: 8px 0 0 20px;">AI XML配置:</el-col>
         <el-col :span="12">
-          <v-choice-selector :del-select="aiCfgPathClear" :use-func="aiCfgSelectChange" :select="data.setting.aiCfgPathSelect" />
+          <v-choice-selector :del-select="reloadAiFileNode" :use-func="reloadAiFileNode" :select="data.setting.aiCfgPathSelect" />
         </el-col>
       </el-row>
       <el-divider></el-divider>
@@ -109,16 +109,8 @@ function filterNode(value: string, data: IFileNode) {
   return data.name.indexOf(value) !== -1
 }
 
-function aiCfgPathClear() {
-  window.tool_api.removeAiCfgPath();
-  data.setting = window.tool_api.setting();
+function reloadAiFileNode() {
   data.files = window.tool_api.aiCfgFileNode();
-}
-
-function aiCfgSelectChange(val: string) {
-  const ret = window.tool_api.useAiConfigPath(val);
-  data.files = window.tool_api.aiCfgFileNode();
-  return ret;
 }
 /**
 * 上传文件

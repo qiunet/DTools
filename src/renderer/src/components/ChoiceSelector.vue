@@ -4,7 +4,7 @@
       class="setting-el-select"
       :style="props.styleData"
       v-model="props.select.current"
-      filterable
+      :filterable="props.filterable"
       allow-create
       :clearable="true"
       default-first-option
@@ -27,24 +27,30 @@
 import {defineProps} from "vue";
 import {StringUtil} from "../common/StringUtil";
 import {ElMessage} from "element-plus";
+import {SelectSetting} from "../common/DToolsSetting";
   const props = defineProps(
       {
+        // SelectSetting 对象
         select: {
-          required: true,
-          type: Object
+          type: Object,
+          required: true
         },
+        // 是否可以过滤
+        filterable: {
+          type: Boolean,
+          default: true
+        },
+        // 外面需要触发的方法传入
         useFunc: {
-          required: true,
           type: Function,
         },
+        // 外面需要触发的方法传入
         delSelect: {
-          required: true,
           type: Function,
         },
-
+        // 需要绑定的style
         styleData: {
           type: Object,
-          required: false,
           default: {width: '500px'}
         },
 
@@ -53,13 +59,27 @@ import {ElMessage} from "element-plus";
         newValCheck: {
           type: Function,
           required: false,
-          default: (val: string) => window.tool_api.isDir(val)
+          default: (val: string):boolean => {
+            const result = window.tool_api.isDir(val);
+            if (! result) {
+              ElMessage.error("["+val+"]必须是文件夹路径!");
+            }
+            return result;
+          }
         }
       }
   );
   let currentVal = props.select.current;
   function clear() {
-    props.delSelect()
+    props.select.list.forEach((val: string, index: number) => {
+      if (val === currentVal) {
+        props.select.list.splice(index, 1);
+      }
+    });
+    props.select.current = props.select.removeCurrentPath();
+    if (props.delSelect !== undefined) {
+      props.delSelect();
+    }
   }
 
   function change(val: string) {
@@ -69,17 +89,19 @@ import {ElMessage} from "element-plus";
     }
 
     if (!props.newValCheck(val)) {
-      ElMessage.error("["+val+"]值错误!");
       props.select.current = currentVal;
       return false;
     }
     currentVal = val;
     props.select.current = val;
-    if (props.useFunc(val)) {
+    if (props.select.usePath(val)) {
       props.select.list.push(val);
       ElMessage.success("保存成功!");
     }else {
       ElMessage.success("切换成功!");
+    }
+    if (props.useFunc !== undefined) {
+      props.useFunc();
     }
   }
 

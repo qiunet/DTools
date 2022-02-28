@@ -27,7 +27,7 @@ export class SelectSetting {
      * @param path
      * @return 是否是新增
      */
-    public usePath(path: string): boolean {
+    usePath = (path: string): boolean => {
         if (path.endsWith("/")) {
             path = path.substring(0, path.length - 1);
         }
@@ -44,12 +44,18 @@ export class SelectSetting {
         SettingManager.save();
         return newPath;
     }
-
+    /**
+     * 删除current path
+     * @param path
+     */
+    removeCurrentPath = (): string => {
+        return this.removePath(this.current);
+    }
     /**
      * 删除某个path
      * @param path
      */
-    public removePath(path: string): string {
+    removePath = (path: string): string => {
         const currPath: string = this.current;
         this.list.forEach((val, index, arr) => {
             if (val !== path) {

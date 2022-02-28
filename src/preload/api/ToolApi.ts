@@ -1,4 +1,4 @@
-import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
+import {DToolsSetting, SelectSetting} from "../../renderer/src/common/DToolsSetting";
 import {SettingManager} from "../utils/SettingManager";
 import {FileUtil} from "../../renderer/src/common/FileUtil";
 import Path from "path";
@@ -11,7 +11,6 @@ import * as fs from "fs";
 import {AiConfigManager, IAIConfig} from "../utils/AiConfig";
 import {XmlUtil} from "../utils/XmlUtil";
 import {RootExecutor} from "../utils/BehaviorTree";
-
 
 export class ToolAPI {
     /**
@@ -52,47 +51,7 @@ export class ToolAPI {
     aiConfigFilePath = (): string => {
         return ToolsConstants.aiConfigFilePath();
     }
-    /**
-     * 删除ai config 路径
-     */
-    removeAiCfgPath = () => {
-        return SettingManager.setting.aiCfgPathSelect.removePath(SettingManager.setting.aiCfgPathSelect.current);
-    }
-    /**
-     * 删除setting中的路径.
-     * @return 新的当前路径
-     */
-    removeProjectCurrPath = (): string => {
-        return SettingManager.setting.projectPathSelect.removePath(SettingManager.setting.projectPathSelect.current);
-    }
-    /**
-     * 删除setting中的路径.
-     * @return 新的当前路径
-     */
-    removeCfgCurrPath = (): string => {
-        return SettingManager.setting.cfgPathSelect.removePath(SettingManager.setting.cfgPathSelect.current);
-    }
-    /**
-     * ai config 使用某个路径
-     * @param path
-     */
-    useAiConfigPath = (path: string): boolean => {
-        return SettingManager.setting.aiCfgPathSelect.usePath(path);
-    }
-    /**
-     * 增加cfg path
-     * @param path
-     */
-    useCfgPath = (path: string): boolean => {
-        return SettingManager.setting.cfgPathSelect.usePath(path);
-    }
-    /**
-     * 增加配置 path
-     * @param path
-     */
-    useProjectPath = (path: string): boolean => {
-        return SettingManager.setting.projectPathSelect.usePath(path);
-    }
+
     /**
      * 转化cfg
      * @param path

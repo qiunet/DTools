@@ -3,15 +3,15 @@
     <el-header height="100px">
       <div style="padding: 10px; font-size: 22px; color: gray">
         <el-row>
-          <el-col :span="3">配置路径:</el-col>
+          <el-col :span="5">配置路径:</el-col>
           <el-col :span="19">
-            <v-choice-selector :select="data.setting.cfgPathSelect" :use-func="cfgSelectChange" :del-select="cfgPathClear" :styleData="{width: '100%'}" />
+            <v-choice-selector :select="data.setting.cfgPathSelect" :use-func="reloadCfgFileNode" :del-select="reloadCfgFileNode" :styleData="{width: '100%'}" />
           </el-col>
         </el-row>
         <el-row  style="width: 100%; margin-top: 10px" :gutter="2">
-          <el-col :span="3">项目路径:</el-col>
+          <el-col :span="5">项目路径:</el-col>
           <el-col :span="19">
-            <v-choice-selector :select="data.setting.projectPathSelect" :use-func="projectPathChange" :del-select="projectPathClear" :styleData="{width: '100%'}" />
+            <v-choice-selector :select="data.setting.projectPathSelect" :styleData="{width: '100%'}" />
           </el-col>
         </el-row>
       </div>
@@ -135,28 +135,12 @@ import vChoiceSelector from "../components/ChoiceSelector.vue";
       )
     ]);
 /**
- * 路径变更
- * @param val
+ * cfg 路径变更
  */
-function cfgSelectChange(val: any) {
-  window.tool_api.useCfgPath(val);
+function reloadCfgFileNode() {
   data.files = window.tool_api.cfgFileNode();
 }
 
-function projectPathChange(val: any) {
-  window.tool_api.useProjectPath(val);
-}
-
-function cfgPathClear() {
-  window.tool_api.removeCfgCurrPath();
-  data.setting = window.tool_api.setting();
-  data.files = window.tool_api.cfgFileNode();
-}
-
-function projectPathClear() {
-  window.tool_api.removeProjectCurrPath();
-  data.setting = window.tool_api.setting();
-}
 </script>
 
 <style>

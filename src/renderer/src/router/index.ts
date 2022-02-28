@@ -38,7 +38,22 @@ const routes: Array<RouteRecordRaw> = [
       title: "行为树配置"
     },
     component: () => import('../views/BehaviorTree.vue')
+  }, {
+    path: '/gm',
+    name: 'GM',
+    meta: {
+      title: "GM命令"
+    },
+    component: () => import('../views/GmCommand.vue')
+  }, {
+    path: '/game_login',
+    name: 'GAME_LOGIN',
+    meta: {
+      title: "登录批量操作"
+    },
+    component: () => import('../views/GameLogin.vue')
   },
+
   {
     path: '/BhtEdit/:file',
     name: 'BehaviorTreeEdit',
