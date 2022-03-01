@@ -1,12 +1,16 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import ToolApi from "./api/ToolApi";
 import Path from "path";
+import {RedisApi} from "./api/RedisApi";
+import {ClientApi} from "./api/ClientApi";
+import {NodeClientApi} from "./api/NodeClientApi";
 
-
-console.log("==========preload==========")
 
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
-contextBridge.exposeInMainWorld("tool_api",ToolApi);
+contextBridge.exposeInMainWorld("node_client_api", NodeClientApi);
+contextBridge.exposeInMainWorld("client_api", ClientApi);
+contextBridge.exposeInMainWorld("redis_api", RedisApi);
+contextBridge.exposeInMainWorld("tool_api", ToolApi);
 contextBridge.exposeInMainWorld('path', Path)
 
 // `exposeInMainWorld` can not detect `prototype` attribute and methods, manually patch it.

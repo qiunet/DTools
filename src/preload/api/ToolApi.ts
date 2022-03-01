@@ -1,4 +1,4 @@
-import {DToolsSetting, SelectSetting} from "../../renderer/src/common/DToolsSetting";
+import {DToolsSetting} from "../../renderer/src/common/DToolsSetting";
 import {SettingManager} from "../utils/SettingManager";
 import {FileUtil} from "../../renderer/src/common/FileUtil";
 import Path from "path";

@@ -6,13 +6,13 @@
       v-model="props.select.current"
       :filterable="props.filterable"
       allow-create
-      :clearable="true"
+      :clearable="props.clearable"
       default-first-option
       :reserve-keyword="false"
       @clear="clear"
       @change="change"
-      no-data-text="需要填入文件夹绝对路径"
-      placeholder="需要填入文件夹绝对路径"
+      no-data-text="没有数据"
+      :placeholder="props.placeholder"
   >
     <el-option
         v-for="item in props.select.list"
@@ -34,6 +34,16 @@ import {SelectSetting} from "../common/DToolsSetting";
         select: {
           type: Object,
           required: true
+        },
+
+        clearable: {
+          type: Boolean,
+          default: true
+        },
+
+        placeholder: {
+          type: String,
+          default: "需要填入文件夹绝对路径"
         },
         // 是否可以过滤
         filterable: {

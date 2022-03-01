@@ -3,7 +3,7 @@
     <el-row style="padding-top: 20px">
       <el-col :span="5">职业:</el-col>
       <el-col :span="17">
-        <el-select class="setting-el-select" v-model="data.setting.role" placeholder="选择职业" size="large" @change="roleChange">
+        <el-select class="setting-el-select" v-model="setting.role" placeholder="选择职业" size="large" @change="roleChange">
           <el-option
               v-for="item in data.roles"
               :key="item.name"
@@ -15,7 +15,11 @@
       </el-col>
     </el-row>
     <el-divider></el-divider>
-
+    <el-row style="padding-top: 20px">
+      <el-col :span="5">Proto:</el-col>
+      <el-col :span="17"><v-choice-selector placeholder="填入'AllInOneProtobufProtocol.proto'文件路径" :select="setting.protoFilePath" :newValCheck="protoCheck" /></el-col>
+    </el-row>
+    <el-divider></el-divider>
     <el-row>
       <el-col :span="5">
         上传模板
@@ -43,11 +47,12 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive} from "vue";
-import { UploadFilled, Close, Plus } from "@element-plus/icons-vue";
+import {reactive, ref} from "vue";
+import { UploadFilled} from "@element-plus/icons-vue";
 import {ElNotification} from "element-plus/es";
 import {Role} from "../common/Enums";
 import {ElMessage} from "element-plus";
+import vChoiceSelector from "../components/ChoiceSelector.vue";
 
 let data = reactive({
   roles: [{
@@ -60,14 +65,26 @@ let data = reactive({
     "role": Role.OTHER,
     "name": "其它"
   }],
-  setting: window.tool_api.setting(),
 });
+const setting = ref(window.tool_api.setting());
 
 function roleChange(index: number) {
   window.tool_api.roleChange(data.roles[index].role).then(() => {
-    data.setting.role = data.roles[index].role;
+    setting.value.role = data.roles[index].role;
     ElMessage.success("切换成功!")
   });
+}
+
+function protoCheck(val: string): boolean {
+  if (! val.endsWith("AllInOneProtobufProtocol.proto")) {
+    ElMessage.error("必须是 AllInOneProtobufProtocol.proto 文件");
+    return false;
+  }
+  if (! window.tool_api.fileExists(val)) {
+    ElMessage.error("文件["+val+"]路径不存在");
+    return false;
+  }
+  return true;
 }
 /**
  * 上传文件

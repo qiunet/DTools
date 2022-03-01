@@ -5,8 +5,8 @@ export class StringUtil {
      * 是否是空字符串
      * @param string
      */
-    public static isEmpty(string: string): boolean {
-        return CommonUtil.isNullOrUndefined(string) || string.trim().length == 0;
+    public static isEmpty(string: string|null|undefined): boolean {
+        return string === null || string === undefined || string.trim().length == 0;
     }
 
     /**
@@ -40,6 +40,14 @@ export class StringUtil {
      * @param regex
      */
     public static regexTest(val: string, regex: string): boolean {
-        return new RegExp(regex).test(val);
+        return this.dRegexTest(val, new RegExp(regex));
+    }
+    /**
+     * 正则校验
+     * @param val
+     * @param regex
+     */
+    public static dRegexTest(val: string, regex: RegExp): boolean {
+        return regex.test(val);
     }
 }

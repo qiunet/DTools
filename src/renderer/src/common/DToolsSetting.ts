@@ -2,22 +2,30 @@ import {Role} from "./Enums";
 import {SettingManager} from "../../../preload/utils/SettingManager";
 import {CommonUtil} from "./CommonUtil";
 export class SelectSetting {
+
+    defaultVal: string|undefined = undefined;
     /**
      * 当前选定数据
      */
-    current: string = "";
+    current: string = '';
     /**
      * 列表数据
      */
     list: Array<string> = [];
 
-    static valueOf(data: any) {
+    static valueOf(data: any, defaultVal?: string) {
         let setting = new SelectSetting();
-        if (! CommonUtil.isNullOrUndefined(data.current)) {
-            setting.current = data.current;
+        if(data !== undefined) {
+            if (! CommonUtil.isNullOrUndefined(data.current)) {
+                setting.current = data.current;
+            }
+            if (! CommonUtil.isNullOrUndefined(data.list)) {
+                setting.list = data.list;
+            }
         }
-        if (! CommonUtil.isNullOrUndefined(data.list)) {
-            setting.list = data.list;
+        setting.defaultVal = defaultVal;
+        if (setting.current === '' && setting.defaultVal !== undefined) {
+            setting.current = setting.defaultVal;
         }
         return setting;
     }
@@ -28,6 +36,11 @@ export class SelectSetting {
      * @return 是否是新增
      */
     usePath = (path: string): boolean => {
+        if (path === this.defaultVal) {
+            this.current = path;
+            return false;
+        }
+
         if (path.endsWith("/")) {
             path = path.substring(0, path.length - 1);
         }
@@ -57,6 +70,11 @@ export class SelectSetting {
      */
     removePath = (path: string): string => {
         const currPath: string = this.current;
+        if (this.current === this.defaultVal) {
+            // 默认的不能删除
+            return this.current;
+        }
+
         this.list.forEach((val, index, arr) => {
             if (val !== path) {
                 return;
@@ -65,11 +83,22 @@ export class SelectSetting {
             if (currPath === path && arr.length >= 1) {
                 this.current = arr[0];
             }else {
-                this.current = "";
+                if(this.defaultVal !== undefined) {
+                    this.current = this.defaultVal;
+                }else {
+                    this.current = "";
+                }
             }
         });
         SettingManager.save();
         return this.current;
+    }
+
+    toJSON() {
+        return {
+            current: this.current,
+            list: this.list
+        }
     }
 }
 
@@ -91,7 +120,14 @@ export class DToolsSetting {
      * ai config 配置文件
      */
     aiCfgPathSelect: SelectSetting = new SelectSetting();
-
+    /**
+     * redis 地址
+     */
+    redisSelect: SelectSetting = new SelectSetting();
+    /**
+     *  proto 文件路径
+     */
+    protoFilePath: SelectSetting = new SelectSetting();
     /**
      *
      * @param data
@@ -101,9 +137,10 @@ export class DToolsSetting {
 
         setting.projectPathSelect = SelectSetting.valueOf(data.projectPathSelect);
         setting.cfgPathSelect = SelectSetting.valueOf(data.cfgPathSelect);
-        if (! CommonUtil.isNullOrUndefined(data.aiCfgPathSelect)) {
-            setting.aiCfgPathSelect = SelectSetting.valueOf(data.aiCfgPathSelect);
-        }
+        setting.aiCfgPathSelect = SelectSetting.valueOf(data.aiCfgPathSelect);
+        setting.redisSelect = SelectSetting.valueOf(data.redisSelect, 'localhost:6379');
+
+        setting.protoFilePath = SelectSetting.valueOf(data.protoFilePath);
         setting.role = data.role;
         return setting;
     }

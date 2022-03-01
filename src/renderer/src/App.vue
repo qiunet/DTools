@@ -8,8 +8,8 @@
         <el-header height="30px">
           <el-divider class="content-area-title" content-position="left">{{ this.$route.meta.title }}</el-divider>
         </el-header>
-        <el-main style="overflow-y: hidden">
-          <div id="content" style="padding-top: 15px">
+        <el-main style="overflow-y: hidden; padding-top: 15px; margin-left: 10px">
+          <div id="content">
             <router-view />
           </div>
         </el-main>

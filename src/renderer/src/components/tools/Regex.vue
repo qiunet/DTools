@@ -54,9 +54,11 @@ import {ElMessage} from "element-plus";
         return;
       }
 
+      const colorArray = ['#b250e2','#347606', '#690d0d', '#1a9595', '#0c2b4f', '#868609'];
       regexData.matchText = regexData.inputContent
           .replace(new RegExp(regexData.inputRegex, 'g'),  (substring: string, args: number) => {
-            return '<b style="color: black; font-size: 22px">'+substring+'</b>';
+            const color = colorArray[args % colorArray.length];
+            return ` <b style="color: ${color}; font-size: 22px">${substring}</b> `;
           })
           .replaceAll("\n", "<br />");
     }
@@ -66,7 +68,7 @@ import {ElMessage} from "element-plus";
 
 <style scoped>
   .regex-match-text {
-    background-color: #d4cfcf;
+    background-color: #f5f1f1;
     border-radius: 5px;
     font-size: 20px;
     padding: 10px;

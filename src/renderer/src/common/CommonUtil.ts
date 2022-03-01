@@ -53,4 +53,18 @@ export class CommonUtil {
     public static isBoolean(obj: unknown): boolean {
         return typeof(obj) === "boolean";
     }
+
+    /**
+     * obj 是否在 args 中
+     * @param obj
+     * @param args
+     */
+    public static existIn(obj: any, ...args: any[]): boolean {
+        for (let arg of args) {
+            if (obj === arg) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

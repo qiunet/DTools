@@ -197,5 +197,8 @@ const newAiForm = reactive({
   .setting-el-select {
     width: 400px;
   }
+  .el-main {
+    padding: 0;
+  }
 
 </style>

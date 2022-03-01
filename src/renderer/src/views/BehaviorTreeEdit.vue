@@ -266,7 +266,7 @@ function dragDrop(node: any, next: any, type: string): boolean {
     return false;
   }
 
-  if (! next.data.decorator && next.parent.data.decorator && type !== 'inner') {
+  if (next.parent.data.decorator && next.parent.data.children.length >= 1 && type !== 'inner') {
     return false;
   }
 

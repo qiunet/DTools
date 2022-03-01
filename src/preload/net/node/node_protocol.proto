@@ -1,0 +1,58 @@
+syntax="proto3";
+
+message OnlineUserInfo {
+  string openId = 1;
+  int64 playerId = 2;
+}
+
+enum GmParamType {
+  int = 0;
+  long = 1;
+  string = 2;
+}
+
+message GmParam {
+    GmParamType type = 1;
+    string name = 2;
+    string regex = 3;
+    string example = 4;
+}
+
+message GmCommandInfo {
+  int32 type = 1;
+  string name = 2;
+  repeated GmParam params = 3;
+}
+
+// 614 d_tools 请求命令
+message GmDToolsCommandReq {
+  int64 playerId = 1;
+  int32 type = 2;
+  repeated string params = 3;
+}
+
+// 615 响应
+message GmDToolsCommandRsp {
+  bool success = 1;
+  string errMsg = 2;
+}
+
+// 612  请求在线的玩家
+message GmOnlineUserReq {
+
+}
+// 613
+message GmOnlineUserRsp {
+  // 所有在线用户
+  repeated OnlineUserInfo userList = 1;
+}
+
+// 606 命令首页请求
+message GmCommandIndexReq {
+
+}
+// 607 命令首页请求
+message GmCommandIndexRsp {
+  // 所有命令信息
+  repeated GmCommandInfo list = 1;
+}
