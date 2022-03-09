@@ -14,6 +14,7 @@
       <el-form-item :label="param.name">
         <el-input-number style="width: 70%" clearable v-model="gmCommandData.commandData[index]" v-if="StringUtil.isJavaNumberType(param.type)" :placeholder="param.example" />
         <el-select
+            v-else
             size="large"
             class="setting-el-select"
             style="width: 70%"
@@ -119,8 +120,8 @@
       }
 
       const ret = props.sendMessage(commandId, arr)
-      if (ret !== '') {
-        ElMessage.error(ret);
+      if (! StringUtil.isEmpty(ret)) {
+        ElMessage.error("发送GM命令错误:"+ ret);
       }
     }
   });

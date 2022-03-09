@@ -129,17 +129,20 @@ export class DToolsSetting {
      */
     protoFilePath: SelectSetting = new SelectSetting();
     /**
+     * 登录服地址
+     */
+    loginUrl: SelectSetting = new SelectSetting();
+    /**
      *
      * @param data
      */
     public static valueOf(data: any) :DToolsSetting {
         let setting = new DToolsSetting();
-
-        setting.projectPathSelect = SelectSetting.valueOf(data.projectPathSelect);
-        setting.cfgPathSelect = SelectSetting.valueOf(data.cfgPathSelect);
-        setting.aiCfgPathSelect = SelectSetting.valueOf(data.aiCfgPathSelect);
+        setting.loginUrl = SelectSetting.valueOf(data.loginUrl, 'http://localhost:8080/login');
         setting.redisSelect = SelectSetting.valueOf(data.redisSelect, 'localhost:6379');
-
+        setting.projectPathSelect = SelectSetting.valueOf(data.projectPathSelect);
+        setting.aiCfgPathSelect = SelectSetting.valueOf(data.aiCfgPathSelect);
+        setting.cfgPathSelect = SelectSetting.valueOf(data.cfgPathSelect);
         setting.protoFilePath = SelectSetting.valueOf(data.protoFilePath);
         setting.role = data.role;
         return setting;

@@ -4,6 +4,7 @@ import {Socket} from "net";
 import crc from 'crc-32'
 import fs from "fs";
 import {SettingManager} from "../utils/SettingManager";
+import {Protocol} from "../../renderer/src/common/Protocol";
 
 export class ProtocolHeader {
     /**
@@ -66,6 +67,10 @@ export class ProtocolHeader {
         buffer.writeBytes(data)
         return buffer.toByteArray();
     }
+
+    toString(): string {
+        return JSON.stringify(this, null)
+    }
 }
 export type EventType = 'close'|'connect'|'data'|'error'|'timeout'|'end';
 export class Client {
@@ -80,15 +85,9 @@ export class Client {
 
     protected client: Socket|undefined;
 
-    onData: (openId: string, protocolId: number, obj: any) => void;
+    readonly onData: (openId: string, protocolId: number, obj: any) => void;
 
     constructor(openId: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void, nodeClient = false) {
-        if (SettingManager.setting.protoFilePath.current === '') {
-            throw Error("Not specified proto file path");
-        }
-        fs.readFile(SettingManager.setting.protoFilePath.current, "utf-8", (err, data) => {
-            ProtoManager.init(data)
-        });
         this.nodeClient = nodeClient;
         this.openId = openId;
         this.onData = onData;
@@ -112,11 +111,7 @@ export class Client {
             if (connectListener) {
                 connectListener()
             }
-            this.timer = setInterval(() => {
-                const type = ProtoManager.findRspProto(700);
-                const message = type.create({});
-                this.sendMessage(700, type.encode(message).finish())
-            }, 20000);
+            this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 20000);
         }).on("data", data => {
             if (data.length < 8) {
                 // 不够header的长度
@@ -131,10 +126,13 @@ export class Client {
                 if (dis.lastLength() < header.length) {
                     return;
                 }
-
                 const uint8Array = dis.readBytes(header.length);
                 const type = this.findRspType(header.protocolId)
                 const message = type.decode(uint8Array);
+                if (header.protocolId === Protocol.CLIENT_PONG) {
+                    continue
+                }
+
                 this.onData(this.openId, header.protocolId, message.toJSON())
             }
         }).on('error', err => {
@@ -164,9 +162,9 @@ export class Client {
     /**
      * 发送消息
      * @param protocolId
-     * @param data
+     * @param messageData 已经组装成 protobuf message data 的数据
      */
-    sendMessage = (protocolId: number, data: Uint8Array): string => {
+    sendMessage = (protocolId: number, messageData: Uint8Array): string => {
         if (! this.activity) {
             return "已经断开连接";
         }
@@ -174,12 +172,24 @@ export class Client {
         if (this.client === undefined)  {
             return "没有创建连接";
         }
-        const header = ProtocolHeader.create(protocolId, crc.buf(data));
-        let write = this.client.write(header.toByteArray(data));
+
+        const header = ProtocolHeader.create(protocolId, crc.buf(messageData));
+        let write = this.client.write(header.toByteArray(messageData));
         if (! write) {
             return "请求失败";
         }
         return "";
+    }
+    /**
+     * 会根据 protocol和data组装 message
+     * @param protocolId
+     * @param data
+     */
+    sendData = (protocolId: number, data: any) => {
+        const type = ProtoManager.findReqProto(protocolId)
+        const message = type.create(data)
+        const uint8Array = type.encode(message).finish();
+        this.sendMessage(protocolId, uint8Array);
     }
     /**
      * 找到response的 type
@@ -189,66 +199,3 @@ export class Client {
         return ProtoManager.findRspProto(protocolId)
     }
 }
-
-/**
- * Socket 管理
- */
-export class NetManager {
-    private static readonly clients: Record<string, Client> = {};
-
-    public static host: string = '';
-    public static port: number = 0;
-
-    static setNetWork = (host:string, port: number) => {
-        if (this.host !== '') {
-            // 释放原有连接
-            for (let clientsKey in this.clients) {
-                this.clients[clientsKey].destroy()
-            }
-        }
-
-        this.host = host;
-        this.port = port;
-    }
-
-    static connect = (openId: string, onData: (openId: string, protocolId: number, obj: any) => void):Promise<Client> => {
-        if (this.host === '' || this.port === 0 ){
-            throw Error("host and port not setting!");
-        }
-
-        if (this.clients[openId] !== undefined) {
-            this.clients[openId].destroy()
-        }
-
-        return new Client(openId, this.host, this.port, onData)
-            .connect().then(client => {
-                this.clients[openId] = client;
-                client.onEvent('close', () => {
-                    delete this.clients[openId];
-                });
-                return client;
-            });
-    }
-
-    /**
-     * 取到Client
-     * @param openId
-     */
-    static getClient = (openId: string):Client => {
-        return this.clients[openId];
-    }
-}
-
-//
-// NetManager.setNetWork("localhost", 8880)
-// NetManager.connect("qiunet").then(client => {
-//     const type = proto.findReqProto(1007);
-//     const message = type.create({gender: 1});
-//     client.sendMessage(1007, type.encode(message).finish())
-// })
-//
-//
-// // redisClient().then(client => client.SET("qiunet", "qiunet")).then(console.log).then(t => refreshClient())
-// //     .then(() => {
-// //     redisClient().then(client => client.SET("qiunet", "qiunet")).then(console.log)
-// // });

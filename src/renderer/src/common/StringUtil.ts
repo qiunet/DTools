@@ -31,7 +31,9 @@ export class StringUtil {
      * @param javaType
      */
     public static isJavaNumberType(javaType: string): boolean {
-        return javaType === 'int' || javaType === 'long';
+        javaType = javaType.toLowerCase();
+        return javaType === 'int' || javaType === 'long'
+            || javaType.endsWith("int") || javaType.endsWith("long");
     }
 
     /**

@@ -1,7 +1,5 @@
 import { ipcMain ,BrowserWindow, IpcMainEvent} from 'electron'
 import {MainChannel, RendererChannel} from "./Channel";
-import {NetManager} from "../net/Client";
-import {NodeClientApi} from "../api/NodeClientApi";
 
 export class IpcMainChannel {
     /***

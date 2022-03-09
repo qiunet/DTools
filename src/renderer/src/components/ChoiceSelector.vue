@@ -1,6 +1,6 @@
 <template>
   <el-select
-      size="large"
+      :size="props.size"
       class="setting-el-select"
       :style="props.styleData"
       v-model="props.select.current"
@@ -39,6 +39,11 @@ import {SelectSetting} from "../common/DToolsSetting";
         clearable: {
           type: Boolean,
           default: true
+        },
+
+        size: {
+          type: String,
+          default: 'large'
         },
 
         placeholder: {

@@ -5,7 +5,7 @@ import Path from "path";
 import {ToolsConstants} from "../utils/ToolsConstants";
 import * as electron from "electron";
 import {IFileNode} from "../../renderer/src/common/IFileNode";
-import {SvnEvent, Role} from "../../renderer/src/common/Enums";
+import {Role, SvnEvent} from "../../renderer/src/common/Enums";
 import {SvnClient} from "../utils/SvnClient";
 import * as fs from "fs";
 import {AiConfigManager, IAIConfig} from "../utils/AiConfig";

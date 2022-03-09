@@ -3,7 +3,7 @@
     <el-aside width="200px">
       <el-form label-position="top" label-width="200px" :model="dataForm" style="max-width: 200px">
         <el-form-item label="Redis地址">
-          <v-choice-select :select="setting.redisSelect" :newValCheck="validRedisUrl" :useFun="reloadServer" :delSelect="reloadServer" placeholder="填入Redis地址以及端口" />
+          <v-choice-select :select="setting.redisSelect" :newValCheck="validRedisUrl" :useFunc="reloadRedisServer" :delSelect="reloadRedisServer" placeholder="填入Redis地址以及端口" />
         </el-form-item>
         <el-form-item label="服务地址">
           <el-select size="large" v-model="currentServer" value-key="serverId" style="width:500px" @change="changeServer" placeholder="选择服务器">
@@ -127,6 +127,7 @@ onUnmounted(() => {
  * @param item
  */
   function changeServer(item: ServerInfo) {
+    window.node_client_api.destroy()
     window.node_client_api.connect(item.host, item.nodePort, onData)
     .then(result => {
       window.node_client_api.getOnlineUser();
@@ -134,8 +135,14 @@ onUnmounted(() => {
     })
   }
 
-  function reloadServer() {
-    window.redis_api.changeRedis().then(s => {
+  function reloadRedisServer() {
+    dataForm.serverPath = [];
+    currentServer.value = undefined;
+    window.redis_api.changeRedis().then(open => {
+      if (! open) {
+        ElMessage.error("Redis连接失败, 请检查是否Redis是否开启!")
+        return;
+      }
       window.redis_api.serverList().then(list => {
         dataForm.serverPath = list;
       });
@@ -143,13 +150,13 @@ onUnmounted(() => {
   }
 
   if (setting.value.redisSelect.current !== '') {
-    reloadServer()
+    reloadRedisServer()
   }
 
   function refresh() {
      dataForm.currentUser = undefined;
      dataForm.serverPath = [];
-     reloadServer()
+     reloadRedisServer()
   }
 
   function sendMessage(command: number, params: string[]):string {
