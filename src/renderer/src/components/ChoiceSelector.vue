@@ -92,6 +92,8 @@ import {SelectSetting} from "../common/DToolsSetting";
       }
     });
     props.select.current = props.select.removeCurrentPath();
+    ElMessage.warning("删除成功!");
+    currentVal = props.select.current;
     if (props.delSelect !== undefined) {
       props.delSelect();
     }

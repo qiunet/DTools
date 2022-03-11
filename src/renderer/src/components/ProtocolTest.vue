@@ -24,7 +24,7 @@
         </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="协议内容" v-if="formData.showContent">
+    <el-form-item label="协议内容">
       <el-input :autosize="{ minRows: 3, maxRows:12}" type="textarea" v-model="formData.protocolData" placeholder="填写请求数据"/>
     </el-form-item>
     <el-form-item>
@@ -55,12 +55,9 @@
      */
     protocolData: '',
 
-    showContent: false,
-
     reqChange(val: number) {
       let obj = window.client_api.buildProtoTypeInfo(val);
       formData.protocolData = JSON.stringify(obj, null, '\t')
-      formData.showContent = Object.keys(obj).length > 0;
     },
 
     submitForm(){

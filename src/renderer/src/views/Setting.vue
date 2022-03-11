@@ -17,7 +17,7 @@
     <el-divider></el-divider>
     <el-row style="padding-top: 20px">
       <el-col :span="5">Proto:</el-col>
-      <el-col :span="17"><v-choice-selector placeholder="填入'AllInOneProtobufProtocol.proto'文件路径" :select="setting.protoFilePath" :newValCheck="protoCheck" /></el-col>
+      <el-col :span="17"><v-choice-selector placeholder="填入'AllInOneProtobufProtocol.proto'文件路径" :select="setting.protoFilePath" :newValCheck="protoCheck" :useFunc="loadProto"/></el-col>
     </el-row>
     <el-divider></el-divider>
     <el-row>
@@ -53,6 +53,14 @@ import {ElNotification} from "element-plus/es";
 import {Role} from "../common/Enums";
 import {ElMessage} from "element-plus";
 import vChoiceSelector from "../components/ChoiceSelector.vue";
+
+function loadProto() {
+  if (window.tool_api.loadProto()) {
+    ElMessage.success("加载协议成功!")
+  }else {
+    ElMessage.error("加载协议失败!")
+  }
+}
 
 let data = reactive({
   roles: [{

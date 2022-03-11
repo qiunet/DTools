@@ -3,7 +3,7 @@
     <el-header height="70px">
       <el-row :gutter="2">
         <el-col :span="4">登录服地址: </el-col>
-        <el-col :span="17"><v-choice-select :size="'default'" :select="setting.loginUrl" :newValCheck="validHttpUrl" :useFunc="reloadServer" :delSelect="reloadServer" placeholder="填入Redis地址以及端口" /></el-col>
+        <el-col :span="17"><v-choice-select :size="'default'" :styleData="{'width': '80%', 'max-width': '800px'}" :select="setting.loginUrl" :newValCheck="validHttpUrl" :useFunc="reloadServer" :delSelect="reloadServer" placeholder="填入Redis地址以及端口" /></el-col>
       </el-row>
       <el-divider />
     </el-header>
@@ -71,7 +71,6 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
 
   const setting = ref(window.tool_api.setting());
   const loginData = PlayerManager.playerList;
-
   function showGmCommand(data: PlayerData) {
     data.on('gm-command-list', (commandList:Array<GmCommandInfo>) => {
       gmCommandData.commandList = commandList;
@@ -127,6 +126,11 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
       return;
     }
 
+    if (setting.value.protoFilePath.current === '') {
+      ElMessage.error("请先设置 AllInOneProtobufProtocol.proto 地址!")
+      return;
+    }
+
     ElMessageBox.prompt('输入玩家OpenId:', '新增登录玩家', {confirmButtonText: '登录',})
       .then(({ value }) => {
         if (loginData.value.find(pData => pData.openId === value)){
@@ -156,11 +160,6 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
         PlayerManager.destroy()
       }).catch(() => {})
   }
-
-  // 离开界面. 退出所有账号.
-  onUnmounted(() => {
-    PlayerManager.destroy()
-  });
 </script>
 
 <style scoped>

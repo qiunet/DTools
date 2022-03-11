@@ -62,6 +62,7 @@ class Proto {
 
 export class ProtoManager {
     private static _proto: Proto;
+    private static currentPath: string;
     private static requestProtoInfos: Array<RequestProtoInfo> = [];
 
     public static findReqProto(protocolId: number):Type {
@@ -80,15 +81,20 @@ export class ProtoManager {
         return ProtoManager._proto.findRspProto(protocolId);
     }
 
-    static init(data: string) {
-        if (StringUtil.isEmpty(data)) {
-            throw new Error("data is empty");
+    static loadProto():boolean {
+        if (SettingManager.setting.protoFilePath.current === ''
+        || this.currentPath === SettingManager.setting.protoFilePath.current) {
+            return false;
         }
 
-        if (this.isInit()) {
-            return;
-        }
+        const data = fs.readFileSync(SettingManager.setting.protoFilePath.current, "utf-8");
+        this.currentPath = SettingManager.setting.protoFilePath.current;
+        ProtoManager.init0(data)
+        return true;
+    }
 
+    private static init0(data: string) {
+        this.requestProtoInfos = [];
         this._proto = new Proto(data);
         let reqEnum = this._proto.findReqEnum();
         for (let reqEnumKey in reqEnum.values) {
@@ -100,17 +106,8 @@ export class ProtoManager {
             this.requestProtoInfos.push(new RequestProtoInfo(protocolId, type.name, type.comment));
         }
     }
-
-    public static isInit() {
-        return this._proto !== undefined;
-    }
 }
 
-if (! ProtoManager.isInit()) {
-    if (SettingManager.setting.protoFilePath.current === '') {
-        throw Error("Not specified proto file path");
-    }
-    fs.readFile(SettingManager.setting.protoFilePath.current, "utf-8", (err, data) => {
-        ProtoManager.init(data)
-    });
+if (ProtoManager.loadProto()) {
+    console.log("协议加载成功!")
 }

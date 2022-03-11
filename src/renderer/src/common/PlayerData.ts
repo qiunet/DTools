@@ -68,14 +68,14 @@ export class PlayerData {
     reconnect() {
         this._reconnect = true;
         this.client?.destroy()
-        setInterval(() => {
+        setTimeout(() => {
             this.connect()
         }, 100)
     }
 
     onData = (openId: string, protocolId: number, obj: any) => {
         // 移动的协议. 不记录. 不打印.
-        if (protocolId === 3000002 || protocolId === 3000003) return;
+        if (protocolId === 3000000 || protocolId === 3000002 || protocolId === 3000003) return;
 
         console.log("==response== openId: " + openId + " protocolId: " + protocolId + " Message: " , obj);
         switch (protocolId) {
@@ -106,6 +106,9 @@ export class PlayerData {
 
                 if (! this._reconnect) {
                     PlayerManager.playerList.value.push(this);
+                }else {
+                    ElMessage.success("重连成功!")
+                    this._reconnect = false;
                 }
                 break
             case Protocol.CURRENCY_UPDATE_PUSH:
@@ -125,6 +128,14 @@ export class PlayerData {
         .then(client => {
             this.client = client
             client.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
+            client.onEvent('connect', () => {
+
+            });
+            client.onEvent('close', () => {
+                if (! this._reconnect) {
+                    PlayerManager.logout(this.openId, false)
+                }
+            });
         });
     }
     /**
@@ -173,11 +184,14 @@ export class PlayerManager {
     /**
      * 登出
      * @param openId
+     * @param callLogout
      */
-    static logout(openId: string) {
+    static logout(openId: string, callLogout:boolean = true) {
         let index = this.playerList.value.findIndex(value => value.openId === openId);
         if (index !== -1) {
-            this.playerList.value[index].logout()
+            if (callLogout) {
+                this.playerList.value[index].logout()
+            }
             this.playerList.value.splice(index, 1);
         }
     }

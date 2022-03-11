@@ -11,6 +11,7 @@ import * as fs from "fs";
 import {AiConfigManager, IAIConfig} from "../utils/AiConfig";
 import {XmlUtil} from "../utils/XmlUtil";
 import {RootExecutor} from "../utils/BehaviorTree";
+import {ProtoManager} from "../net/Proto";
 
 export class ToolAPI {
     /**
@@ -157,6 +158,10 @@ export class ToolAPI {
      */
     saveToXml = (xmlObject: any, xmlFilePath: string) : void => {
         XmlUtil.writeXmlFile(xmlObject, xmlFilePath);
+    }
+
+    loadProto = ():boolean => {
+        return ProtoManager.loadProto()
     }
 }
 const ToolApi = new ToolAPI();
