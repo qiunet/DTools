@@ -57,6 +57,10 @@ export class PlayerData {
         this.on(eventName, cb, true);
     }
 
+    get hostInfo() {
+        return this.client?.host+":"+this.client?.port;
+    }
+
     logout() {
         this.client?.sendData(Protocol.LOGOUT_REQ, {});
         this.client?.destroy()

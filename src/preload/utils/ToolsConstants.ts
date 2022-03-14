@@ -17,15 +17,6 @@ export class ToolsConstants {
      * 存放ejs的目录
      */
     private static readonly EJS_TEMPLATE_DIR = Constants.EJS_TEMPLATE_DIR;
-    /**
-     * ai 行为树的配置存放目录
-     */
-    private static readonly AI_CONFIG_DIR = "ai";
-    /**
-     * ai config file name
-     * @private
-     */
-    private static readonly AI_CONFIG_NAME = "AiConfig.json";
 
     /**
      * 配置名称
@@ -52,20 +43,6 @@ export class ToolsConstants {
      */
     public static ejsTemplateDir(): string {
         return Path.join(this.settingDir(), this.EJS_TEMPLATE_DIR);
-    }
-
-    /**
-     * 获得 ai 行为树 路径
-     */
-    public static aiConfigDir(): string {
-        return Path.join(this.settingDir(), this.AI_CONFIG_DIR);
-    }
-
-    /**
-     * 获得 ai 行为树 路径
-     */
-    public static aiConfigFilePath(): string {
-        return Path.join(this.aiConfigDir(), this.AI_CONFIG_NAME);
     }
 
     /**

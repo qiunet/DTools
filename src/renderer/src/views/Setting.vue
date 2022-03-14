@@ -88,7 +88,7 @@ function protoCheck(val: string): boolean {
     ElMessage.error("必须是 AllInOneProtobufProtocol.proto 文件");
     return false;
   }
-  if (! window.tool_api.fileExists(val)) {
+  if (! val.startsWith("http") && ! window.tool_api.fileExists(val)) {
     ElMessage.error("文件["+val+"]路径不存在");
     return false;
   }

@@ -1,9 +1,10 @@
 import os from 'os'
 import path from 'path'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain} from 'electron'
 import {ToolsConstants} from "../preload/utils/ToolsConstants";
 import * as fs from "fs";
 import { env } from 'process';
+import axios from "axios";
 
 // https://stackoverflow.com/questions/42524606/how-to-get-windows-version-using-node-js
 const isWin7 = os.release().startsWith('6.1')
@@ -67,6 +68,17 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+ipcMain.on('proto_request', ((event, url) => {
+  axios.get(url).then(response => {
+        event.sender.send('proto_response', response.data)
+      })
+}));
+
+ipcMain.on('ai_config_request',  (async (event, url) => {
+  const response = await axios.get(url)
+  event.returnValue = response.data;
+}));
 
 // @TODO
 // auto update

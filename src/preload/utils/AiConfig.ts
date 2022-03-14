@@ -3,7 +3,6 @@
  */
 import {JsonUtil} from "../../renderer/src/common/JsonUtil";
 import {FileUtil} from "../../renderer/src/common/FileUtil";
-import {ToolsConstants} from "./ToolsConstants";
 
 export interface IConditionParam {
     /**
@@ -70,23 +69,4 @@ export interface IAIConfig {
     conditionDocs: Array<IConditionConfig>;
 }
 
-export class AiConfigManager {
-    /**
-     * ai Config
-     * @private
-     */
-    private static _aiConfig: IAIConfig;
-    /**
-     * 获得单例 对象
-     */
-    static get aiConfig(): IAIConfig {
-        if (this._aiConfig == null) {
-           this.reload();
-        }
-        return this._aiConfig;
-    }
 
-    static reload() {
-        this._aiConfig = JsonUtil.stringToJson(FileUtil.readFile(ToolsConstants.aiConfigFilePath()));
-    }
-}

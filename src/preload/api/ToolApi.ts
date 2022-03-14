@@ -8,10 +8,11 @@ import {IFileNode} from "../../renderer/src/common/IFileNode";
 import {Role, SvnEvent} from "../../renderer/src/common/Enums";
 import {SvnClient} from "../utils/SvnClient";
 import * as fs from "fs";
-import {AiConfigManager, IAIConfig} from "../utils/AiConfig";
+import {IAIConfig} from "../utils/AiConfig";
 import {XmlUtil} from "../utils/XmlUtil";
 import {RootExecutor} from "../utils/BehaviorTree";
 import {ProtoManager} from "../net/Proto";
+import {AiConfigManager} from "../utils/AiConfigManager";
 
 export class ToolAPI {
     /**
@@ -47,13 +48,6 @@ export class ToolAPI {
         return true;
     }
     /**
-     * 路径
-     */
-    aiConfigFilePath = (): string => {
-        return ToolsConstants.aiConfigFilePath();
-    }
-
-    /**
      * 转化cfg
      * @param path
      * @param logger
@@ -68,16 +62,6 @@ export class ToolAPI {
      */
     copyToEjsDir = (filePath: string) : Promise<void>  => {
         return FileUtil.copy(filePath, Path.join(ToolsConstants.ejsTemplateDir(), Path.basename(filePath)));
-    }
-    /**
-     * copy文件到 ai config 目录
-     * @param filePath
-     */
-    copyToAiCfgDir = (filePath: string) : Promise<void>  => {
-        return FileUtil.copy(filePath, Path.join(ToolsConstants.aiConfigDir(), Path.basename(filePath)))
-            .then(res => {
-                AiConfigManager.reload();
-            });
     }
     /**
      * 获得配置文件
@@ -142,6 +126,13 @@ export class ToolAPI {
      * 得到 aiConfig 的内容.
      */
     aiConfigJson = (): IAIConfig =>  {
+        return AiConfigManager.aiConfig;
+    }
+    /**
+     * 重新加载 ai_config.json
+     */
+    aiConfigJsonReload = (): IAIConfig => {
+        AiConfigManager.reload()
         return AiConfigManager.aiConfig;
     }
     /**

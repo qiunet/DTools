@@ -1,8 +1,10 @@
 import pb, {Root, Type} from 'protobufjs';
-import {StringUtil} from "../../renderer/src/common/StringUtil";
 import {RequestProtoInfo} from "../utils/RequestProtoInfo";
 import {SettingManager} from "../utils/SettingManager";
+import {ipcRenderer} from 'electron'
 import fs from "fs";
+import * as http from "http";
+import axios from "axios";
 
 /**
  * proto 数据管理
@@ -87,9 +89,18 @@ export class ProtoManager {
             return false;
         }
 
-        const data = fs.readFileSync(SettingManager.setting.protoFilePath.current, "utf-8");
         this.currentPath = SettingManager.setting.protoFilePath.current;
-        ProtoManager.init0(data)
+        if (this.currentPath.startsWith("http")) {
+            ipcRenderer.send('proto_request', this.currentPath);
+            ipcRenderer.on('proto_response', (event, data) => {
+                ProtoManager.init0(data)
+            })
+        }else {
+            fs.readFile(SettingManager.setting.protoFilePath.current, "utf-8", (err, data) => {
+                console.log("File read:", data)
+                ProtoManager.init0(data)
+            });
+        }
         return true;
     }
 
@@ -102,6 +113,9 @@ export class ProtoManager {
                 continue
             }
             const protocolId = reqEnum.values[reqEnumKey];
+            if (protocolId === 0) {
+                continue
+            }
             let type = this.findReqProto(protocolId);
             this.requestProtoInfos.push(new RequestProtoInfo(protocolId, type.name, type.comment));
         }

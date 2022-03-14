@@ -53,24 +53,9 @@
       </el-row>
       <el-divider></el-divider>
       <el-row>
-        <el-col :span="5"></el-col>
+        <el-col :span="5"  style="padding: 8px 0 0 20px;">AiConfig.json</el-col>
         <el-col :span="12">
-          <el-upload
-              drag
-              action="/"
-              accept=".json"
-              auto-upload: false
-              :before-upload="data.uploadFile">
-            <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
-            <div class="el-upload__text">
-              拖拽AiConfig.json文件到这里 或者 <em>点击上传</em>
-            </div>
-            <template #tip>
-              <div class="el-upload__tip">
-                允许上传AiConfig.json模板文件!
-              </div>
-            </template>
-          </el-upload>
+          <v-choice-selector :del-select="reloadAiCfgJson" :use-func="reloadAiCfgJson" :newValCheck="checkAiConfigJson" :select="data.setting.aiJsonCfgPathSelect" />
         </el-col>
       </el-row>
     </el-main>
@@ -95,43 +80,40 @@ const router = useRouter();
 const data = reactive({
   setting: window.tool_api.setting(),
   files: window.tool_api.aiCfgFileNode(),
-
-
-
   defaultProps : {
     children: 'children',
     label: 'name',
   },
-});
-
-function filterNode(value: string, data: IFileNode) {
+  filterNode: (value: string, data: IFileNode) => {
   if (!value) return true
   return data.name.indexOf(value) !== -1
 }
+});
 
 function reloadAiFileNode() {
   data.files = window.tool_api.aiCfgFileNode();
+}
+
+
+function reloadAiCfgJson() {
+  window.tool_api.aiConfigJsonReload();
 }
 /**
 * 上传文件
 * @param file
 */
-function uploadFile(file: any):boolean {
-  if (! file.path.endsWith("AiConfig.json")) {
+function checkAiConfigJson(val: any):boolean {
+  if (! val.endsWith("AiConfig.json")) {
     ElMessage.error("仅支持AiConfig.json文件!");
     return false;
   }
 
-  window.tool_api.copyToAiCfgDir(file.path).then(() => {
-    ElNotification({
-      title: '上传成功',
-      duration: 1000,
-      message: file.name,
-      type: 'success',
-      showClose: false
-    })
-  });
-  return false;
+  if (! val.startsWith("http") && !window.tool_api.fileExists(val)) {
+    ElMessage.error("文件不存在!");
+    return false;
+  }
+
+  return true;
 }
 const filterText = ref('');
 const treeRef = ref<InstanceType<typeof ElTree>>()
@@ -156,7 +138,7 @@ function rightClick(e: PointerEvent, node: any, data: any) {
 
 const menus = ref([
     new RClickMenu("编辑", "编辑AI逻辑", () => {
-      if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
+      if (data.setting.aiJsonCfgPathSelect.current === '') {
         ElMessage.error("AiConfig.json 没有上传!")
         return false;
       }
@@ -177,7 +159,7 @@ const newAiForm = reactive({
       return false;
     }
 
-    if (! window.tool_api.fileExists(window.tool_api.aiConfigFilePath())) {
+    if (data.setting.aiJsonCfgPathSelect.current === '') {
       ElMessage.error("AiConfig.json 没有上传!")
       return false;
     }
@@ -191,6 +173,10 @@ const newAiForm = reactive({
     newAiForm.newAiFormVisible = false;
   },
 });
+
+if (data.setting.aiJsonCfgPathSelect.current !== '') {
+  window.tool_api.aiConfigJsonReload()
+}
 </script>
 
 <style scoped>
