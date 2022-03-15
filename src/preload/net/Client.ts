@@ -2,8 +2,6 @@ import {ByteInputBuffer, ByteOutputBuffer} from "./ByteBuffer";
 import {ProtoManager} from "./Proto";
 import {Socket} from "net";
 import crc from 'crc-32'
-import fs from "fs";
-import {SettingManager} from "../utils/SettingManager";
 import {Protocol} from "../../renderer/src/common/Protocol";
 
 export class ProtocolHeader {

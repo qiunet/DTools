@@ -4,7 +4,6 @@ import {SettingManager} from "../utils/SettingManager";
 import {ipcRenderer} from 'electron'
 import fs from "fs";
 import * as http from "http";
-import axios from "axios";
 
 /**
  * proto 数据管理

@@ -1,8 +1,6 @@
 /**
  * 条件参数
  */
-import {JsonUtil} from "../../renderer/src/common/JsonUtil";
-import {FileUtil} from "../../renderer/src/common/FileUtil";
 
 export interface IConditionParam {
     /**

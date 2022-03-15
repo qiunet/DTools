@@ -1,8 +1,6 @@
 import {JsonUtil} from "../../renderer/src/common/JsonUtil";
-import {FileUtil} from "../../renderer/src/common/FileUtil";
 import {ipcRenderer} from 'electron';
 import {IAIConfig} from "./AiConfig";
-import {ToolsConstants} from "./ToolsConstants";
 import {SettingManager} from "./SettingManager";
 import fs from "fs";
 
