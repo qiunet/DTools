@@ -52,4 +52,19 @@ export class StringUtil {
     public static dRegexTest(val: string, regex: RegExp): boolean {
         return regex.test(val);
     }
+
+    /**
+     * java hash code
+     * @param val
+     */
+    public static javaHashCode(val: string): number {
+        let hash = 0, i, chr;
+        if (val.length === 0) return hash;
+        for (i = 0; i < val.length; i++) {
+            chr = val.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
+            hash |= 0;
+        }
+        return hash
+    }
 }
