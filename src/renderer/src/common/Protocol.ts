@@ -21,6 +21,10 @@ export class Protocol {
 
     static readonly LOGOUT_REQ = 1002;
 
+    // 请求随机名字
+    static readonly RANDOM_NAME_REQ = 1007;
+    static readonly RANDOM_NAME_RSP = 1007001;
+
     static readonly REGISTER_REQ = 1003;
     static readonly REGISTER_RSP = 1003001;
     /**

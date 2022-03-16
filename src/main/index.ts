@@ -69,6 +69,18 @@ app.on('activate', () => {
   }
 })
 
+ipcMain.on('login_request', (async (event, ...args) => {
+    const response: any = await axios.post(args[0], args[1]).catch((err) => {
+      return err;
+    });
+    if (response instanceof Error) {
+      event.returnValue = {status: {code: 2, desc: '服务器异常['+response.message+']'}}
+    }else {
+      event.returnValue = response.data;
+    }
+}));
+
+
 ipcMain.on('proto_request', ((event, url) => {
   axios.get(url).then(response => {
         event.sender.send('proto_response', response.data)

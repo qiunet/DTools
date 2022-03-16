@@ -14,9 +14,8 @@
           empty-text	="当前还没有登录玩家账号"
        >
         <el-table-column label="ID" width="100"  prop="playerId"/>
-        <el-table-column label="账号" width="100"  prop="openId"/>
         <el-table-column label="服务器" width="150"  prop="hostInfo"/>
-        <el-table-column label="名称" width="80"  prop="name"/>
+        <el-table-column label="名称" width="120"  prop="name"/>
         <el-table-column label="M1" width="70"  prop="m1"/>
         <el-table-column label="M2" width="70"  prop="m2"/>
         <el-table-column fixed="right" label="操作" width="200">
@@ -33,10 +32,10 @@
         </el-table-column>
       </el-table>
       <el-button class="player-table-view" type="success" style="width: 90%" @click="newLoginPlayer">新增登录玩家</el-button>
-      <el-dialog v-model="gmCommandData.showDialog" title="GM命令" width="70%">
+      <el-dialog v-model="gmCommandData.showDialog" :title="`玩家[${gmCommandData.currPlayer?.openId}]GM命令`" width="70%">
         <d-tool-command :command-list="gmCommandData.commandList" :send-message="gmCommandData.sendGmCommand"/>
       </el-dialog>
-      <el-dialog v-model="protoTestData.showDialog" title="协议测试" width="70%">
+      <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="70%">
         <v-protocol-test :submit="protoTestData.submit" />
       </el-dialog>
 
@@ -132,7 +131,12 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
       return;
     }
 
-    ElMessageBox.prompt('输入玩家OpenId:', '新增登录玩家', {confirmButtonText: '登录',})
+    ElMessageBox.prompt('输入玩家OpenId:', '新增登录玩家', {
+      confirmButtonText: '登录',
+      inputPattern: /[0-9]+/,
+      inputPlaceholder: '输入数值类型账号',
+      inputErrorMessage: '请输入数组类型账号!'
+    })
       .then(({ value }) => {
         if (loginData.value.find(pData => pData.openId === value)){
           ElMessage.error(`${value}重复登录`)

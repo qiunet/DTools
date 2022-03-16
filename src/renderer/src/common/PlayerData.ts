@@ -87,8 +87,11 @@ export class PlayerData {
                 break
             case Protocol.LOGIN_RSP:
                 if (obj.needRegister) {
-                    this.client?.sendData(Protocol.REGISTER_REQ, {name: "用户:"+openId, icon: 1})
+                    this.client?.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1});
                 }
+                break
+            case Protocol.RANDOM_NAME_RSP:
+                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name, icon: 1})
                 break
             case Protocol.ERROR_STATUS_TIPS_RSP:
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
@@ -167,22 +170,13 @@ export class PlayerManager {
         if (StringUtil.isEmpty(loginUrl)) {
             throw new Error("LoginUrl must setting!")
         }
-        const data = {openId: openId}
-        const params = {
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-            method: 'POST'
-        };
-        fetch(loginUrl, params)
-        .then(response => response.json())
-        .then(data => {
-           if (data.status.status !== 1) {
-               ElMessage.error("登录错误:"+data.status.desc)
-               return;
-           }
+       const result = window.ipcRenderer.sendSync('login_request', loginUrl, {token: openId});
+       if (result.status.code !== 1) {
+           ElMessage.error("登录错误:"+result.status.desc)
+           return;
+       }
 
-           new PlayerData(openId, data).connect();
-        })
+       new PlayerData(openId, result).connect();
     }
 
     /**
