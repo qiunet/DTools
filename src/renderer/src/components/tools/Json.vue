@@ -60,7 +60,7 @@ import {StringUtil} from "../../common/StringUtil";
 
     showJsonView.value = true;
     try {
-      data.jsonData = JSON.parse(data.jsonString)
+      data.jsonData = JSON.parse(data.jsonString.replaceAll("'", "\""))
       data.dialogVisible = false
     }catch (e) {
       ElMessage.error('Json格式错误:'+ e)

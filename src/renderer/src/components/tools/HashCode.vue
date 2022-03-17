@@ -2,7 +2,7 @@
   <el-divider />
     <el-row :gutter="20">
       <el-col :span="10">
-        <el-input clearable v-model="openId" st placeholder="输入字符串"/>
+        <el-input clearable v-model="openId" st placeholder="输入字符串,得到HashCode!"/>
       </el-col>
       <el-col :span="5">
         <el-popover
@@ -16,7 +16,7 @@
   <el-divider />
   <el-row :gutter="20">
     <el-col :span="10">
-      <el-input type="number" clearable v-model="playerId" placeholder="输入玩家ID" />
+      <el-input type="number" clearable v-model="playerId" placeholder="输入玩家ID,计算服务器组和数据表Index!" />
     </el-col>
     <el-col :span="5">
       <el-popover
