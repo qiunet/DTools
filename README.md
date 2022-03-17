@@ -1,5 +1,34 @@
-# DTools
-> 一个工具集合. 使用vite + ts + vue + electron 搭建
+# [DuoDuo](https://github.com/qiunet/DuoDuo) > DTools
+> 一个服务端工具集合. 使用vite + ts + vue + electron 搭建
+> 主要是搭配DuoDuo实现服务端的一些功能配置.
+
+## Run Setup
+
+  ```bash
+  # clone the project
+  git clone git@github.com:qiunet/DTools.git
+
+  # enter the project directory
+  cd DTools
+
+  # install dependency
+  npm install
+
+  # develop
+  npm run dev
+  
+  # build
+  npm run build
+  ```
+
+### 界面
+![批量登录](img/GameLogin1.png)
+![协议联调](img/GameLogin2.png)
+![GM命令](img/GmCommand.png)
+![行为树编辑](img/BehaviorTree1.png)
+![行为树菜单](img/BehaviorTree2.png)
+![Excel转配置Json](img/ExcelToCfg.png)
+
 
 ### excel格式
 
@@ -21,25 +50,6 @@
 1. sheet 如果为end . 后面的内容就不会读取.
 2. sheet 名包含 `c.` 表示仅客户端需要. `s.` 表示仅服务器需要
 3. sheet 名包含其它比如`lua.` 表示客户端需要按照lua输出. 会去 home目录下的`.dTools/ejs` 找对应的ejs模板
-
-## Run Setup
-
-  ```bash
-  # clone the project
-  git clone git@github.com:qiunet/DTools.git
-
-  # enter the project directory
-  cd DTools
-
-  # install dependency
-  npm install
-
-  # develop
-  npm run dev
-  
-  # build
-  npm run build
-  ```
 
 
 ### [配置输出模板](https://ejs.co/#docs)
