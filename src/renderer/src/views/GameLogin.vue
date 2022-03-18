@@ -135,7 +135,7 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
       confirmButtonText: '登录',
       inputPattern: /[0-9]+/,
       inputPlaceholder: '输入数值类型账号',
-      inputErrorMessage: '请输入数组类型账号!'
+      inputErrorMessage: '请输入数值类型账号!'
     })
       .then(({ value }) => {
         if (loginData.value.find(pData => pData.openId === value)){

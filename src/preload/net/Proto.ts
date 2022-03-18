@@ -112,9 +112,11 @@ export class ProtoManager {
                 continue
             }
             const protocolId = reqEnum.values[reqEnumKey];
-            if (protocolId === 0) {
+            if (protocolId < 1000) {
+                // 系统相关协议
                 continue
             }
+
             let type = this.findReqProto(protocolId);
             this.requestProtoInfos.push(new RequestProtoInfo(protocolId, type.name, type.comment));
         }
