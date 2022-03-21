@@ -5,7 +5,7 @@ import {ToolsConstants} from "../preload/utils/ToolsConstants";
 import * as fs from "fs";
 import { env } from 'process';
 import axios from "axios";
-import {httpListener} from "./HttpListener";
+import * as HttpListener from "./HttpListener";
 
 // https://stackoverflow.com/questions/42524606/how-to-get-windows-version-using-node-js
 const isWin7 = os.release().startsWith('6.1')
@@ -70,7 +70,7 @@ app.on('activate', () => {
   }
 })
 
-httpListener()
+HttpListener.listener()
 
 // @TODO
 // auto update

@@ -1,7 +1,7 @@
 import {ipcMain} from "electron";
 import axios from "axios";
 
-export function httpListener() {
+export function listener() {
     /**
      * args
      * 0 url
