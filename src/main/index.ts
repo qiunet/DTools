@@ -5,6 +5,7 @@ import {ToolsConstants} from "../preload/utils/ToolsConstants";
 import * as fs from "fs";
 import { env } from 'process';
 import axios from "axios";
+import {httpListener} from "./HttpListener";
 
 // https://stackoverflow.com/questions/42524606/how-to-get-windows-version-using-node-js
 const isWin7 = os.release().startsWith('6.1')
@@ -38,7 +39,7 @@ async function createWindow() {
     const pkg = await import('../../package.json')
     const url = `http://${pkg.env.HOST || '127.0.0.1'}:${pkg.env.PORT}`
 
-    win.loadURL(url)
+    win.loadURL(url);
     win.webContents.openDevTools()
   }
 }
@@ -69,28 +70,7 @@ app.on('activate', () => {
   }
 })
 
-ipcMain.on('login_request', (async (event, ...args) => {
-    const response: any = await axios.post(args[0], args[1]).catch((err) => {
-      return err;
-    });
-    if (response instanceof Error) {
-      event.returnValue = {status: {code: 2, desc: '服务器异常['+response.message+']'}}
-    }else {
-      event.returnValue = response.data;
-    }
-}));
-
-
-ipcMain.on('proto_request', ((event, url) => {
-  axios.get(url).then(response => {
-        event.sender.send('proto_response', response.data)
-      })
-}));
-
-ipcMain.on('ai_config_request',  (async (event, url) => {
-  const response = await axios.get(url)
-  event.returnValue = response.data;
-}));
+httpListener()
 
 // @TODO
 // auto update

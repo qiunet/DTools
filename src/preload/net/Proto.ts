@@ -90,10 +90,8 @@ export class ProtoManager {
 
         this.currentPath = SettingManager.setting.protoFilePath.current;
         if (this.currentPath.startsWith("http")) {
-            ipcRenderer.send('proto_request', this.currentPath);
-            ipcRenderer.on('proto_response', (event, data) => {
-                ProtoManager.init0(data)
-            })
+            const data = ipcRenderer.sendSync('get_request', this.currentPath);
+            ProtoManager.init0(data)
         }else {
             fs.readFile(SettingManager.setting.protoFilePath.current, "utf-8", (err, data) => {
                 console.log("File read:", data)

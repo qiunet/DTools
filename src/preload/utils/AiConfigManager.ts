@@ -23,7 +23,7 @@ export class AiConfigManager {
     static reload() {
         if (SettingManager.setting.aiJsonCfgPathSelect.current != '') {
             if (SettingManager.setting.aiJsonCfgPathSelect.current.startsWith("http")) {
-                this._aiConfig = ipcRenderer.sendSync('ai_config_request', SettingManager.setting.aiJsonCfgPathSelect.current);
+                this._aiConfig = ipcRenderer.sendSync('get_request', SettingManager.setting.aiJsonCfgPathSelect.current);
             }else {
                 fs.readFile(SettingManager.setting.aiJsonCfgPathSelect.current, "utf-8", (err, data) => {
                     this._aiConfig = JsonUtil.stringToJson(data);

@@ -170,7 +170,7 @@ export class PlayerManager {
         if (StringUtil.isEmpty(loginUrl)) {
             throw new Error("LoginUrl must setting!")
         }
-       const result = window.ipcRenderer.sendSync('login_request', loginUrl, {token: openId});
+       const result = window.ipcRenderer.sendSync('post_request', loginUrl, {token: openId});
        if (result.status.code !== 1) {
            ElMessage.error("登录错误:"+result.status.desc)
            return;
