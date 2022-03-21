@@ -11,7 +11,7 @@ export class SelectSetting {
     /**
      * 列表数据
      */
-    list: Array<string> = [];
+    list: Set<string> = new Set();
 
     static valueOf(data: any, defaultVal?: string) {
         let setting = new SelectSetting();
@@ -20,7 +20,7 @@ export class SelectSetting {
                 setting.current = data.current;
             }
             if (! CommonUtil.isNullOrUndefined(data.list)) {
-                setting.list = data.list;
+                setting.list = new Set(data.list);
             }
         }
         setting.defaultVal = defaultVal;
@@ -44,16 +44,9 @@ export class SelectSetting {
         if (path.endsWith("/")) {
             path = path.substring(0, path.length - 1);
         }
-        let newPath = false;
-        if (! this.list.find((str, index, objs) => {
-            if (str === path) {
-                return true;
-            }
-        })) {
-            this.list.push(path);
-            newPath = true;
-        }
+        let newPath = this.list.has(path);
         this.current = path;
+        this.list.add(path);
         SettingManager.save();
         return newPath;
     }
@@ -74,24 +67,30 @@ export class SelectSetting {
             // 默认的不能删除
             return this.current;
         }
+        this.list.delete(path);
 
-        this.list.forEach((val, index, arr) => {
-            if (val !== path) {
-                return;
-            }
-            arr.splice(index, 1);
-            if (currPath === path && arr.length >= 1) {
-                this.current = arr[0];
+        if (currPath === path && this.list.size >= 1) {
+            const [first] = this.list;
+            this.current = first;
+        }else {
+            if(this.defaultVal !== undefined) {
+                this.current = this.defaultVal;
             }else {
-                if(this.defaultVal !== undefined) {
-                    this.current = this.defaultVal;
-                }else {
-                    this.current = "";
-                }
+                this.current = "";
             }
-        });
+        }
         SettingManager.save();
         return this.current;
+    }
+
+    /**
+     * 覆盖生成json用的.
+     */
+    toJSON() {
+        return {
+            current: this.current,
+            list: Array.from(this.list)
+        }
     }
 }
 

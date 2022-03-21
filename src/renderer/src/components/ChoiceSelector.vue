@@ -86,11 +86,7 @@ import {SelectSetting} from "../common/DToolsSetting";
   );
   let currentVal = props.select.current;
   function clear() {
-    props.select.list.forEach((val: string, index: number) => {
-      if (val === currentVal) {
-        props.select.list.splice(index, 1);
-      }
-    });
+    props.select.list.delete(currentVal)
     props.select.current = props.select.removeCurrentPath();
     ElMessage.warning("删除成功!");
     currentVal = props.select.current;
@@ -112,7 +108,7 @@ import {SelectSetting} from "../common/DToolsSetting";
     currentVal = val;
     props.select.current = val;
     if (props.select.usePath(val)) {
-      props.select.list.push(val);
+      props.select.list.add(val);
       ElMessage.success("保存成功!");
     }else {
       ElMessage.success("切换成功!");
