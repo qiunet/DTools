@@ -44,11 +44,10 @@ export class SelectSetting {
         if (path.endsWith("/")) {
             path = path.substring(0, path.length - 1);
         }
-        let newPath = this.list.has(path);
         this.current = path;
         this.list.add(path);
         SettingManager.save();
-        return newPath;
+        return this.list.has(path);
     }
     /**
      * 删除current path
@@ -62,21 +61,18 @@ export class SelectSetting {
      * @param path
      */
     removePath = (path: string): string => {
-        const currPath: string = this.current;
         if (this.current === this.defaultVal) {
             // 默认的不能删除
             return this.current;
         }
         this.list.delete(path);
 
-        if (currPath === path && this.list.size >= 1) {
-            const [first] = this.list;
-            this.current = first;
-        }else {
-            if(this.defaultVal !== undefined) {
-                this.current = this.defaultVal;
+        if (this.current === path) {
+            if (this.list.size == 0) {
+                this.current = this.defaultVal !== undefined ? this.defaultVal: '';
             }else {
-                this.current = "";
+                const [first] = this.list;
+                this.current = first;
             }
         }
         SettingManager.save();
