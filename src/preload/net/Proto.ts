@@ -94,7 +94,6 @@ export class ProtoManager {
             ProtoManager.init0(data)
         }else {
             fs.readFile(SettingManager.setting.protoFilePath.current, "utf-8", (err, data) => {
-                console.log("File read:", data)
                 ProtoManager.init0(data)
             });
         }

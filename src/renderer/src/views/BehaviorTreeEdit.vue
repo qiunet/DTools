@@ -87,7 +87,7 @@ import {TreeNode} from "element-plus/es/components/tree-v2/src/types";
 import {
   BehaviorAction,
   BHTNode, InvertNode, ParallelExecutor,
-  RandomExecutor, RepeatNode,
+  RandomExecutor, RepeatNode, CounterNode,
   RootExecutor,
   SelectorExecutor,
   SequenceExecutor
@@ -198,6 +198,24 @@ const menus = ref([
           if (typeof err !== 'string')console.error(err);
         })
       }, RootExecutor.REPEAT_ICON,
+      (): boolean => {
+        return ! currNode.data.canAddChild
+      },
+  ),
+  new RClickMenu("新建计数装饰节点", "计数装饰节点",
+      () => {
+        ElMessageBox.prompt('请输入计数次数!', `新建计数装饰节点`,
+            {confirmButtonText: '创建', cancelButtonText: '取消', inputPattern: /[0-9]+/, inputErrorMessage: '请输入数字类型'}
+        ).then(({ value }) => {
+          if ( parseInt(value) < 1) {
+            return ElMessage.error("请输入大于0的数值");
+          }
+          currNode.data.children.push(new CounterNode({count: value}));
+          ElMessage({type: 'success', message: `创建成功`,})
+        }).catch((err) => {
+          if (typeof err !== 'string')console.error(err);
+        })
+      }, RootExecutor.COUNTER_ICON,
       (): boolean => {
         return ! currNode.data.canAddChild
       },

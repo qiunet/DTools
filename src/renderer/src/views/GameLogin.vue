@@ -161,9 +161,7 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
    * http url 重新改变
    */
   function reloadServer() {
-    ElMessageBox.confirm('Http url 变动将会踢出现有账号, 是否确认?', 'Warning',).then(() => {
-        PlayerManager.destroy()
-      }).catch(() => {})
+      PlayerManager.destroy()
   }
 </script>
 

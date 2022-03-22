@@ -26,6 +26,7 @@ export class SelectSetting {
         setting.defaultVal = defaultVal;
         if (setting.current === '' && setting.defaultVal !== undefined) {
             setting.current = setting.defaultVal;
+            setting.list.add(setting.defaultVal);
         }
         return setting;
     }
@@ -36,11 +37,6 @@ export class SelectSetting {
      * @return 是否是新增
      */
     usePath = (path: string): boolean => {
-        if (path === this.defaultVal) {
-            this.current = path;
-            return false;
-        }
-
         if (path.endsWith("/")) {
             path = path.substring(0, path.length - 1);
         }
@@ -61,10 +57,6 @@ export class SelectSetting {
      * @param path
      */
     removePath = (path: string): string => {
-        if (this.current === this.defaultVal) {
-            // 默认的不能删除
-            return this.current;
-        }
         this.list.delete(path);
 
         if (this.current === path) {
