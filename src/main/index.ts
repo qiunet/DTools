@@ -1,11 +1,13 @@
 import os from 'os'
 import path from 'path'
-import { app, BrowserWindow, ipcMain} from 'electron'
+import { app, BrowserWindow, dialog} from 'electron'
+import {autoUpdater} from 'electron-updater'
 import {ToolsConstants} from "../preload/utils/ToolsConstants";
 import * as fs from "fs";
 import { env } from 'process';
 import axios from "axios";
 import * as HttpListener from "./HttpListener";
+import {MessageUtil} from "./MessageUtil";
 
 // https://stackoverflow.com/questions/42524606/how-to-get-windows-version-using-node-js
 const isWin7 = os.release().startsWith('6.1')
@@ -72,14 +74,41 @@ app.on('activate', () => {
 
 HttpListener.listener()
 
-// @TODO
+function checkForUpdates() {
+  MessageUtil.consoleMsg("#######checkForUpdates#######")
 // auto update
-/* if (app.isPackaged) {
-  app.whenReady()
-    .then(() => import('electron-updater'))
-    .then(({ autoUpdater }) => autoUpdater.checkForUpdatesAndNotify())
-    .catch((e) =>
-      // maybe you need to record some log files.
-      console.error('Failed check update:', e)
-    )
-} */
+  autoUpdater.checkForUpdates()
+
+  autoUpdater.on('error', (err) => {
+    MessageUtil.consoleMsg(err)
+  })
+
+  autoUpdater.on('update-available', () => {
+    MessageUtil.consoleMsg('found new version')
+  })
+
+  autoUpdater.on('update-not-available', (name: string) => {
+    MessageUtil.consoleMsg('update-not-available: '+name)
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    MessageUtil.consoleMsg("update-downloaded")
+    dialog.showMessageBox({
+      type: 'info',
+      title: '应用更新',
+      message: '发现新版本，是否更新？',
+      buttons: ['是', '否']
+    }).then((buttonIndex) => {
+      if(buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
+        autoUpdater.quitAndInstall()
+        app.quit()
+      }
+    })
+  })
+}
+
+// if (app.isPackaged) {
+//   app.whenReady().then(() => {
+//     setTimeout(checkForUpdates, 4000)
+//   })
+// }

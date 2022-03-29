@@ -12,7 +12,9 @@ contextBridge.exposeInMainWorld("client_api", ClientApi);
 contextBridge.exposeInMainWorld("redis_api", RedisApi);
 contextBridge.exposeInMainWorld("tool_api", ToolApi);
 contextBridge.exposeInMainWorld('path', Path)
-
+ipcRenderer.on('consoleMsg', (e, args) => {
+  console.log("## main channel message:", args)
+});
 // `exposeInMainWorld` can not detect `prototype` attribute and methods, manually patch it.
 function withPrototype(obj: Record<string, any>) {
   const protos = Object.getPrototypeOf(obj)

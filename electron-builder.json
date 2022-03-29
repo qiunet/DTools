@@ -1,5 +1,11 @@
 {
   "appId": "qiunet@163.com",
+  "publish": {
+    "releaseType": "release",
+    "provider": "github",
+    "owner": "qiunet",
+    "repo": "DTools"
+  },
   "asar": true,
   "productName": "DTools",
   "artifactName": "DTools",

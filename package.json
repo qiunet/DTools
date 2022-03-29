@@ -4,11 +4,16 @@
   "main": "dist/main/index.cjs",
   "description": "DuoDuo的工具",
   "author": "qiunet",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/qiunet/DTools"
+  },
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/watch.mjs",
     "build": "rm -rf ./release && node scripts/build.mjs && electron-builder",
-    "buildWM": "rm -rf ./release && node scripts/build.mjs && electron-builder -wm"
+    "buildWM": "rm -rf ./release && node scripts/build.mjs && electron-builder -wm",
+    "release": "rm -rf ./release && cross-env GH_TOKEN= electron-builder -wm"
   },
   "engines": {
     "node": ">=14.17.0"
@@ -17,6 +22,7 @@
     "@element-plus/icons-vue": "^0.2.4",
     "axios": "^0.26.1",
     "crc-32": "^1.2.1",
+    "electron-updater": "^4.6.5",
     "element-plus": "^1.3.0-beta.5",
     "excel_to_cfg": "^1.0.51",
     "fast-xml-parser": "^4.0.2",
@@ -35,6 +41,7 @@
     "@types/node": "^17.0.8",
     "@vitejs/plugin-vue": "^2.0.1",
     "chalk": "^5.0.0",
+    "cross-env": "^7.0.3",
     "electron": "16.0.6",
     "electron-builder": "^22.14.5",
     "ts-node": "^10.4.0",
