@@ -29,6 +29,10 @@ export class ProtoTypeInfo {
             case 'int64':
             case 'uint32':
             case 'uint64':
+            case 'sfixed64':
+            case 'sfixed32':
+            case 'fixed64':
+            case 'fixed32':
             case 'float':
             case 'double':
                 return 0;

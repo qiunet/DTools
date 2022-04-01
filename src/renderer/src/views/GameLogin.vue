@@ -14,11 +14,11 @@
           empty-text	="当前还没有登录玩家账号"
        >
         <el-table-column label="ID" width="100"  prop="playerId"/>
-        <el-table-column label="服务器" width="150"  prop="hostInfo"/>
+        <el-table-column label="服务器" width="200"  prop="hostInfo"/>
         <el-table-column label="名称" width="120"  prop="name"/>
         <el-table-column label="M1" width="70"  prop="m1"/>
         <el-table-column label="M2" width="70"  prop="m2"/>
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button type="text" size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
             <el-button type="text" size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
@@ -168,6 +168,6 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
 <style scoped>
   .player-table-view {
     width: 90%;
-    max-width:800px;
+    max-width:1000px;
   }
 </style>
