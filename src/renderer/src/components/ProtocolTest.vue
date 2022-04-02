@@ -25,7 +25,7 @@
       </el-select>
     </el-form-item>
     <el-form-item label="协议内容">
-      <el-input :autosize="{ minRows: 3, maxRows:12}" type="textarea" v-model="formData.protocolData" placeholder="填写请求数据"/>
+      <el-input :autosize="{ minRows: 3, maxRows:8 }" type="textarea" v-model="formData.protocolData" placeholder="填写请求数据"/>
     </el-form-item>
     <el-form-item>
       <el-button style="width: 100%" type="success" @click="formData.submitForm">请求协议</el-button>

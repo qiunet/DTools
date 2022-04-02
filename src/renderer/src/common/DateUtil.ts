@@ -28,6 +28,14 @@ export class DateUtil {
     }
 
     /**
+     * 格式化日期为 HH:mm:ss
+     * @param date
+     */
+    public static timeFormat(date: Date): string {
+        return +StringUtil.fixedNumber(date.getHours(), 2)+":"+StringUtil.fixedNumber(date.getMinutes(), 2)+":"+StringUtil.fixedNumber(date.getSeconds(), 2);
+    }
+
+    /**
      * string to Date
      * @param dateString
      * @param format

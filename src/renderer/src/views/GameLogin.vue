@@ -35,8 +35,12 @@
       <el-dialog v-model="gmCommandData.showDialog" :title="`玩家[${gmCommandData.currPlayer?.openId}]GM命令`" width="70%">
         <d-tool-command :command-list="gmCommandData.commandList" :send-message="gmCommandData.sendGmCommand"/>
       </el-dialog>
-      <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="70%">
+      <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="70%" @close="protoTestData.close">
         <v-protocol-test :submit="protoTestData.submit" />
+        <fieldset style="margin: 0; padding: 0 8px 0 2px">
+          <legend><b>响应控制台</b></legend>
+          <textarea disabled rows="10" id="proto_response_output" v-html="protoTestData.protoResponseOutput"/>
+        </fieldset>
       </el-dialog>
 
     </el-main>
@@ -57,6 +61,7 @@ import {PlayerData, PlayerManager} from "../common/PlayerData";
 import {Protocol} from "../common/Protocol";
 import DToolCommand from "../components/DToolCommand.vue";
 import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
+import {DateUtil} from "../common/DateUtil";
   interface IGmCommandData {
     showDialog: boolean;
     commandList:Array<GmCommandInfo>;
@@ -64,9 +69,11 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
     sendGmCommand: (command: number, params: Array<string>) => void;
   }
   interface IProtoTestData {
-    showDialog: boolean;
-    currPlayer: PlayerData|undefined;
     submit: (protocolID: number, jsonString: string) => void;
+    currPlayer: PlayerData|undefined;
+    protoResponseOutput: string;
+    showDialog: boolean;
+    close: () => void;
   }
 
   const setting = ref(window.tool_api.setting());
@@ -101,20 +108,46 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
     },
   });
 
+
   function showProtoTest(data: PlayerData) {
     protoTestData.showDialog = true;
     protoTestData.currPlayer = data;
+    protoTestData.protoResponseOutput = '';
+    data.on('server-response', (protocolID:number, obj: any) => {
+      const info = window.client_api.rspProtoInfo(protocolID)
+      let str = "["+(DateUtil.timeFormat(new Date()) +  "] (" + info?.className +":"+protocolID+") <<< " + JSON.stringify(obj) + "\n");
+      protoTestData.protoResponseOutput += str;
+      scrollToBottom()
+    });
+  }
+
+/**
+ * 滚到最下面
+ */
+ function scrollToBottom() {
+    setTimeout(() => {
+      let obj: any = document.getElementById('proto_response_output')
+      if (obj === null) {
+        return
+      }
+      obj.scrollTop = obj.scrollHeight
+    }, 10);
+
   }
 
   const protoTestData = reactive<IProtoTestData>({
     showDialog: false,
     currPlayer: undefined,
+    protoResponseOutput: '',
     submit: (protocolId: number, jsonString: string) => {
       protoTestData.currPlayer?.once('proto-debug-response', () => {
         ElMessage.success("发送成功")
       });
       protoTestData.currPlayer?.sendData(Protocol.GM_DEBUG_PROTOCOL_REQ, {protocolId: protocolId, data: jsonString})
     },
+    close: () => {
+      protoTestData.currPlayer?.off('server-response')
+    }
   })
 
   /**
@@ -169,5 +202,16 @@ import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
   .player-table-view {
     width: 90%;
     max-width:1000px;
+  }
+
+  #proto_response_output {
+    background-color: #313131;
+    color: #94a6a6;
+    border-radius: 5px;
+    alignment: center;
+    font-size: 16px;
+    width: 100%;
+    resize: none;
+    height: 100%;
   }
 </style>

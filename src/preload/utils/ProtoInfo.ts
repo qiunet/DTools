@@ -1,7 +1,7 @@
 /**
  * 请求协议信息
  */
-export class RequestProtoInfo {
+export class ProtoInfo {
 
     protocolID: number;
 

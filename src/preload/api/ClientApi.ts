@@ -1,5 +1,5 @@
 import {Client} from "../net/Client";
-import {RequestProtoInfo} from "../utils/RequestProtoInfo";
+import {ProtoInfo} from "../utils/ProtoInfo";
 import {ProtoManager} from "../net/Proto";
 import {ProtoTypeInfo} from "../../renderer/src/common/ProtoTypeInfo";
 
@@ -11,8 +11,15 @@ export class ClientAPI {
     /**
      * 请求协议信息
      */
-    requestEnum = ():Array<RequestProtoInfo> => {
-        return ProtoManager.getRequestProtoInfo();
+    requestEnum = ():Array<ProtoInfo> => {
+        return ProtoManager.getRequestProtoInfos();
+    }
+    /**
+     * 获得rsp的proto 信息
+     * @param protocolId
+     */
+    rspProtoInfo = (protocolId: number) => {
+        return ProtoManager.getResponseProtoInfo(protocolId)
     }
 
     buildProtoTypeInfo = (protocolId: number): object => {

@@ -26,28 +26,25 @@
       </el-dialog>
     </div>
     <el-divider></el-divider>
-    <json-viewer
+    <JsonTreeView
         id="json-view-output-area"
-        :value="data.jsonData"
+        :data="data.jsonData"
         v-show="showJsonView"
-        :expand-depth=5
-        style="height: 400px; overflow:auto"
-        copyable
-        boxed
-        sort
+        root-key="Root"
+        :max-depth=3
     />
   </div>
 </template>
 
 <script lang="ts" setup>
 import {reactive, ref} from 'vue'
-import JsonViewer from 'vue-json-viewer';
+import { JsonTreeView } from "json-tree-view-vue3";
 import {Upload} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 import {StringUtil} from "../../common/StringUtil";
   const showJsonView = ref(false);
   let data = reactive({
-    jsonData : '',
+    jsonData : '{}',
     jsonString: '',
     dialogVisible: false,
   });
@@ -58,13 +55,9 @@ import {StringUtil} from "../../common/StringUtil";
       return;
     }
 
+    data.jsonData = data.jsonString
+    data.dialogVisible = false
     showJsonView.value = true;
-    try {
-      data.jsonData = JSON.parse(data.jsonString.replaceAll("'", "\""))
-      data.dialogVisible = false
-    }catch (e) {
-      ElMessage.error('Json格式错误:'+ e)
-    }
   }
 </script>
 

@@ -1,5 +1,5 @@
 import pb, {Root, Type} from 'protobufjs';
-import {RequestProtoInfo} from "../utils/RequestProtoInfo";
+import {ProtoInfo} from "../utils/ProtoInfo";
 import {SettingManager} from "../utils/SettingManager";
 import {ipcRenderer} from 'electron'
 import fs from "fs";
@@ -24,6 +24,10 @@ class Proto {
 
     public findReqEnum():pb.Enum {
         return this.root.lookupEnum(Proto.REQUEST_ENUM_NAME)
+    }
+
+    public findRspEnum(): pb.Enum {
+        return this.root.lookupEnum(Proto.RESPONSE_ENUM_NAME)
     }
 
     public findReqProto(protocolId: number):Type {
@@ -64,7 +68,8 @@ class Proto {
 export class ProtoManager {
     private static _proto: Proto;
     private static currentPath: string;
-    private static requestProtoInfos: Array<RequestProtoInfo> = [];
+    private static requestProtoInfos: Array<ProtoInfo> = [];
+    private static responseProtoInfoMap: Record<number, ProtoInfo> = {};
 
     public static findReqProto(protocolId: number):Type {
         return ProtoManager._proto.findReqProto(protocolId);
@@ -74,9 +79,14 @@ export class ProtoManager {
         return this._proto.findType(name);
     }
 
-    public static getRequestProtoInfo(): Array<RequestProtoInfo> {
+    public static getRequestProtoInfos(): Array<ProtoInfo> {
         return this.requestProtoInfos;
     }
+
+    public static getResponseProtoInfo(protocolId: number): ProtoInfo {
+        return this.responseProtoInfoMap[protocolId];
+    }
+
 
     public static findRspProto(protocolId: number):Type {
         return ProtoManager._proto.findRspProto(protocolId);
@@ -102,7 +112,14 @@ export class ProtoManager {
 
     private static init0(data: string) {
         this.requestProtoInfos = [];
+        this.responseProtoInfoMap = {}
         this._proto = new Proto(data);
+        this.initProtoInfo().then(() => {
+            console.log("解析Request和Response完成!")
+        });
+    }
+
+    private static async initProtoInfo() {
         let reqEnum = this._proto.findReqEnum();
         for (let reqEnumKey in reqEnum.values) {
             if (reqEnumKey === 'ProtoReqId_NONE' || !reqEnumKey.startsWith(Proto.REQUEST_ENUM_NAME)) {
@@ -115,7 +132,17 @@ export class ProtoManager {
             }
 
             let type = this.findReqProto(protocolId);
-            this.requestProtoInfos.push(new RequestProtoInfo(protocolId, type.name, type.comment));
+            this.requestProtoInfos.push(new ProtoInfo(protocolId, type.name, type.comment));
+        }
+
+        let rspEnum = this._proto.findRspEnum()
+        for (let rspEnumKey in rspEnum.values) {
+            if (rspEnumKey === 'ProtoRspId_NONE' || !rspEnumKey.startsWith(Proto.RESPONSE_ENUM_NAME)) {
+                continue
+            }
+            const protocolId = rspEnum.values[rspEnumKey];
+            let type = this.findRspProto(protocolId);
+            this.responseProtoInfoMap[protocolId] = new ProtoInfo(protocolId, type.name, type.comment);
         }
     }
 }

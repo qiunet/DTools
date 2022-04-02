@@ -8,7 +8,7 @@ import Events from 'onfire.js';
 /**
  * 事件类型
  */
-export type EventName = 'gm-command-list' | 'gm-command-success' | 'proto-debug-response'
+export type EventName = 'gm-command-list' | 'gm-command-success' | 'proto-debug-response' | 'server-response'
 
 export class PlayerData {
     private readonly events: Events = new Events();
@@ -38,10 +38,6 @@ export class PlayerData {
      * 昵称
      */
     name: string = '';
-    /**
-     * 所有响应
-     */
-    responses: Array<any> = [];
 
     constructor(openId: string, loginData: any) {
         this.loginData = loginData;
@@ -51,6 +47,11 @@ export class PlayerData {
 
     on(eventName: EventName, cb: Function, once?: boolean): void {
       this.events.on(eventName, cb, once);
+    }
+
+    off(eventName: EventName) {
+        console.log("# openId:", this.openId, "eventName:", eventName, "closed!");
+        this.events.off(eventName);
     }
 
     once(eventName: EventName, cb: Function): void {
@@ -79,9 +80,11 @@ export class PlayerData {
 
     onData = (openId: string, protocolId: number, obj: any) => {
         // 移动的协议. 不记录. 不打印.
-        if (protocolId === 3000000 || protocolId === 3000002 || protocolId === 3000003) return;
+        const ignoreProtocolId = [3000000, 3000001, 3000002, 3000003]
+        if (ignoreProtocolId.find(id => id === protocolId)) return;
 
         console.log("==response== openId: " + openId + " protocolId: " + protocolId + " Message: " , obj);
+
         switch (protocolId) {
             case Protocol.CLIENT_PONG:
                 break
@@ -126,8 +129,7 @@ export class PlayerData {
                 }
                 break
             default:
-                // 暂时客户端没有需要显示. 以后有需要显示. 就从这里取.
-                // this.responses.push(obj)
+                this.events.fire('server-response', protocolId, obj)
         }
     }
     connect() {
