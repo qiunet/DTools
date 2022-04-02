@@ -12,7 +12,7 @@ html, body, #app, .content_area {
     left: 0;
     display: flex;
     position: fixed;
-    background-color: #eceef3;
+    background: linear-gradient(280deg, transparent, #eceef3, #dff2db);
 }
 
 #toolBox {

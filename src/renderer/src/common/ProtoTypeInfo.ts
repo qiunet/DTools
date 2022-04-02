@@ -41,7 +41,7 @@ export class ProtoTypeInfo {
             default:
                 let protoType = ProtoManager.findType(field.type);
                 if (protoType instanceof Enum) {
-                    return (<Enum>protoType).valuesById[0];
+                    return 0;
                 }
                 return this.buildType(protoType);
         }

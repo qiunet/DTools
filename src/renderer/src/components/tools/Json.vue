@@ -26,13 +26,13 @@
       </el-dialog>
     </div>
     <el-divider></el-divider>
-    <JsonTreeView
-        id="json-view-output-area"
-        :data="data.jsonData"
-        v-show="showJsonView"
-        root-key="Root"
-        :max-depth=3
-    />
+    <el-scrollbar height="500px" id="json-view-output-area" v-show="showJsonView">
+      <JsonTreeView
+          :data="data.jsonData"
+          root-key="Root"
+          :max-depth=3
+      />
+    </el-scrollbar>
   </div>
 </template>
 

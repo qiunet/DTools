@@ -35,18 +35,20 @@
       <el-dialog v-model="gmCommandData.showDialog" :title="`玩家[${gmCommandData.currPlayer?.openId}]GM命令`" width="70%">
         <d-tool-command :command-list="gmCommandData.commandList" :send-message="gmCommandData.sendGmCommand"/>
       </el-dialog>
-      <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="70%" @close="protoTestData.close">
+      <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="75%" @close="protoTestData.close">
         <v-protocol-test :submit="protoTestData.submit" />
-        <fieldset style="margin: 0; padding: 0 8px 0 2px">
-          <legend><b>响应控制台</b></legend>
-          <textarea disabled rows="10" id="proto_response_output" v-html="protoTestData.protoResponseOutput"/>
-        </fieldset>
+        <el-divider content-position="left">响应控制台</el-divider>
+        <el-scrollbar
+              id="proto_response_output"
+              ref="scrollbarRef"
+              height="240px"
+          >
+            <div ref="innerRef">
+              <rsp-message v-for="item in protoTestData.protoResponseOutput" :message="item" />
+            </div>
+          </el-scrollbar>
       </el-dialog>
-
     </el-main>
-    <el-footer height="150px">
-      <el-divider />
-    </el-footer>
   </el-container>
 </template>
 
@@ -54,14 +56,16 @@
 import vChoiceSelect from "../components/ChoiceSelector.vue";
 import dToolCommand from "../components/DToolCommand.vue";
 import vProtocolTest from "../components/ProtocolTest.vue";
+import rspMessage from "../components/RspMessage.vue";
 
-import {onUnmounted, reactive, ref} from "vue";
-import {ElMessage, ElMessageBox} from "element-plus";
+import { reactive, ref} from "vue";
+import {ElMessage, ElMessageBox, ElScrollbar} from "element-plus";
 import {PlayerData, PlayerManager} from "../common/PlayerData";
 import {Protocol} from "../common/Protocol";
 import DToolCommand from "../components/DToolCommand.vue";
 import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
-import {DateUtil} from "../common/DateUtil";
+import {ResponseInfo} from "../common/ResponseInfo";
+
   interface IGmCommandData {
     showDialog: boolean;
     commandList:Array<GmCommandInfo>;
@@ -71,7 +75,7 @@ import {DateUtil} from "../common/DateUtil";
   interface IProtoTestData {
     submit: (protocolID: number, jsonString: string) => void;
     currPlayer: PlayerData|undefined;
-    protoResponseOutput: string;
+    protoResponseOutput: Array<ResponseInfo>;
     showDialog: boolean;
     close: () => void;
   }
@@ -100,23 +104,21 @@ import {DateUtil} from "../common/DateUtil";
 
       gmCommandData.currPlayer.once('gm-command-success', () => {
         ElMessage.success("发送命令成功!")
-        // gmCommandData.currPlayer = undefined;
-        // gmCommandData.showDialog = false;
       });
 
       gmCommandData.currPlayer.sendData(Protocol.GM_COMMAND_REQ, {type: command, params: params});
     },
   });
-
-
-  function showProtoTest(data: PlayerData) {
-    protoTestData.showDialog = true;
-    protoTestData.currPlayer = data;
-    protoTestData.protoResponseOutput = '';
+ const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
+ const innerRef = ref<HTMLDivElement>()
+ function showProtoTest(data: PlayerData) {
+  protoTestData.showDialog = true;
+    if (data.openId !== protoTestData.currPlayer?.openId) {
+     protoTestData.currPlayer = data;
+     protoTestData.protoResponseOutput = [];
+   }
     data.on('server-response', (protocolID:number, obj: any) => {
-      const info = window.client_api.rspProtoInfo(protocolID)
-      let str = "["+(DateUtil.timeFormat(new Date()) +  "] (" + info?.className +":"+protocolID+") <<< " + JSON.stringify(obj) + "\n");
-      protoTestData.protoResponseOutput += str;
+      protoTestData.protoResponseOutput.push(new ResponseInfo(protocolID, obj));
       scrollToBottom()
     });
   }
@@ -126,11 +128,8 @@ import {DateUtil} from "../common/DateUtil";
  */
  function scrollToBottom() {
     setTimeout(() => {
-      let obj: any = document.getElementById('proto_response_output')
-      if (obj === null) {
-        return
-      }
-      obj.scrollTop = obj.scrollHeight
+      const height = innerRef.value?.clientHeight;
+      scrollbarRef.value?.setScrollTop( (height?height:0) + 10);
     }, 10);
 
   }
@@ -138,7 +137,7 @@ import {DateUtil} from "../common/DateUtil";
   const protoTestData = reactive<IProtoTestData>({
     showDialog: false,
     currPlayer: undefined,
-    protoResponseOutput: '',
+    protoResponseOutput: [],
     submit: (protocolId: number, jsonString: string) => {
       protoTestData.currPlayer?.once('proto-debug-response', () => {
         ElMessage.success("发送成功")
@@ -202,6 +201,11 @@ import {DateUtil} from "../common/DateUtil";
   .player-table-view {
     width: 90%;
     max-width:1000px;
+  }
+
+  fieldset {
+    height: 180px;
+    padding: 0 2px 2px 2px;
   }
 
   #proto_response_output {
