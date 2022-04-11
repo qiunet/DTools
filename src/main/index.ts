@@ -1,6 +1,6 @@
 import os from 'os'
 import path from 'path'
-import { app, BrowserWindow, dialog} from 'electron'
+import { app, BrowserWindow, dialog, Menu, Tray } from 'electron'
 import {autoUpdater} from 'electron-updater'
 import {ToolsConstants} from "../preload/utils/ToolsConstants";
 import * as fs from "fs";
@@ -24,6 +24,8 @@ if (app.isPackaged && (os.platform() === 'darwin' || os.platform() === 'linux'))
 }
 
 let win: BrowserWindow | null = null
+let tray: Tray | null = null
+let contextMenu: Electron.Menu | undefined = undefined
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -44,15 +46,66 @@ async function createWindow() {
     win.loadURL(url);
     win.webContents.openDevTools()
   }
+  
+  win.on('close', (e) => {
+    e.preventDefault()
+    hideWindow();
+  })
+
+  tray = new Tray('icon/icon_512x512.png')
+  contextMenu = createContextMenu();
+
+  tray.setToolTip('DTools')
+  tray.setContextMenu(contextMenu)
+  
+  //open tray menu
+  tray.on('click', (e, bounds) => {
+    showWindow();
+  });
+
+  tray.on('right-click', (e, bounds) => {
+    tray?.popUpContextMenu(contextMenu);
+  });
+}
+
+function createContextMenu(){
+  return Menu.buildFromTemplate(buildOptions())
+}
+
+function buildOptions():Electron.MenuItemConstructorOptions[]{
+  return [
+    {
+      label: "打开",
+      click(mi, bw, event) { showWindow(); },
+    },
+    { type: 'separator' },
+    {
+      label: '退出',
+      click() { quitApp(); }
+    }
+  ];
+}
+
+function showWindow(){
+  win?.show();
+}
+
+function hideWindow(){
+  win?.hide();
+}
+
+function quitApp(){
+  win?.destroy()
+  win = null
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 }
 
 app.whenReady().then(() => ToolsConstants.initTools()).then(createWindow);
 
 app.on('window-all-closed', () => {
-  win = null
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  quitApp();
 })
 
 app.on('second-instance', () => {
