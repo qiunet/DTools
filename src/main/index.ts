@@ -23,9 +23,8 @@ if (app.isPackaged && (os.platform() === 'darwin' || os.platform() === 'linux'))
   env.PATH = "/usr/local/bin:" + env.PATH;
 }
 
+let isWin = os.platform() === "win32"
 let win: BrowserWindow | null = null
-let tray: Tray | null = null
-let contextMenu: Electron.Menu | undefined = undefined
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -47,25 +46,27 @@ async function createWindow() {
     win.webContents.openDevTools()
   }
   
-  win.on('close', (e) => {
-    e.preventDefault()
-    hideWindow();
-  })
-
-  tray = new Tray('icon/icon_512x512.png')
-  contextMenu = createContextMenu();
-
-  tray.setToolTip('DTools')
-  tray.setContextMenu(contextMenu)
+  if(isWin){
+    win.on('close', (e) => {
+      e.preventDefault()
+      hideWindow();
+    })
+    
+    let tray = new Tray('icon/icon_512x512.png')
+    let contextMenu = createContextMenu();
   
-  //open tray menu
-  tray.on('click', (e, bounds) => {
-    showWindow();
-  });
-
-  tray.on('right-click', (e, bounds) => {
-    tray?.popUpContextMenu(contextMenu);
-  });
+    tray.setToolTip('DTools')
+    tray.setContextMenu(contextMenu)
+    
+    //open tray menu
+    tray.on('click', (e, bounds) => {
+      showWindow();
+    });
+  
+    tray.on('right-click', (e, bounds) => {
+      tray?.popUpContextMenu(contextMenu);
+    });
+  }
 }
 
 function createContextMenu(){
@@ -81,7 +82,10 @@ function buildOptions():Electron.MenuItemConstructorOptions[]{
     { type: 'separator' },
     {
       label: '退出',
-      click() { quitApp(); }
+      click() { 
+        win?.destroy()
+        quitApp(); 
+      }
     }
   ];
 }
@@ -95,7 +99,6 @@ function hideWindow(){
 }
 
 function quitApp(){
-  win?.destroy()
   win = null
   if (process.platform !== 'darwin') {
     app.quit()
