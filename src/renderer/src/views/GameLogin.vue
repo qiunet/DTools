@@ -37,7 +37,12 @@
       </el-dialog>
       <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="75%" @close="protoTestData.close">
         <v-protocol-test :submit="protoTestData.submit" />
-        <el-divider content-position="left">响应控制台</el-divider>
+        <el-divider content-position="left">
+          <el-space :spacer="spacer">
+            <div>响应控制台</div>
+            <div><el-button type="text" @click="protoTestData.protoResponseOutput.splice(0)">清空</el-button></div>
+          </el-space>
+        </el-divider>
         <el-scrollbar
               id="proto_response_output"
               ref="scrollbarRef"
@@ -58,13 +63,14 @@ import dToolCommand from "../components/DToolCommand.vue";
 import vProtocolTest from "../components/ProtocolTest.vue";
 import rspMessage from "../components/RspMessage.vue";
 
-import { reactive, ref} from "vue";
-import {ElMessage, ElMessageBox, ElScrollbar} from "element-plus";
+import {h, reactive, ref} from "vue";
+import {ElDivider, ElMessage, ElMessageBox, ElScrollbar} from "element-plus";
 import {PlayerData, PlayerManager} from "../common/PlayerData";
 import {Protocol} from "../common/Protocol";
 import DToolCommand from "../components/DToolCommand.vue";
 import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
 import {ResponseInfo} from "../common/ResponseInfo";
+  const spacer = h(ElDivider, { direction: 'vertical' })
 
   interface IGmCommandData {
     showDialog: boolean;
@@ -112,11 +118,11 @@ import {ResponseInfo} from "../common/ResponseInfo";
  const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
  const innerRef = ref<HTMLDivElement>()
  function showProtoTest(data: PlayerData) {
-  protoTestData.showDialog = true;
-    if (data.openId !== protoTestData.currPlayer?.openId) {
-     protoTestData.currPlayer = data;
+    protoTestData.showDialog = true;
+    if (protoTestData.currPlayer !== data) {
      protoTestData.protoResponseOutput = [];
-   }
+    }
+    protoTestData.currPlayer = data;
     data.on('server-response', (protocolID:number, obj: any) => {
       protoTestData.protoResponseOutput.push(new ResponseInfo(protocolID, obj));
       scrollToBottom()

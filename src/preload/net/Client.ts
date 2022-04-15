@@ -125,13 +125,17 @@ export class Client {
                     return;
                 }
                 const uint8Array = dis.readBytes(header.length);
-                const type = this.findRspType(header.protocolId)
-                const message = type.decode(uint8Array);
                 if (header.protocolId === Protocol.CLIENT_PONG) {
                     continue
                 }
 
-                this.onData(this.openId, header.protocolId, message.toJSON())
+                const type = this.findRspType(header.protocolId)
+                try {
+                    const message = type.decode(uint8Array);
+                    this.onData(this.openId, header.protocolId, message.toJSON())
+                }catch(e) {
+                    this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
+                }
             }
         }).on('error', err => {
             console.error("Connect Errors", err)
@@ -172,6 +176,9 @@ export class Client {
         }
 
         const header = ProtocolHeader.create(protocolId, crc.buf(messageData));
+        if(! this.client.writable) {
+            return "Client已经失效";
+        }
         let write = this.client.write(header.toByteArray(messageData));
         if (! write) {
             return "请求失败";
@@ -184,10 +191,21 @@ export class Client {
      * @param data
      */
     sendData = (protocolId: number, data: any) => {
+        console.log("===Request protocol[" + protocolId + "], data:", data)
         const type = ProtoManager.findReqProto(protocolId)
         const message = type.create(data)
-        const uint8Array = type.encode(message).finish();
-        this.sendMessage(protocolId, uint8Array);
+        let uint8Array: Uint8Array;
+        try {
+            uint8Array = type.encode(message).finish();
+            const sendMessage = this.sendMessage(protocolId, uint8Array);
+            if (sendMessage !== "") {
+                this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]发送失败, "+sendMessage})
+            }
+        } catch (e) {
+            this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]编码错误"})
+            console.error(e);
+        }
+
     }
     /**
      * 找到response的 type
