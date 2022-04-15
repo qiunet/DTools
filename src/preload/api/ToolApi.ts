@@ -13,6 +13,7 @@ import {XmlUtil} from "../utils/XmlUtil";
 import {RootExecutor} from "../utils/BehaviorTree";
 import {ProtoManager} from "../net/Proto";
 import {AiConfigManager} from "../utils/AiConfigManager";
+import { CryptoUtil } from "../../renderer/src/common/CryptoUtil";
 
 export class ToolAPI {
     /**
@@ -153,6 +154,15 @@ export class ToolAPI {
 
     loadProto = ():boolean => {
         return ProtoManager.loadProto()
+    }
+
+    /**
+     * md5加密
+     * @param context 加密文本
+     * @returns 
+     */
+    md5 = (context:string):string => {
+        return CryptoUtil.md5(context);
     }
 }
 const ToolApi = new ToolAPI();
