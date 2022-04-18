@@ -16,8 +16,8 @@
         <el-option
             v-for="item in radixes"
             :label="item.name"
+            :key="item.radix"
             :value="item"
-            :key="item.name"
         />
       </el-select>
     </el-form-item>
@@ -31,8 +31,8 @@
         <el-option
             v-for="item in radixes"
             :label="item.name"
+            :key="item.radix"
             :value="item"
-            :key="item.name"
         />
       </el-select>
     </el-form-item>
@@ -46,7 +46,6 @@
 
 <script lang="ts" setup>
   import {ref} from "vue";
-  import {StringUtil} from "../../common/StringUtil";
   import {ElMessage} from "element-plus";
 
   interface IRadix {
