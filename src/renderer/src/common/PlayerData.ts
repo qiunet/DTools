@@ -94,10 +94,11 @@ export class PlayerData {
                 }
                 break
             case Protocol.RANDOM_NAME_RSP:
-                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name, icon: 1})
+                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name, icon: "1"})
                 break
             case Protocol.ERROR_STATUS_TIPS_RSP:
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
+                this.events.fire('server-response', protocolId, obj)
                 break;
             case Protocol.GM_COMMAND_LIST_RSP:
                 this.events.fire('gm-command-list', obj.list);
