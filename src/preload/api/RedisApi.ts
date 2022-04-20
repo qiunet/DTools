@@ -1,6 +1,5 @@
 import {redisClient, refreshClient} from "../utils/redis/RedisClient";
 import {ServerInfo} from "../net/node/ServerInfo";
-import {DbUtil} from "../utils/DbUtil";
 import {JsonUtil} from "../../renderer/src/common/JsonUtil";
 
 export class RedisAPI {
@@ -16,22 +15,10 @@ export class RedisAPI {
      */
     serverList = async ():Promise<Array<ServerInfo>> => {
         const client = await redisClient();
-
         const arr: Array<ServerInfo> = [];
-        const key = await client.GET('CURRENT_ONLINE_PLAYER_REDIS_KEY')
-        if (key === null) {
-            return arr;
-        }
-        const data = await client.HGETALL(key)
-        if (data === null) {
-            return arr;
-        }
-
-        for(let groupId in data) {
-           const nodeData = await client.HGETALL(DbUtil.getServerNodeInfoKey(groupId));
-            for(let info in nodeData) {
-                arr.push(new ServerInfo(JsonUtil.stringToJson(nodeData[info])))
-            }
+       const nodeData = await client.HGETALL("SERVER_INFO_DATA#LOGIC");
+        for(let info in nodeData) {
+            arr.push(new ServerInfo(JsonUtil.stringToJson(nodeData[info])))
         }
         return arr;
     }

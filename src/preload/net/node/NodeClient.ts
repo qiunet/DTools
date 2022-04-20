@@ -1,5 +1,5 @@
 import pb, {Enum, Root, Type} from 'protobufjs';
-import {Client} from "../Client";
+import {Client, TcpClient} from "../Client";
 import {ProtoManager} from "../Proto";
 
 // 从 node_protocol.proto 贴过来
@@ -74,7 +74,7 @@ class NodeProto {
     }
 }
 
-export class NodeClient extends Client {
+export class NodeClient extends TcpClient {
     static client: NodeClient|undefined;
 
     constructor(host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) {

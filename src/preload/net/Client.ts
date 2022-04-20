@@ -71,8 +71,18 @@ export class ProtocolHeader {
     }
 }
 export type EventType = 'close'|'connect'|'data'|'error'|'timeout'|'end';
-export class Client {
 
+export interface Client {
+    onEvent: (event: EventType, func: (...args: any[]) => void) => Client;
+    connect: (connectListener?:() => void) => Promise<Client>
+    sendData: (protocolId: number, data: any) => void;
+    activity: () => boolean;
+    destroy: () => void;
+    host: string;
+    port: number;
+}
+
+export class TcpClient implements Client {
     readonly openId: string;
 
     readonly host: string;
