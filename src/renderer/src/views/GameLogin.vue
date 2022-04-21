@@ -120,6 +120,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
  function showProtoTest(data: PlayerData) {
     protoTestData.showDialog = true;
     if (protoTestData.currPlayer !== data) {
+      protoTestData.currPlayer?.off('server-response');
      protoTestData.protoResponseOutput = [];
     }
     protoTestData.currPlayer = data;
@@ -151,7 +152,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
       protoTestData.currPlayer?.sendData(Protocol.GM_DEBUG_PROTOCOL_REQ, {protocolId: protocolId, data: jsonString})
     },
     close: () => {
-      protoTestData.currPlayer?.off('server-response')
+      // protoTestData.currPlayer?.off('server-response')
     }
   })
 
