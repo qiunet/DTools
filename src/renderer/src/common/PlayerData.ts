@@ -73,9 +73,10 @@ export class PlayerData {
     reconnect() {
         this._reconnect = true;
         this.client?.destroy()
+        PlayerManager.logout(this.openId, false)
         setTimeout(() => {
             this.connect()
-        }, 100)
+        }, 1000)
     }
 
     onData = (openId: string, protocolId: number, obj: any) => {
@@ -115,9 +116,8 @@ export class PlayerData {
                 this.m1 = obj.playerTo.m1;
                 this.m2 = obj.playerTo.m2;
 
-                if (! this._reconnect) {
-                    PlayerManager.playerList.value.push(this);
-                }else {
+               PlayerManager.playerList.value.push(this);
+               if (this._reconnect){
                     ElMessage.success("重连成功!")
                     this._reconnect = false;
                 }
