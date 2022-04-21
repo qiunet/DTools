@@ -64,7 +64,6 @@ export class PlayerData {
 
     logout() {
         this.client?.sendData(Protocol.LOGOUT_REQ, {});
-        this.client?.destroy()
     }
     private _reconnect: boolean = false;
     /**
@@ -83,7 +82,7 @@ export class PlayerData {
         // 移动的协议. 不记录. 不打印.
         const ignoreProtocolId = Protocol.IGNORE_PROTOCOL_ID;
         if (ignoreProtocolId.find(id => id === protocolId)) return;
-        
+
         console.log("==response== openId: " + openId + " protocolId: " + protocolId + " Message: " , obj);
         if(this.onReceive(openId, protocolId, obj)){
             return;
@@ -138,10 +137,10 @@ export class PlayerData {
     }
     /**
      * 自定义接收数据
-     * @param openId 
-     * @param protocolId 
-     * @param obj 
-     * @returns 
+     * @param openId
+     * @param protocolId
+     * @param obj
+     * @returns
      */
     onReceive(openId: string, protocolId: number, obj: any):boolean{
         console.log("original onReceive")
@@ -181,7 +180,7 @@ export class PlayerManager {
      */
     static readonly playerList = ref<Array<PlayerData>>([]);
     /**
-     * 新增用户 
+     * 新增用户
      * @param openId
      */
     static login(openId: string){

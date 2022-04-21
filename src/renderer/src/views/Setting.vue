@@ -45,12 +45,15 @@
           </div>
           <template #tip>
             <div class="el-upload__tip">
-              允许上传ejs模板文件!
+              允许上传ejs模板文件!&nbsp;<el-button type="text" @click="drawer = true">语法</el-button>
             </div>
           </template>
         </el-upload>
       </el-col>
     </el-row>
+    <el-drawer v-model="drawer" size="50%" title="语法">
+      <el-input style="font-size:18px; resize: none;" type="textarea" v-model="drawerText" :rows="20" />
+    </el-drawer>
   </div>
 </template>
 
@@ -63,6 +66,7 @@ import {ElMessage} from "element-plus";
 import vChoiceSelector from "../components/ChoiceSelector.vue";
 import { StringUtil } from "../common/StringUtil";
 
+const drawer = ref(false);
 function loadProto() {
   if (window.tool_api.loadProto()) {
     ElMessage.success("加载协议成功!")
@@ -152,6 +156,34 @@ function loadLoginScript0(force:boolean) {
   }
 }
 
+
+const drawerText = "" +
+    "模板使用 `ejs` 语法\n" +
+    "数据结构:\n" +
+    "rows: [\n" +
+    "      {\n" +
+    "        cells [\n" +
+    "          {\n" +
+    "            name: string // 字段名\n" +
+    "            val : string // 字段值 如果字符串需要输出双引号, 需要根据type自行判断.\n" +
+    "            type: string // 字段类型 int long string int[] long[] 后3中实际都是字符串结构.\n" +
+    "\n" +
+    "            isStringType(): boolean; 是否是字符串类型(string int[] long[])\n" +
+    "            isNumberType(): boolean; 是否是数值类型(int number)\n" +
+    "          }\n" +
+    "       ]\n" +
+    "     }\n" +
+    "]\n" +
+    "Json.ejs 示例:\n" +
+    "[\n" +
+    "<%_ rows.forEach(function (row, rIndex){ _%>\n" +
+    "    {\n" +
+    "    <%_ row.cells.forEach(function (cell, cIndex) { _%>\n" +
+    "        \"<%= cell.name %>\": <% if (cell.isStringType()) {%>\"<% }%><%-cell.val%><% if (cell.isStringType()) {%>\"<% }%><% if(cIndex < row.cells.length - 1) { %>,<% } %>\n" +
+    "    <%_}); _%>\n" +
+    "    }<% if(rIndex < rows.length - 1) { %>,<% } %>\n" +
+    "<%_ }); _%>\n" +
+    "]"
 </script>
 
 <style scoped>
