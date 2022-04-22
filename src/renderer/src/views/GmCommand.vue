@@ -13,8 +13,9 @@
                 :key="item.serverId"
                 :value="item"
              >
-              <span>{{ item.serverId }}</span>
-              <span style="float: right; color: grey">{{ item.host }}: {{ item.nodePort }}</span>
+              <span style="color: cadetblue; font-size: 12px">{{ item.serverId }}</span>
+              &nbsp;
+              <span style="color: grey">{{ item.host }}:{{ item.nodePort }}</span>
             </el-option>
           </el-select>
         </el-form-item>
