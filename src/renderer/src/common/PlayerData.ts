@@ -81,10 +81,13 @@ export class PlayerData {
 
     onData = (openId: string, protocolId: number, obj: any) => {
         // 移动的协议. 不记录. 不打印.
-        const ignoreProtocolId = [3000000, 3000001, 3000002, 3000003]
+        const ignoreProtocolId = Protocol.IGNORE_PROTOCOL_ID;
         if (ignoreProtocolId.find(id => id === protocolId)) return;
-
+        
         console.log("==response== openId: " + openId + " protocolId: " + protocolId + " Message: " , obj);
+        if(this.onReceive(openId, protocolId, obj)){
+            return;
+        }
 
         switch (protocolId) {
             case Protocol.CLIENT_PONG:
@@ -95,7 +98,7 @@ export class PlayerData {
                 }
                 break
             case Protocol.RANDOM_NAME_RSP:
-                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name, icon: "1"})
+                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name});
                 break
             case Protocol.ERROR_STATUS_TIPS_RSP:
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
@@ -133,11 +136,24 @@ export class PlayerData {
                 this.events.fire('server-response', protocolId, obj)
         }
     }
+    /**
+     * 自定义接收数据
+     * @param openId 
+     * @param protocolId 
+     * @param obj 
+     * @returns 
+     */
+    onReceive(openId: string, protocolId: number, obj: any):boolean{
+        console.log("original onReceive")
+        return false;
+    }
+
+
     connect() {
         window.client_api.connect(this.loginData.serverHost, this.loginData.serverPort, this.openId, this.loginData.ticket, this.onData)
         .then(client => {
-            this.client = client
-            client.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
+            this.client = client;
+            this.client?.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
             client.onEvent('connect', () => {
 
             });
@@ -148,6 +164,7 @@ export class PlayerData {
             });
         });
     }
+
     /**
      * 发送数据
      * @param protocolId 协议id
@@ -156,7 +173,6 @@ export class PlayerData {
     sendData(protocolId: number, data: any) {
         this.client?.sendData(protocolId, data);
     }
-
 }
 
 export class PlayerManager {
@@ -165,21 +181,41 @@ export class PlayerManager {
      */
     static readonly playerList = ref<Array<PlayerData>>([]);
     /**
-     * 新增用户
+     * 新增用户 
      * @param openId
      */
-    static login(openId: string) {
+    static login(openId: string){
         const loginUrl = window.tool_api.setting().loginUrl.current;
         if (StringUtil.isEmpty(loginUrl)) {
             throw new Error("LoginUrl must setting!")
         }
-       const result = window.ipcRenderer.sendSync('post_request', loginUrl, {uid: openId, token: ''});
-       if (result.status.code !== 1) {
-           ElMessage.error("登录错误:"+result.status.desc)
-           return;
-       }
 
-       new PlayerData(openId, result).connect();
+        const setting = window.tool_api.setting();
+        const scriptPath = setting.loginScriptFilePath.current;
+        window.tool_api.reloadScriptContext(scriptPath);
+        const loginScript = window.tool_api.scriptContext(scriptPath);
+        if(!StringUtil.isEmpty(loginScript)){
+            console.log("eval loginScript")
+            try {
+                eval(loginScript);
+            } catch (error) {
+                console.error("eval loginScript error " + error)
+            }
+            return;
+        }
+        const result = this.httpLogin(loginUrl, openId, {uid:openId, token:''});
+        if(result){
+            new PlayerData(openId, result).connect();
+        }
+    }
+
+    static httpLogin(loginUrl:string, openId:string, data:object){
+        const result = window.ipcRenderer.sendSync('post_request', loginUrl, data);
+        if (result.status.code !== 1) {
+            ElMessage.error("登录错误:"+result.status.desc)
+            return null;
+        }
+        return result;
     }
 
     /**

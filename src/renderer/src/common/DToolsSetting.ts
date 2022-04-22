@@ -1,6 +1,7 @@
 import {Role} from "./Enums";
 import {SettingManager} from "../../../preload/utils/SettingManager";
 import {CommonUtil} from "./CommonUtil";
+import { ToolsConstants } from "../../../preload/utils/ToolsConstants";
 export class SelectSetting {
 
     defaultVal: string|undefined = undefined;
@@ -117,6 +118,10 @@ export class DToolsSetting {
      */
     loginUrl: SelectSetting = new SelectSetting();
     /**
+     * 登录脚本文件路径
+     */
+    loginScriptFilePath: SelectSetting = new SelectSetting();
+    /**
      *
      * @param data
      */
@@ -129,6 +134,7 @@ export class DToolsSetting {
         setting.projectPathSelect = SelectSetting.valueOf(data.projectPathSelect);
         setting.aiCfgPathSelect = SelectSetting.valueOf(data.aiCfgPathSelect);
         setting.cfgPathSelect = SelectSetting.valueOf(data.cfgPathSelect);
+        setting.loginScriptFilePath = SelectSetting.valueOf(data.loginScriptFilePath);
         setting.role = data.role;
         return setting;
     }

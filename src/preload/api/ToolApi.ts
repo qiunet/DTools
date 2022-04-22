@@ -14,6 +14,8 @@ import {RootExecutor} from "../utils/BehaviorTree";
 import {ProtoManager} from "../net/Proto";
 import {AiConfigManager} from "../utils/AiConfigManager";
 import { CryptoUtil } from "../../renderer/src/common/CryptoUtil";
+import { ScriptSettingManager } from "../utils/ScriptSettingManager";
+import { Protocol } from "../../renderer/src/common/Protocol";
 
 export class ToolAPI {
     /**
@@ -158,11 +160,48 @@ export class ToolAPI {
 
     /**
      * md5加密
-     * @param context 加密文本
+     * @param context   加密文本
      * @returns 
      */
     md5 = (context:string):string => {
         return CryptoUtil.md5(context);
+    }
+    /**
+     * 脚本内容
+     * @param path      脚本路径
+     * @returns 
+     */
+    scriptContext = (path:string):string => {
+        return ScriptSettingManager.getScript(path);
+    }
+
+    /**
+     * 保存脚本内容
+     * @param path      脚本路径
+     * @param context   脚本内容
+     */
+    saveScriptContext = (path:string, context:string):void => {
+        ScriptSettingManager.saveScript(path, context);
+    }
+
+    /**
+     * 重载脚本内容
+     * @param path      脚本路径
+     */
+    reloadScriptContext = (path:string):void => {
+        ScriptSettingManager.reloadScript(path);
+    }
+
+    /**
+     * 执行脚本
+     * @param script 
+     */
+    evalScript = (script:string) => {
+        try{
+            eval(script)
+        }catch(e){
+            console.error("eavl script error! "+e)
+        }
     }
 }
 const ToolApi = new ToolAPI();
