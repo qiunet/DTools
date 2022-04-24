@@ -190,10 +190,7 @@ export class PlayerManager {
             throw new Error("LoginUrl must setting!")
         }
 
-        const setting = window.tool_api.setting();
-        const scriptPath = setting.loginScriptFilePath.current;
-        window.tool_api.reloadScriptContext(scriptPath);
-        const loginScript = window.tool_api.scriptContext(scriptPath);
+        const loginScript = window.tool_api.getScript();
         if(!StringUtil.isEmpty(loginScript)){
             console.log("eval loginScript")
             try {

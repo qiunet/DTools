@@ -6,16 +6,6 @@
         <el-col :span="4">登录服地址: </el-col>
         <el-col :span="16"><v-choice-select :size="'default'" :styleData="{'width': '95%', 'max-width': '800px'}" :select="setting.loginUrl" :newValCheck="validHttpUrl" :useFunc="reloadServer" :delSelect="reloadServer" placeholder="填入Redis地址以及端口" /></el-col>
       </el-row>
-      <el-row style="width: 100%; margin-top: 10px" :gutter="2">
-        <el-col :span="4">登录脚本文件: </el-col>
-        <el-col :span="16"><v-choice-select :size="'default'" :styleData="{'width': '95%', 'max-width': '800px'}" :select="setting.loginScriptFilePath" :newValCheck="validScriptUrl" :useFunc="reloadLoginScriptFilePath" :delSelect="reloadLoginScriptFilePath" placeholder="填入登录脚本文件地址" /></el-col>
-        <el-col :span="2">
-          <el-button class="player-table-view" type="success" style="width: 90%" :disabled="loginScript.disabledReload" @click="clickReloadLoginScript">重载</el-button>
-        </el-col>
-        <el-col :span="2">
-          <el-button class="player-table-view" type="success" style="width: 90%" :disabled="loginScript.disabledEdit" @click="clickEditLoginScript">编辑</el-button>
-        </el-col>
-      </el-row>
       </div>
     </el-header>
     <el-main>
@@ -64,9 +54,6 @@
             </div>
           </el-scrollbar>
       </el-dialog>
-      <el-dialog v-model="loginScript.showDialog" :title="`登录逻辑脚本`" width="70%" destroy-on-close>
-        <v-login-script />
-      </el-dialog>
     </el-main>
   </el-container>
 </template>
@@ -75,7 +62,6 @@
 import vChoiceSelect from "../components/ChoiceSelector.vue";
 import dToolCommand from "../components/DToolCommand.vue";
 import vProtocolTest from "../components/ProtocolTest.vue";
-import vLoginScript from "../components/LoginScript.vue";
 import rspMessage from "../components/RspMessage.vue";
 
 import {h, reactive, ref} from "vue";
@@ -85,7 +71,6 @@ import {Protocol} from "../common/Protocol";
 import DToolCommand from "../components/DToolCommand.vue";
 import {GmCommandInfo} from "../../../preload/net/node/NodeClientResponse";
 import {ResponseInfo} from "../common/ResponseInfo";
-import { StringUtil } from "../common/StringUtil";
   const spacer = h(ElDivider, { direction: 'vertical' })
 
   interface IGmCommandData {
@@ -99,12 +84,6 @@ import { StringUtil } from "../common/StringUtil";
     currPlayer: PlayerData|undefined;
     protoResponseOutput: Array<ResponseInfo>;
     showDialog: boolean;
-    close: () => void;
-  }
-  interface IScriptSettingData {
-    showDialog: boolean;
-    disabledReload:boolean;
-    disabledEdit:boolean;
     close: () => void;
   }
 
@@ -178,15 +157,6 @@ import { StringUtil } from "../common/StringUtil";
     }
   })
 
-  const isEmptyLoginScriptUrl = StringUtil.isEmpty(setting.value.loginScriptFilePath.current);
-  const loginScript = reactive<IScriptSettingData>({
-    showDialog: false,
-    disabledReload: isEmptyLoginScriptUrl,
-    disabledEdit: isEmptyLoginScriptUrl,
-    close: () => {
-    }
-  });
-
   /**
  * 新增登录玩家
  */
@@ -232,39 +202,6 @@ import { StringUtil } from "../common/StringUtil";
    */
   function reloadServer() {
       PlayerManager.destroy()
-  }
-  /**
-   * 校验新的脚本地址
-   */
-  function validScriptUrl(val:string):boolean{
-    if(val.endsWith("/")){
-      ElMessage.error("请输入文件地址!")
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * 重载登录脚本设置
-   */
-  function reloadLoginScriptFilePath(){
-    if(StringUtil.isEmpty(setting.value.loginScriptFilePath.current)){
-      loginScript.disabledReload = true;
-      loginScript.disabledEdit = true;
-      return;
-    }
-    loginScript.disabledReload = false;
-    loginScript.disabledEdit = false;
-    window.tool_api.reloadScriptContext(setting.value.loginScriptFilePath.current);
-  }
-
-  function clickReloadLoginScript(){
-    reloadLoginScriptFilePath();
-    ElMessage.success("重载登录脚本完成!")
-  }
-
-  function clickEditLoginScript(){
-    loginScript.showDialog = true;
   }
 
 </script>

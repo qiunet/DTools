@@ -20,6 +20,14 @@
       <el-col :span="17"><v-choice-selector placeholder="填入'AllInOneProtobufProtocol.proto'文件路径" :select="setting.protoFilePath" :newValCheck="protoCheck" :useFunc="loadProto"/></el-col>
     </el-row>
     <el-divider></el-divider>
+    <el-row style="padding-top: 20px">
+      <el-col :span="5">Script:</el-col>
+      <el-col :span="17"><v-choice-selector placeholder="填入登录脚本文件路径" :select="setting.loginScriptFilePath" :newValCheck="loginScriptCheck" :useFunc="loadLoginScript"/></el-col>
+      <el-col :span="2">
+        <el-button class="player-table-view" type="success" style="width: 90%" :disabled="data.loginScriptDisable" @click="reloadLoginScript">重载</el-button>
+      </el-col>
+    </el-row>
+    <el-divider></el-divider>
     <el-row>
       <el-col :span="5">
         上传模板
@@ -53,6 +61,7 @@ import {ElNotification} from "element-plus/es";
 import {Role} from "../common/Enums";
 import {ElMessage} from "element-plus";
 import vChoiceSelector from "../components/ChoiceSelector.vue";
+import { StringUtil } from "../common/StringUtil";
 
 function loadProto() {
   if (window.tool_api.loadProto()) {
@@ -62,6 +71,8 @@ function loadProto() {
   }
 }
 
+
+const setting = ref(window.tool_api.setting());
 let data = reactive({
   roles: [{
     "role": Role.CLIENT,
@@ -73,8 +84,12 @@ let data = reactive({
     "role": Role.OTHER,
     "name": "其它"
   }],
+  loginScriptDisable: loginScriptDisabled(),
 });
-const setting = ref(window.tool_api.setting());
+
+function loginScriptDisabled():boolean{
+  return StringUtil.isEmpty(setting.value.loginScriptFilePath.current)
+}
 
 function roleChange(index: number) {
   window.tool_api.roleChange(data.roles[index].role).then(() => {
@@ -110,6 +125,33 @@ function uploadFile(file: any): boolean {
   });
   return false;
 }
+
+
+function loginScriptCheck(val: string): boolean {
+  if (! val.startsWith("http") && ! window.tool_api.fileExists(val)) {
+    ElMessage.error("文件["+val+"]路径不存在");
+    return false;
+  }
+  return true;
+}
+
+function loadLoginScript() {
+  data.loginScriptDisable = loginScriptDisabled();
+  loadLoginScript0(false);
+}
+
+function reloadLoginScript(){
+  loadLoginScript0(true);
+}
+
+function loadLoginScript0(force:boolean) {
+  if (window.tool_api.loadScript(force)) {
+    ElMessage.success("加载脚本成功!")
+  }else {
+    ElMessage.error("加载脚本失败!")
+  }
+}
+
 </script>
 
 <style scoped>

@@ -1,39 +1,36 @@
-import { ScriptSetting } from "../../renderer/src/common/ScriptSetting";
+import { SettingManager } from "./SettingManager";
+import {ipcRenderer} from 'electron'
+import fs from "fs";
 
 export class ScriptSettingManager{
-
-    private static settings:any = {};
-
-    private static getSetting(path:string):ScriptSetting{
-        let setting = this.settings[path];
-        if(!setting){
-            setting = this.settings[path] = ScriptSetting.valueOf(path);
+    
+    private static currentPath:string;
+    private static script:string;
+    
+    static loadScript(force:boolean):boolean{
+        if(!force){
+            if(SettingManager.setting.loginScriptFilePath.current === '' || this.currentPath === SettingManager.setting.loginScriptFilePath.current){
+                return false;
+            }
         }
-        return setting;
+
+        this.currentPath = SettingManager.setting.loginScriptFilePath.current;
+        if (this.currentPath.startsWith("http")) {
+            this.script = ipcRenderer.sendSync('get_request', this.currentPath);
+        }else {
+            fs.readFile(SettingManager.setting.loginScriptFilePath.current, "utf-8", (err, data) => {
+                this.script = data;
+            });
+        }
+        return true;
     }
 
-    /**
-     * 获取逻辑脚本内容
-     * @param path      脚本路径
-     * @returns 逻辑脚本内容
-     */
-    public static getScript(path:string):string{
-        return this.getSetting(path).context;
-    }
-    /**
-     * 保存逻辑脚本内容
-     * @param path      脚本路径
-     * @param context   脚本内容
-     */
-    public static saveScript(path:string, context:string){
-        this.getSetting(path).save(context);
+    static getScript():string{
+        return this.script;
     }
 
-    /**
-     * 重载脚本内容
-     * @param path      脚本路径
-     */
-    public static reloadScript(path:string){
-        this.getSetting(path).load();
-    }
+}
+
+if(ScriptSettingManager.loadScript(true)){
+    console.log("加载登录脚本成功！")
 }
