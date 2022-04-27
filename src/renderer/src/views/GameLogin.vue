@@ -1,11 +1,12 @@
 <template>
   <el-container style="height: 100%">
-    <el-header height="70px">
+    <el-header height="140px">
+      <div style="padding: 10px; font-size: 22px; color: gray">
       <el-row :gutter="2">
         <el-col :span="4">登录服地址: </el-col>
-        <el-col :span="17"><v-choice-select :size="'default'" :styleData="{'width': '80%', 'max-width': '800px'}" :select="setting.loginUrl" :newValCheck="validHttpUrl" :useFunc="reloadServer" :delSelect="reloadServer" placeholder="填入Redis地址以及端口" /></el-col>
+        <el-col :span="16"><v-choice-select :size="'default'" :styleData="{'width': '95%', 'max-width': '800px'}" :select="setting.loginUrl" :newValCheck="validHttpUrl" :useFunc="reloadServer" :delSelect="reloadServer" placeholder="填入Redis地址以及端口" /></el-col>
       </el-row>
-      <el-divider />
+      </div>
     </el-header>
     <el-main>
       <el-table
@@ -202,6 +203,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
   function reloadServer() {
       PlayerManager.destroy()
   }
+
 </script>
 
 <style scoped>

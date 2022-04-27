@@ -13,6 +13,8 @@ import {XmlUtil} from "../utils/XmlUtil";
 import {RootExecutor} from "../utils/BehaviorTree";
 import {ProtoManager} from "../net/Proto";
 import {AiConfigManager} from "../utils/AiConfigManager";
+import { CryptoUtil } from "../../renderer/src/common/CryptoUtil";
+import { ScriptSettingManager } from "../utils/ScriptSettingManager";
 
 export class ToolAPI {
     /**
@@ -153,6 +155,43 @@ export class ToolAPI {
 
     loadProto = ():boolean => {
         return ProtoManager.loadProto()
+    }
+
+    /**
+     * md5加密
+     * @param context   加密文本
+     * @returns 
+     */
+    md5 = (context:string):string => {
+        return CryptoUtil.md5(context);
+    }
+
+    /**
+     * 执行脚本
+     * @param script 
+     */
+    evalScript = (script:string) => {
+        try{
+            eval(script)
+        }catch(e){
+            console.error("eavl script error! "+e)
+        }
+    }
+
+    /**
+     * 加载脚本
+     * @returns 
+     */
+    loadScript = (force:boolean):boolean => {
+        return ScriptSettingManager.loadScript(force);
+    }
+
+    /**
+     * 取得脚本
+     * @returns 
+     */
+    getScript = () => {
+        return ScriptSettingManager.getScript();
     }
 }
 const ToolApi = new ToolAPI();

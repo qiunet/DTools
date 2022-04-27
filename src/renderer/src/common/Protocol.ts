@@ -35,4 +35,8 @@ export class Protocol {
      * 货币变动
      */
     static readonly CURRENCY_UPDATE_PUSH = 1000000;
+    /**
+     * 忽略协议ID
+     */
+    static readonly IGNORE_PROTOCOL_ID = [3000000, 3000001, 3000002, 3000003]
 }

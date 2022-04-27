@@ -22,6 +22,10 @@ export class ToolsConstants {
      * 配置名称
      */
     private static readonly SETTING_NAME = "setting.json";
+    /**
+     * 默认的登录脚本文件名
+     */
+    private static readonly DEFAULT_LOGIN_SCRIPT_FILE_NAME = "login_script.js";
 
     /**
      * 得到setting 的目录
@@ -43,6 +47,14 @@ export class ToolsConstants {
      */
     public static ejsTemplateDir(): string {
         return Path.join(this.settingDir(), this.EJS_TEMPLATE_DIR);
+    }    
+
+    /**
+     * 默认的登录脚本文件路径
+     * @returns 
+     */
+    public static defaultLoginScriptFilePath(){
+        return Path.join(this.settingDir(), this.DEFAULT_LOGIN_SCRIPT_FILE_NAME);
     }
 
     /**

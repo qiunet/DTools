@@ -13,7 +13,8 @@
     "output": "release"
   },
   "files": [
-    "dist"
+    "dist",
+    "icon"
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",

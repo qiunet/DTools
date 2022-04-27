@@ -1,6 +1,6 @@
 import os from 'os'
 import path from 'path'
-import { app, BrowserWindow, dialog, Menu, Tray } from 'electron'
+import { app, BrowserWindow, dialog, Menu, Tray, nativeImage } from 'electron'
 import {autoUpdater} from 'electron-updater'
 import {ToolsConstants} from "../preload/utils/ToolsConstants";
 import * as fs from "fs";
@@ -52,7 +52,8 @@ async function createWindow() {
       hideWindow();
     })
     
-    let tray = new Tray('icon/icon_512x512.png')
+    let iconPath = path.join(__dirname, "../../icon/icon_512x512.png");
+    let tray = new Tray(nativeImage.createFromPath(iconPath));
     let contextMenu = createContextMenu();
   
     tray.setToolTip('DTools')
