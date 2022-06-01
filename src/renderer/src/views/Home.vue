@@ -30,6 +30,7 @@
             default-expand-all
             :props="data.defaultProps"
             :highlight-current="true"
+            @dblclick="openFile"
             :filter-node-method="filterNode"
         >
         </el-tree>
@@ -84,6 +85,10 @@ import vChoiceSelector from "../components/ChoiceSelector.vue";
     const filterText = ref('');
     const treeRef = ref<InstanceType<typeof ElTree>>()
 
+    function openFile() {
+      let path = treeRef.value?.currentNode.data.fullPath;
+      window.tool_api.openPath(path);
+    }
     watch(filterText, (val) => {
       treeRef.value!.filter(val)
     })
