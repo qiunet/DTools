@@ -104,16 +104,7 @@ export class PlayerData {
                 }
                 break
             case Protocol.RANDOM_NAME_RSP:
-                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name, avatarTo: {
-                    roleId: 1,
-                    avatars: [
-                        {
-                            id: 101,
-                            value: "TF0G01"
-                        }
-                    ],
-                    fileType: 1
-                }});
+                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name});
                 break
             case Protocol.ERROR_STATUS_TIPS_RSP:
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
