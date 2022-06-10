@@ -4,6 +4,7 @@ import {Client} from "../../../preload/net/Client";
 import {Protocol} from "./Protocol";
 import {ref} from "vue";
 import Events from 'onfire.js';
+import { ConsoleUtil } from "./ConsoleUtil";
 
 /**
  * 事件类型
@@ -18,6 +19,8 @@ export class PlayerData {
      */
     private readonly loginData: any;
     client: Client|undefined;
+    private kcpData: any;
+
     /**
      * 账号
      */
@@ -65,6 +68,10 @@ export class PlayerData {
     logout() {
         this.client?.sendData(Protocol.LOGOUT_REQ, {});
     }
+
+    disconnectKcp(){
+        window.ipcRenderer.send('kcp_disconnect', this.openId)
+    }
     private _reconnect: boolean = false;
     /**
      * 模拟重连
@@ -82,8 +89,8 @@ export class PlayerData {
         // 移动的协议. 不记录. 不打印.
         const ignoreProtocolId = Protocol.IGNORE_PROTOCOL_ID;
         if (ignoreProtocolId.find(id => id === protocolId)) return;
-
-        console.log("==response== openId: " + openId + " protocolId: " + protocolId + " Message: " , obj);
+        
+        ConsoleUtil.log("==response== openId: " + openId + " protocolId: " + protocolId + " Message: " + obj);
         if(this.onReceive(openId, protocolId, obj)){
             return;
         }
@@ -97,7 +104,16 @@ export class PlayerData {
                 }
                 break
             case Protocol.RANDOM_NAME_RSP:
-                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name});
+                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name, avatarTo: {
+                    roleId: 1,
+                    avatars: [
+                        {
+                            id: 101,
+                            value: "TF0G01"
+                        }
+                    ],
+                    fileType: 1
+                }});
                 break
             case Protocol.ERROR_STATUS_TIPS_RSP:
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
@@ -123,6 +139,7 @@ export class PlayerData {
                     ElMessage.success("重连成功!")
                     this._reconnect = false;
                 }
+                this.sendData(Protocol.KCP_TOKEN_REQ, {})
                 break
             case Protocol.CURRENCY_UPDATE_PUSH:
                 if (obj.cfgId === 1) {
@@ -131,16 +148,27 @@ export class PlayerData {
                     this.m2 = obj.currVal;
                 }
                 break
+            case Protocol.KCP_TOKEN_RSP:
+                this.kcpData = obj
+                this.kcpConnect();
+                break;
+            case Protocol.KCP_CONNECT_RSP:
+                ConsoleUtil.log(`Kcp 连接成功!`)
+                this.sendKcpData(Protocol.KCP_BIND_AUTH_REQ, { playerId:this.playerId, token:this.kcpData.token })
+                break;
+            case Protocol.KCP_BIND_AUTH_RSP:
+                ConsoleUtil.log(`Kcp 连接绑定成功!`)
+                break;
             default:
                 this.events.fire('server-response', protocolId, obj)
         }
     }
     /**
      * 自定义接收数据
-     * @param openId
-     * @param protocolId
-     * @param obj
-     * @returns
+     * @param openId 
+     * @param protocolId 
+     * @param obj 
+     * @returns 
      */
     onReceive(openId: string, protocolId: number, obj: any):boolean{
         console.log("original onReceive")
@@ -169,8 +197,40 @@ export class PlayerData {
      * @param protocolId 协议id
      * @param data
      */
-    sendData(protocolId: number, data: any) {
+    sendData(protocolId: number, data: any, isKcp:boolean=false) {
+        if(isKcp){
+            this.sendKcpData(protocolId, data);
+        }else{
+            this.sendTcpData(protocolId, data);
+        }
+    }
+
+    sendTcpData(protocolId: number, data: any){
+        ConsoleUtil.log(`Tcp => send data protocolId:${protocolId}`)
         this.client?.sendData(protocolId, data);
+    }
+
+    sendKcpData(protocolId: number, data: any) {
+        ConsoleUtil.log(`Kcp => send data protocolId:${protocolId}`)
+        const bytes = this.client?.buildMessage(protocolId, data);
+        window.ipcRenderer.send('kcp_send', this.openId, protocolId, bytes)
+    }
+
+    kcpConnect() {
+        window.ipcRenderer.sendSync('kcp_connect', this.openId, this.loginData.serverHost, this.kcpData.port, this.kcpData.convId);
+        this.kcpBindAuth();
+    }
+
+    kcpBindAuth(){
+        this.sendKcpData(Protocol.KCP_BIND_AUTH_REQ, { playerId:this.playerId, token:this.kcpData.token })
+    }
+
+    onKcpData(openId: string, protocolId: number, data: any){
+        if(data instanceof Uint8Array){
+            this.client?.receiveData(data, false);
+        }else{
+            this.onData(openId, protocolId, data);
+        }
     }
 }
 
@@ -180,7 +240,7 @@ export class PlayerManager {
      */
     static readonly playerList = ref<Array<PlayerData>>([]);
     /**
-     * 新增用户
+     * 新增用户 
      * @param openId
      */
     static login(openId: string){
@@ -202,6 +262,7 @@ export class PlayerManager {
         const result = this.httpLogin(loginUrl, openId, {uid:openId, token:''});
         if(result){
             new PlayerData(openId, result).connect();
+            this.onKcpEvent();
         }
     }
 
@@ -225,6 +286,7 @@ export class PlayerManager {
             if (callLogout) {
                 this.playerList.value[index].logout()
             }
+            this.playerList.value[index].disconnectKcp();
             this.playerList.value.splice(index, 1);
         }
     }
@@ -235,6 +297,21 @@ export class PlayerManager {
     static destroy() {
         this.playerList.value.forEach(data => data.logout())
         this.playerList.value.splice(0, this.playerList.value.length)
+    }
+
+    private static isOnKcpEvent:boolean = false;
+    static onKcpEvent(){
+        if(this.isOnKcpEvent){
+            return;
+        }
+
+        window.ipcRenderer.addListener("kcp_server_data", (event, ...args)=>{
+            let index = this.playerList.value.findIndex(value => value.openId === args[0]);
+            if(index != -1){
+                this.playerList.value[index].onKcpData(args[0], args[1], args[2])
+            }
+        })
+        this.isOnKcpEvent = true;
     }
 }
 

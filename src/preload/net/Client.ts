@@ -3,73 +3,9 @@ import {ProtoManager} from "./Proto";
 import {Socket} from "net";
 import crc from 'crc-32'
 import {Protocol} from "../../renderer/src/common/Protocol";
+import { ConsoleUtil } from "../../renderer/src/common/ConsoleUtil";
+import { ProtocolHeader } from "./ProtocolHeader";
 
-export class ProtocolHeader {
-    /**
-     * 服务端的 magic
-     */
-    private static readonly MAGIC_BYTES = [102, 97, 115, 116];
-    private static readonly SERVER_REQUEST_HEADER_LENGTH = 16;
-
-    magic: Uint8Array = new Uint8Array(4);
-    protocolId: number = 0;
-    length: number = 0;
-    crc: number = 0;
-
-    /**
-     * 服务器对客户端下发
-     * @param dis
-     */
-    static createServerHeaderByBytes(dis: ByteInputBuffer): ProtocolHeader {
-        const header = new ProtocolHeader();
-        header.length = dis.readInt();
-        header.protocolId = dis.readInt();
-        return header;
-    }
-
-    /**
-     * Node server 对客户端下发
-     *
-     * @param dis
-     */
-    static createNodeHeaderByBytes(dis: ByteInputBuffer): ProtocolHeader {
-        const header = new ProtocolHeader();
-        header.magic = dis.readBytes(4);
-        header.length = dis.readInt();
-        header.protocolId = dis.readInt();
-        header.crc = dis.readInt();
-        return header;
-    }
-
-    /**
-     * 上行创建 header
-     * @param protocolId
-     * @param crc
-     */
-    static create(protocolId: number, crc: number = 0): ProtocolHeader {
-        const header = new ProtocolHeader();
-        header.magic.set(ProtocolHeader.MAGIC_BYTES)
-        header.protocolId = protocolId;
-        header.length = 0;
-        header.crc = crc;
-        return header;
-    }
-
-
-    toByteArray = (data: Uint8Array):Uint8Array => {
-        const buffer = new ByteOutputBuffer(ProtocolHeader.SERVER_REQUEST_HEADER_LENGTH + data.length);
-        buffer.writeBytes(this.magic);
-        buffer.writeInt(data.length)
-        buffer.writeInt(this.protocolId)
-        buffer.writeInt(this.crc)
-        buffer.writeBytes(data)
-        return buffer.toByteArray();
-    }
-
-    toString(): string {
-        return JSON.stringify(this, null)
-    }
-}
 export type EventType = 'close'|'connect'|'data'|'error'|'timeout'|'end';
 
 export interface Client {
@@ -78,6 +14,8 @@ export interface Client {
     sendData: (protocolId: number, data: any) => void;
     activity: () => boolean;
     destroy: () => void;
+    buildMessage: (protocolId: number, data: any) => any;
+    receiveData: (data:Uint8Array, isNodeClient:boolean) => void;
     host: string;
     port: number;
 }
@@ -121,37 +59,14 @@ export class TcpClient implements Client {
             }
             this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 20000);
         }).on("data", data => {
-            if (data.length < 8) {
-                // 不够header的长度
-                return;
-            }
-
-            const dis = new ByteInputBuffer(data);
-            while(! dis.isEmpty()) {
-                const header = this.nodeClient ?
-                    ProtocolHeader.createNodeHeaderByBytes(dis)
-                    : ProtocolHeader.createServerHeaderByBytes(dis);
-                if (dis.lastLength() < header.length) {
-                    return;
-                }
-                const uint8Array = dis.readBytes(header.length);
-                if (header.protocolId === Protocol.CLIENT_PONG) {
-                    continue
-                }
-
-                const type = this.findRspType(header.protocolId)
-                try {
-                    const message = type.decode(uint8Array);
-                    this.onData(this.openId, header.protocolId, message.toJSON())
-                }catch(e) {
-                    this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
-                }
-            }
+            this.receiveData(data, this.nodeClient);
         }).on('error', err => {
             console.error("Connect Errors", err)
         });
         return this;
     }
+
+
     /**
      * 事件
      */
@@ -185,11 +100,10 @@ export class TcpClient implements Client {
             return "没有创建连接";
         }
 
-        const header = ProtocolHeader.create(protocolId, crc.buf(messageData));
         if(! this.client.writable) {
             return "Client已经失效";
         }
-        let write = this.client.write(header.toByteArray(messageData));
+        let write = this.client.write(messageData);
         if (! write) {
             return "请求失败";
         }
@@ -201,13 +115,10 @@ export class TcpClient implements Client {
      * @param data
      */
     sendData = (protocolId: number, data: any) => {
-        console.log("===Request protocol[" + protocolId + "], data:", data)
-        const type = ProtoManager.findReqProto(protocolId)
-        const message = type.create(data)
-        let uint8Array: Uint8Array;
+        ConsoleUtil.log("===Request protocol[" + protocolId + "], data:"+ data)
         try {
-            uint8Array = type.encode(message).finish();
-            const sendMessage = this.sendMessage(protocolId, uint8Array);
+            const bytes = this.buildMessage(protocolId, data);
+            const sendMessage = this.sendMessage(protocolId, bytes);
             if (sendMessage !== "") {
                 this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]发送失败, "+sendMessage})
             }
@@ -215,7 +126,6 @@ export class TcpClient implements Client {
             this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]编码错误"})
             console.error(e);
         }
-
     }
     /**
      * 找到response的 type
@@ -223,5 +133,49 @@ export class TcpClient implements Client {
      */
     protected findRspType = (protocolId: number) => {
         return ProtoManager.findRspProto(protocolId)
+    }
+
+    public buildMessage = (protocolId: number, data: any):Uint8Array => {
+        const type = ProtoManager.findReqProto(protocolId)
+        const message = type.create(data)
+        let uint8Array = type.encode(message).finish();
+        const header = ProtocolHeader.create(protocolId, crc.buf(uint8Array));
+        return header.toByteArray(uint8Array);
+    }
+
+    /**
+     * 接收服务器数据
+     * @param data 
+     * @param isNodeClient 
+     * @returns 
+     */
+    receiveData = (data:Uint8Array, isNodeClient:boolean) : void => {
+        if (data.length < 8) {
+            // 不够header的长度
+            return;
+        }
+
+        const dis = new ByteInputBuffer(data);
+        while(! dis.isEmpty()) {
+            const header = isNodeClient ?
+                ProtocolHeader.createNodeHeaderByBytes(dis)
+                : ProtocolHeader.createServerHeaderByBytes(dis);
+            if (dis.lastLength() < header.length) {
+                return;
+            }
+            const uint8Array = dis.readBytes(header.length);
+            if (header.protocolId === Protocol.CLIENT_PONG) {
+                continue
+            }
+
+            const type = this.findRspType(header.protocolId)
+            try {
+                const message = type.decode(uint8Array);
+                this.onData(this.openId, header.protocolId, message.toJSON())
+            }catch(e) {
+                this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
+                console.error(e);
+            }
+        }
     }
 }
