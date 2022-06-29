@@ -122,13 +122,16 @@ import {ResponseInfo} from "../common/ResponseInfo";
     protoTestData.showDialog = true;
     if (protoTestData.currPlayer !== data) {
       protoTestData.currPlayer?.off('server-response');
-     protoTestData.protoResponseOutput = [];
+      protoTestData.protoResponseOutput = data.responseList;
+      protoTestData.currPlayer?.unselect();
     }
     protoTestData.currPlayer = data;
-    data.on('server-response', (protocolID:number, obj: any) => {
-      protoTestData.protoResponseOutput.push(new ResponseInfo(protocolID, obj));
+    data.selected = true;
+    scrollToBottom()
+    data.on('server-response', (info: ResponseInfo) => {
+      protoTestData.protoResponseOutput.push(info);
       scrollToBottom()
-    });
+    })
   }
 
 /**

@@ -8,10 +8,6 @@ export class ResponseInfo {
      */
     private readonly protocolId: number;
     /**
-     * 对应的proto信息
-     */
-    private readonly info: ProtoInfo;
-    /**
      * response 数据
      */
     private readonly rspString: string;
@@ -22,7 +18,6 @@ export class ResponseInfo {
     private readonly dt: Date
 
     public constructor(protocolId: number, obj: any) {
-        this.info = window.client_api.rspProtoInfo(protocolId)
         this.rspString = JSON.stringify(obj);
         this.protocolId = protocolId;
         this.dt = new Date()
@@ -33,7 +28,7 @@ export class ResponseInfo {
     }
 
     public getProtoInfo(): ProtoInfo {
-        return this.info;
+        return window.client_api.rspProtoInfo(this.protocolId);
     }
 
     public getDtString() {
@@ -41,6 +36,6 @@ export class ResponseInfo {
     }
 
     public getProtocolInfo() {
-        return this.info?.className +":"+this.protocolId;
+        return this.getProtoInfo()?.className +":"+this.protocolId;
     }
 }

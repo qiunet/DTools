@@ -145,6 +145,7 @@ export class TcpClient implements Client {
                     this.onData(this.openId, header.protocolId, message.toJSON())
                 }catch(e) {
                     this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
+                    console.error(e)
                 }
             }
         }).on('error', err => {
