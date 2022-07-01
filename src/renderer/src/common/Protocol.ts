@@ -38,5 +38,5 @@ export class Protocol {
     /**
      * 忽略协议ID
      */
-    static readonly IGNORE_PROTOCOL_ID = []
+    static readonly IGNORE_PROTOCOL_ID = [3000003]
 }
