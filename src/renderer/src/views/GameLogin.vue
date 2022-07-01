@@ -80,7 +80,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
     sendGmCommand: (command: number, params: Array<string>) => void;
   }
   interface IProtoTestData {
-    submit: (protocolID: number, jsonString: string) => void;
+    submit: (protocolID: number, jsonString: string, kcp: boolean) => void;
     currPlayer: PlayerData|undefined;
     protoResponseOutput: Array<ResponseInfo>;
     showDialog: boolean;
@@ -149,11 +149,11 @@ import {ResponseInfo} from "../common/ResponseInfo";
     showDialog: false,
     currPlayer: undefined,
     protoResponseOutput: [],
-    submit: (protocolId: number, jsonString: string) => {
+    submit: (protocolId: number, jsonString: string, kcp: boolean) => {
       protoTestData.currPlayer?.once('proto-debug-response', () => {
         ElMessage.success("发送成功")
       });
-      protoTestData.currPlayer?.sendData(Protocol.GM_DEBUG_PROTOCOL_REQ, {protocolId: protocolId, data: jsonString})
+      protoTestData.currPlayer?.sendData(Protocol.GM_DEBUG_PROTOCOL_REQ, {protocolId: protocolId, data: jsonString}, kcp)
     },
     close: () => {
       // protoTestData.currPlayer?.off('server-response')
