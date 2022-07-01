@@ -5,6 +5,7 @@ import {Protocol} from "./Protocol";
 import {ref} from "vue";
 import Events from 'onfire.js';
 import { ConsoleUtil } from "./ConsoleUtil";
+import {ResponseInfo} from "./ResponseInfo";
 
 /**
  * 事件类型
@@ -18,6 +19,15 @@ export class PlayerData {
      * @private
      */
     private readonly loginData: any;
+    /**
+     * 响应的数据信息
+     */
+    responseList: Array<ResponseInfo> = [];
+    /**
+     * 是否被选择查看响应消息
+     */
+    selected: boolean|undefined;
+
     client: Client|undefined;
     private kcpData: any;
 
@@ -61,6 +71,10 @@ export class PlayerData {
         this.on(eventName, cb, true);
     }
 
+    unselect() {
+        this.selected = false;
+    }
+
     get hostInfo() {
         return this.client?.host+":"+this.client?.port;
     }
@@ -83,6 +97,10 @@ export class PlayerData {
         setTimeout(() => {
             this.connect()
         }, 1000)
+    }
+
+    cleanupResponses = () => {
+        this.responseList.splice(0);
     }
 
     onData = (openId: string, protocolId: number, obj: any) => {
@@ -151,7 +169,11 @@ export class PlayerData {
                 ConsoleUtil.log(`Kcp 连接绑定成功!`)
                 break;
             default:
-                this.events.fire('server-response', protocolId, obj)
+                let responseInfo = new ResponseInfo(protocolId, obj);
+                if (! this.selected) {
+                    this.responseList.push(responseInfo);
+                }
+                this.events.fire('server-response', responseInfo)
         }
     }
     /**
