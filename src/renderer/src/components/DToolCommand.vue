@@ -56,7 +56,7 @@
   });
 
   import {StringUtil} from "../common/StringUtil";
-  import {defineProps, reactive, ref} from "vue";
+   import {defineProps, reactive, ref} from "vue";
   import {GmCommandInfo, GmParam} from "../../../preload/net/node/NodeClientResponse";
   import {ElMessage} from "element-plus";
   import {CommonUtil} from "../common/CommonUtil";

@@ -7,7 +7,6 @@ import * as fs from "fs";
 import { env } from 'process';
 import axios from "axios";
 import * as HttpListener from "./HttpListener";
-import * as KcpListener from "./KcpListener";
 import {MessageUtil} from "./MessageUtil";
 
 // https://stackoverflow.com/questions/42524606/how-to-get-windows-version-using-node-js
@@ -131,11 +130,6 @@ app.on('activate', () => {
 })
 
 HttpListener.listener()
-KcpListener.listener(getWindow)
-
-function getWindow(){
-  return win;
-}
 
 function checkForUpdates() {
   MessageUtil.consoleMsg("#######checkForUpdates#######")
