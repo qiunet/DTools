@@ -44,13 +44,4 @@ export class DateUtil {
         console.log(moment(dateString, format).toDate());
         return moment(dateString, format).toDate();
     }
-
-    /**
-     * 日志打印时间 yyyy-MM-dd HH:mm:ss.ms
-     * @returns 
-     */
-    public static logTimeString(): string{
-        const date = new Date();
-        return this.dateFormat(date) + "." + StringUtil.fixedNumber(date.getMilliseconds(), 3)
-    }
 }

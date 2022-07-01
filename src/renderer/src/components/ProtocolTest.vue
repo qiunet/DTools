@@ -27,9 +27,6 @@
     <el-form-item label="协议内容">
       <el-input :autosize="{ minRows: 3, maxRows:8 }" type="textarea" resize="none" v-model="formData.protocolData" placeholder="填写请求数据"/>
     </el-form-item>
-    <el-form-item label="是否KCP">
-      <el-checkbox v-model="formData.kcp"/>
-    </el-form-item>
     <el-form-item>
       <el-button style="width: 100%" type="success" @click="formData.submitForm">请求协议</el-button>
     </el-form-item>
@@ -58,8 +55,6 @@
      */
     protocolData: '',
 
-    kcp:false,
-
     reqChange(val: number) {
       let obj = window.client_api.buildProtoTypeInfo(val);
       formData.protocolData = JSON.stringify(obj, null, '\t')
@@ -70,8 +65,7 @@
         ElMessage.error("请选择协议. 填写请求数据!")
         return;
       }
-      
-      props.submit(formData.selectRequestID, formData.protocolData, formData.kcp)
+      props.submit(formData.selectRequestID, formData.protocolData)
     }
   });
 

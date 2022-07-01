@@ -167,15 +167,6 @@ export class ToolAPI {
     }
 
     /**
-     * sha1加密
-     * @param context   加密文本
-     * @returns 
-     */
-    sha1 = (context:string):string => {
-        return CryptoUtil.sha1(context);
-    }
-
-    /**
      * 执行脚本
      * @param script 
      */

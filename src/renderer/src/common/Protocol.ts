@@ -3,12 +3,6 @@
  */
 export class Protocol {
     static readonly ERROR_STATUS_TIPS_RSP = 4;
-    /**申请kcp的token. 仅tcp WebSocket使用. */
-    static readonly  KCP_TOKEN_REQ = 8;
-    static readonly  KCP_TOKEN_RSP = 9;
-    /**申请kcp 绑定*/
-    static readonly  KCP_BIND_AUTH_REQ = 10;
-    static readonly  KCP_BIND_AUTH_RSP = 11;
 
     static readonly GM_COMMAND_INDEX_REQ = 606;
     static readonly GM_COMMAND_LIST_RSP = 607;
@@ -21,10 +15,6 @@ export class Protocol {
 
     static readonly CLIENT_PING = 700;
     static readonly CLIENT_PONG = 701;
-    
-	/** kcp 连接 */
-	static readonly KCP_CONNECT_REQ = 702;
-	static readonly KCP_CONNECT_RSP = 703;
 
     static readonly LOGIN_REQ = 1001;
     static readonly LOGIN_RSP = 1001001;
