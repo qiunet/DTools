@@ -126,7 +126,7 @@ export class ProtoManager {
                 continue
             }
             const protocolId = reqEnum.values[reqEnumKey];
-            if (protocolId < 2000) {
+            if (protocolId < 1008) {
                 // 系统以及登录相关协议
                 continue
             }

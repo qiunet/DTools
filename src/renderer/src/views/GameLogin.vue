@@ -23,12 +23,15 @@
           <template #default="scope">
             <el-button type="text" size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
             <el-button type="text" size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
-            <el-popconfirm title="是否登出?" confirm-button-text="直接登出" cancel-button-text="模拟断线重连"
-                           @confirm="PlayerManager.logout(scope.row.openId)" @cancel="scope.row.reconnect()">
+            <el-popover v-model:visible="logoutVisible" :width="200">
+                <p><b>是否登出?</b></p>
+                <el-button size="small" type="text" @click="brokenConnection(scope.row)">异常登出</el-button>
+                <el-button size="small" type="text" @click="brokenAndReconnection(scope.row)">断线重连</el-button>
+                <el-button size="small" type="primary" @click="logout(scope.row)">正常登出</el-button>
               <template #reference>
-                <el-button type="text" size="small" >登出</el-button>
+                <el-button type="text" size="small" @click="logoutVisible = true">登出</el-button>
               </template>
-            </el-popconfirm>
+            </el-popover>
           </template>
         </el-table-column>
       </el-table>
@@ -41,7 +44,7 @@
         <el-divider content-position="left">
           <el-space :spacer="spacer">
             <div>响应控制台</div>
-            <div><el-button type="text" @click="protoTestData.protoResponseOutput.splice(0)">清空</el-button></div>
+            <div><el-button type="text" @click="cleanupConsole">清空</el-button></div>
           </el-space>
         </el-divider>
         <el-scrollbar
@@ -87,6 +90,11 @@ import {ResponseInfo} from "../common/ResponseInfo";
     close: () => void;
   }
 
+  function cleanupConsole() {
+    protoTestData.protoResponseOutput.splice(0)
+    protoTestData.currPlayer?.cleanupResponses()
+  }
+  const logoutVisible = ref();
   const setting = ref(window.tool_api.setting());
   const loginData = PlayerManager.playerList;
   function showGmCommand(data: PlayerData) {
@@ -122,11 +130,13 @@ import {ResponseInfo} from "../common/ResponseInfo";
     protoTestData.showDialog = true;
     if (protoTestData.currPlayer !== data) {
       protoTestData.currPlayer?.off('server-response');
-      protoTestData.protoResponseOutput = data.responseList;
-      protoTestData.currPlayer?.unselect();
+      protoTestData.protoResponseOutput.splice(0);
+      let responseList: Array<ResponseInfo> = data.responseList;
+      responseList.forEach(val => {
+        protoTestData.protoResponseOutput.push(val)
+      });
     }
     protoTestData.currPlayer = data;
-    data.selected = true;
     scrollToBottom()
     data.on('server-response', (info: ResponseInfo) => {
       protoTestData.protoResponseOutput.push(info);
@@ -207,6 +217,20 @@ import {ResponseInfo} from "../common/ResponseInfo";
       PlayerManager.destroy()
   }
 
+  function logout(data: PlayerData) {
+      PlayerManager.logout(data.openId)
+      logoutVisible.value = false
+  }
+
+  function brokenConnection(data: PlayerData) {
+    logoutVisible.value = false
+    data.client?.destroy()
+  }
+
+  function brokenAndReconnection(data: PlayerData) {
+    logoutVisible.value = false
+    data.reconnect()
+  }
 </script>
 
 <style scoped>

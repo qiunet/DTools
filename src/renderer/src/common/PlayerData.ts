@@ -13,6 +13,7 @@ export type EventName = 'gm-command-list' | 'gm-command-success' | 'proto-debug-
 
 export class PlayerData {
     private readonly events: Events = new Events();
+    private eventListener: Array<EventName> = [];
     /**
      * 登录数据. 可以重登使用
      * @private
@@ -22,10 +23,6 @@ export class PlayerData {
      * 响应的数据信息
      */
     responseList: Array<ResponseInfo> = [];
-    /**
-     * 是否被选择查看响应消息
-     */
-    selected: boolean|undefined;
 
     client: Client|undefined;
     /**
@@ -68,17 +65,15 @@ export class PlayerData {
         this.on(eventName, cb, true);
     }
 
-    unselect() {
-        this.selected = false;
-    }
-
     get hostInfo() {
         return this.client?.host+":"+this.client?.port;
     }
 
     logout() {
         this.client?.sendData(Protocol.LOGOUT_REQ, {});
+        this.events.off('server-response');
     }
+
     private _reconnect: boolean = false;
     /**
      * 模拟重连
@@ -87,6 +82,7 @@ export class PlayerData {
         this._reconnect = true;
         this.client?.destroy()
         PlayerManager.logout(this.openId, false)
+        this.events.off('server-response');
         setTimeout(() => {
             this.connect()
         }, 1000)
@@ -151,10 +147,8 @@ export class PlayerData {
                 break
             default:
                 let responseInfo = new ResponseInfo(protocolId, obj);
-                if (! this.selected) {
-                    this.responseList.push(responseInfo);
-                }
                 this.events.fire('server-response', responseInfo)
+                this.responseList.push(responseInfo)
         }
     }
     /**
