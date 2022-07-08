@@ -21,15 +21,15 @@
         <el-table-column label="M2" width="70"  prop="m2"/>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button type="text" size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
-            <el-button type="text" size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
-            <el-popover v-model:visible="logoutVisible" :width="200">
+            <el-button type="primary" text size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
+            <el-button type="primary" text size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
+            <el-popover v-model:visible="logoutVisible" :width="220" trigger="click" auto-close="3">
                 <p><b>是否登出?</b></p>
-                <el-button size="small" type="text" @click="brokenConnection(scope.row)">异常登出</el-button>
-                <el-button size="small" type="text" @click="brokenAndReconnection(scope.row)">断线重连</el-button>
+                <el-button size="small" type="danger" text @click="brokenConnection(scope.row)">异常登出</el-button>
+                <el-button size="small" type="primary" text @click="brokenAndReconnection(scope.row)">断线重连</el-button>
                 <el-button size="small" type="primary" @click="logout(scope.row)">正常登出</el-button>
               <template #reference>
-                <el-button type="text" size="small" @click="logoutVisible = true">登出</el-button>
+                <el-button type="primary" text size="small" @click="logoutVisible = !logoutVisible">登出</el-button>
               </template>
             </el-popover>
           </template>
@@ -44,7 +44,7 @@
         <el-divider content-position="left">
           <el-space :spacer="spacer">
             <div>响应控制台</div>
-            <div><el-button type="text" @click="cleanupConsole">清空</el-button></div>
+            <div><el-button type="primary" text @click="cleanupConsole">清空</el-button></div>
           </el-space>
         </el-divider>
         <el-scrollbar

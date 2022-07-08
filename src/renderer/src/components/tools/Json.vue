@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="align-items: center; padding-top: 20px">
-      <el-button type="text" size="large" @click="data.dialogVisible = true; showJsonView = false;">
+      <el-button type="primary" text size="large" @click="data.dialogVisible = true; showJsonView = false;">
         点击按钮粘贴Json文本<el-icon class="el-icon--right"><Upload /></el-icon>
       </el-button>
 
