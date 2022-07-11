@@ -166,7 +166,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
       protoTestData.currPlayer?.sendData(Protocol.GM_DEBUG_PROTOCOL_REQ, {protocolId: protocolId, data: jsonString})
     },
     close: () => {
-      // protoTestData.currPlayer?.off('server-response')
+      protoTestData.currPlayer?.off('server-response')
     }
   })
 
@@ -219,16 +219,13 @@ import {ResponseInfo} from "../common/ResponseInfo";
 
   function logout(data: PlayerData) {
       PlayerManager.logout(data.openId)
-      logoutVisible.value = false
   }
 
   function brokenConnection(data: PlayerData) {
-    logoutVisible.value = false
     data.client?.destroy()
   }
 
   function brokenAndReconnection(data: PlayerData) {
-    logoutVisible.value = false
     data.reconnect()
   }
 </script>
