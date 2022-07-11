@@ -23,13 +23,13 @@
           <template #default="scope">
             <el-button type="primary" text size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
             <el-button type="primary" text size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
-            <el-popover v-model:visible="logoutVisible" :width="220" trigger="click" auto-close="3">
+            <el-popover :width="220" trigger="click" auto-close="3">
                 <p><b>是否登出?</b></p>
                 <el-button size="small" type="danger" text @click="brokenConnection(scope.row)">异常登出</el-button>
                 <el-button size="small" type="primary" text @click="brokenAndReconnection(scope.row)">断线重连</el-button>
                 <el-button size="small" type="primary" @click="logout(scope.row)">正常登出</el-button>
               <template #reference>
-                <el-button type="primary" text size="small" @click="logoutVisible = !logoutVisible">登出</el-button>
+                <el-button type="primary" text size="small">登出</el-button>
               </template>
             </el-popover>
           </template>
@@ -94,7 +94,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
     protoTestData.protoResponseOutput.splice(0)
     protoTestData.currPlayer?.cleanupResponses()
   }
-  const logoutVisible = ref();
+
   const setting = ref(window.tool_api.setting());
   const loginData = PlayerManager.playerList;
   function showGmCommand(data: PlayerData) {
