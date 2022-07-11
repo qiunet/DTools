@@ -23,7 +23,7 @@
           <template #default="scope">
             <el-button type="primary" text size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
             <el-button type="primary" text size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
-            <el-popover :width="220" trigger="click" auto-close="3">
+            <el-popover :width="250" trigger="click" auto-close="3">
                 <p><b>是否登出?</b></p>
                 <el-button size="small" type="danger" text @click="brokenConnection(scope.row)">异常登出</el-button>
                 <el-button size="small" type="primary" text @click="brokenAndReconnection(scope.row)">断线重连</el-button>
