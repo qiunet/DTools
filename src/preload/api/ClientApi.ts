@@ -1,4 +1,4 @@
-import {Client, TcpClient} from "../net/Client";
+import {Client, KcpClient, TcpClient} from "../net/Client";
 import {ProtoInfo} from "../utils/ProtoInfo";
 import {ProtoManager} from "../net/Proto";
 import {ProtoTypeInfo} from "../../renderer/src/common/ProtoTypeInfo";
@@ -8,6 +8,11 @@ export class ClientAPI {
     connect = (host:string, port:number, openId: string, ticket: string, onData: (openId: string, protocolId: number, obj: any) => void): Promise<Client> => {
         return new TcpClient(openId, host, port, onData).connect();
     }
+
+    kcpConnect = (convId: number, host:string, port:number, openId: string, onData: (openId: string, protocolId: number, obj: any) => void): Promise<Client> => {
+        return new KcpClient(convId, openId, host, port, onData).connect();
+    }
+
     /**
      * 请求协议信息
      */

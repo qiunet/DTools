@@ -24,6 +24,14 @@
         </el-option>
       </el-select>
     </el-form-item>
+    <el-form-item label="协议类型">
+      <el-switch
+          width="150"
+          active-text="KCP"
+          inactive-text="TCP"
+          v-model="formData.kcp"
+      />
+    </el-form-item>
     <el-form-item label="协议内容">
       <el-input :autosize="{ minRows: 3, maxRows:8 }" type="textarea" resize="none" v-model="formData.protocolData" placeholder="填写请求数据"/>
     </el-form-item>
@@ -35,7 +43,7 @@
 
 <script lang="ts" setup>
 
-  import {reactive} from "vue";
+import {reactive, ref} from "vue";
   import {ElMessage} from "element-plus";
 
   const props = defineProps({
@@ -55,6 +63,8 @@
      */
     protocolData: '',
 
+    kcp: false,
+
     reqChange(val: number) {
       let obj = window.client_api.buildProtoTypeInfo(val);
       formData.protocolData = JSON.stringify(obj, null, '\t')
@@ -65,7 +75,7 @@
         ElMessage.error("请选择协议. 填写请求数据!")
         return;
       }
-      props.submit(formData.selectRequestID, formData.protocolData)
+      props.submit(formData.selectRequestID, formData.protocolData, formData.kcp)
     }
   });
 

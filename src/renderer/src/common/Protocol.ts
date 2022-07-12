@@ -4,6 +4,12 @@
 export class Protocol {
     static readonly ERROR_STATUS_TIPS_RSP = 4;
 
+    static readonly KCP_TOKEN_REQ = 8;
+    static readonly KCP_TOKEN_RSP = 9;
+
+    static readonly KCP_BIND_AUTH_REQ = 10;
+    static readonly KCP_BIND_AUTH_RSP = 11;
+
     static readonly GM_COMMAND_INDEX_REQ = 606;
     static readonly GM_COMMAND_LIST_RSP = 607;
 

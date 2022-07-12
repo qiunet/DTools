@@ -24,7 +24,8 @@ export class PlayerData {
      */
     responseList: Array<ResponseInfo> = [];
 
-    client: Client|undefined;
+    tcpClient: Client|undefined;
+    kcpClient: Client|undefined;
     /**
      * 账号
      */
@@ -66,11 +67,11 @@ export class PlayerData {
     }
 
     get hostInfo() {
-        return this.client?.host+":"+this.client?.port;
+        return this.tcpClient?.host+":"+this.tcpClient?.port;
     }
 
     logout() {
-        this.client?.sendData(Protocol.LOGOUT_REQ, {});
+        this.tcpClient?.sendData(Protocol.LOGOUT_REQ, {});
         this.events.off('server-response');
     }
 
@@ -80,7 +81,7 @@ export class PlayerData {
      */
     reconnect() {
         this._reconnect = true;
-        this.client?.destroy()
+        this.tcpClient?.destroy()
         PlayerManager.logout(this.openId, false)
         this.events.off('server-response');
         setTimeout(() => {
@@ -107,12 +108,20 @@ export class PlayerData {
                 break
             case Protocol.LOGIN_RSP:
                 if (obj.needRegister) {
-                    this.client?.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1});
+                    this.tcpClient?.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1});
                 }
                 break
             case Protocol.RANDOM_NAME_RSP:
-                this.client?.sendData(Protocol.REGISTER_REQ, {name: obj.name});
+                this.tcpClient?.sendData(Protocol.REGISTER_REQ, {name: obj.name});
                 break
+            case Protocol.KCP_TOKEN_RSP:
+                let host: string = this.tcpClient?.host === undefined ? "" : this.tcpClient.host;
+                let port: number = this.tcpClient?.port === undefined ? 0 : this.tcpClient.port;
+                window.client_api.kcpConnect(obj.convId, host, port, openId, this.onData).then(c => {
+                    c.sendData(Protocol.KCP_BIND_AUTH_REQ, {playerId: this.playerId, token: obj.token})
+                    this.kcpClient = c;
+                })
+                break;
             case Protocol.ERROR_STATUS_TIPS_RSP:
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
                 this.events.fire('server-response', protocolId, obj)
@@ -159,7 +168,6 @@ export class PlayerData {
      * @returns
      */
     onReceive(openId: string, protocolId: number, obj: any):boolean{
-        console.log("original onReceive")
         return false;
     }
 
@@ -167,8 +175,11 @@ export class PlayerData {
     connect() {
         window.client_api.connect(this.loginData.serverHost, this.loginData.serverPort, this.openId, this.loginData.ticket, this.onData)
         .then(client => {
-            this.client = client;
-            this.client?.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
+            this.tcpClient = client;
+            this.tcpClient?.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
+            setTimeout(() => {
+                this.tcpClient?.sendData(Protocol.KCP_TOKEN_REQ, {})
+            }, 500);
             client.onEvent('connect', () => {
 
             });
@@ -184,9 +195,14 @@ export class PlayerData {
      * 发送数据
      * @param protocolId 协议id
      * @param data
+     * @param kcp
      */
-    sendData(protocolId: number, data: any) {
-        this.client?.sendData(protocolId, data);
+    sendData(protocolId: number, data: any, kcp: boolean) {
+        if (kcp) {
+            this.kcpClient?.sendData(protocolId, data)
+        }else {
+            this.tcpClient?.sendData(protocolId, data);
+        }
     }
 }
 

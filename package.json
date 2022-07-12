@@ -27,7 +27,6 @@
     "excel_to_cfg": "^1.0.51",
     "fast-xml-parser": "^4.0.2",
     "json-tree-view-vue3": "^0.1.16",
-    "kcpjs": "^1.0.10",
     "moment": "^2.29.1",
     "onfire.js": "^2.0.1",
     "protobufjs": "^6.11.2",

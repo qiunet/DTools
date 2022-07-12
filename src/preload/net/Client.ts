@@ -3,7 +3,7 @@ import {ProtoManager} from "./Proto";
 import {Socket} from "net";
 import crc from 'crc-32'
 import {Protocol} from "../../renderer/src/common/Protocol";
-import {DialWithOptions, UDPSession} from "kcpjs"
+import {DialWithOptions, UDPSession} from "./kcp/session"
 import {MathUtil} from "../../renderer/src/common/MathUtil";
 
 export class ProtocolHeader {
@@ -108,7 +108,7 @@ export abstract class Client {
      * @param protocolId
      * @param data
      */
-    sendData(protocolId: number, data: any): void  {
+    sendData = (protocolId: number, data: any):void => {
         console.log("===Request protocol[" + protocolId + "], data:", data)
         const type = ProtoManager.findReqProto(protocolId)
         const message = type.create(data)
@@ -235,13 +235,13 @@ export class TcpClient extends Client {
 export class KcpClient extends Client {
     private session: UDPSession| undefined;
     protected timer: any;
-    readonly token: string;
+    readonly convId: number
 
 
 
-    constructor(openId: string, token: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) {
+    constructor(convId: number, openId: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) {
         super(openId, host, port, onData)
-        this.token = token;
+        this.convId = convId;
     }
 
     activity = (): boolean => {
@@ -250,14 +250,11 @@ export class KcpClient extends Client {
 
     connect = async (connectListener?:() => void): Promise<Client> => {
         this.session = DialWithOptions({
-            conv: MathUtil.random(1, 100000),
+            conv: this.convId,
             port: this.port,
             host: this.host,
-            block: undefined,
-            dataShards: 0,
-            parityShards: 0
         });
-        this.session.setMtu(512);
+
         if (connectListener) {
             connectListener()
         }
@@ -281,8 +278,8 @@ export class KcpClient extends Client {
         }).on('error', err => {
             console.error("Connect Errors", err)
         });
-
         this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 20000);
+        console.log("kcp connected!")
         return this;
     }
 
@@ -324,12 +321,11 @@ export class KcpClient extends Client {
         return "";
     }
 }
-
-
-const kcp = new KcpClient("11", "1231231", "localhost", 8880, ((openId, protocolId, obj) => {
-    console.log(obj)
-}));
-
-kcp.connect().then(client => {
-    client.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1})
-});
+//
+// const kcp = new KcpClient("11", "1231231", "localhost", 8880, ((openId, protocolId, obj) => {
+//     console.log(obj)
+// }));
+//
+// kcp.connect().then(client => {
+//     client.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1})
+// });
