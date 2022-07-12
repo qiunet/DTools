@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "commonjs",
     "moduleResolution": "node",
+    "strictNullChecks": false,
     "importHelpers": true,
     "jsx": "preserve",
     "esModuleInterop": true,

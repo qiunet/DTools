@@ -8,8 +8,8 @@
         <el-table-column prop="isNot" label="取反" width="80" />
         <el-table-column fixed="right" label="操作" width="120">
           <template #default="scope">
-            <el-button type="primary" text size="small" @click="deleteCondition(conditions, scope.$index)">删除</el-button>
-            <el-button type="primary" text size="small" @click="updateCondition(conditions, scope.$index)">编辑</el-button>
+            <el-link type="primary" @click="deleteCondition(conditions, scope.$index)">删除</el-link>&nbsp;
+            <el-link type="primary" @click="updateCondition(conditions, scope.$index)">编辑</el-link>
           </template>
         </el-table-column>
       </el-table>

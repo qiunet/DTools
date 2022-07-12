@@ -3,6 +3,8 @@ import {ProtoManager} from "./Proto";
 import {Socket} from "net";
 import crc from 'crc-32'
 import {Protocol} from "../../renderer/src/common/Protocol";
+import {DialWithOptions, UDPSession} from "kcpjs"
+import {MathUtil} from "../../renderer/src/common/MathUtil";
 
 export class ProtocolHeader {
     /**
@@ -72,35 +74,66 @@ export class ProtocolHeader {
 }
 export type EventType = 'close'|'connect'|'data'|'error'|'timeout'|'end';
 
-export interface Client {
-    onEvent: (event: EventType, func: (...args: any[]) => void) => Client;
-    connect: (connectListener?:() => void) => Promise<Client>
-    sendData: (protocolId: number, data: any) => void;
-    activity: () => boolean;
-    destroy: () => void;
-    host: string;
-    port: number;
-}
+export abstract class Client {
+    readonly onData: (openId: string, protocolId: number, obj: any) => void;
 
-export class TcpClient implements Client {
+    abstract onEvent: (event: EventType, func: (...args: any[]) => void) => Client;
+    abstract sendMessage: (protocolId: number, messageData: Uint8Array) => string;
+    abstract connect: (connectListener?:() => void) => Promise<Client>
+    abstract activity: () => boolean;
+    abstract destroy: () => void;
+
     readonly openId: string;
-
     readonly host: string;
     readonly port: number;
 
-    protected timer: any;
-    private readonly nodeClient: boolean;
 
-    protected client: Socket|undefined;
-
-    readonly onData: (openId: string, protocolId: number, obj: any) => void;
-
-    constructor(openId: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void, nodeClient = false) {
-        this.nodeClient = nodeClient;
-        this.openId = openId;
+    protected constructor(openId: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) {
         this.onData = onData;
+        this.openId = openId;
         this.host = host;
         this.port = port;
+    }
+
+    /**
+     * 找到response的 type
+     * @param protocolId
+     */
+    protected findRspType = (protocolId: number) => {
+        return ProtoManager.findRspProto(protocolId)
+    }
+
+    /**
+     * 会根据 protocol和data组装 message
+     * @param protocolId
+     * @param data
+     */
+    sendData(protocolId: number, data: any): void  {
+        console.log("===Request protocol[" + protocolId + "], data:", data)
+        const type = ProtoManager.findReqProto(protocolId)
+        const message = type.create(data)
+        let uint8Array: Uint8Array;
+        try {
+            uint8Array = type.encode(message).finish();
+            const sendMessage = this.sendMessage(protocolId, uint8Array);
+            if (sendMessage !== "") {
+                this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]发送失败, "+sendMessage})
+            }
+        } catch (e) {
+            this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]编码错误"})
+            console.error(e);
+        }
+    }
+}
+
+export class TcpClient extends Client {
+    protected timer: any;
+    private readonly nodeClient: boolean;
+    protected client: Socket|undefined;
+
+    constructor(openId: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void, nodeClient = false) {
+        super(openId, host, port, onData)
+        this.nodeClient = nodeClient;
     }
 
     /**
@@ -196,33 +229,107 @@ export class TcpClient implements Client {
         }
         return "";
     }
-    /**
-     * 会根据 protocol和data组装 message
-     * @param protocolId
-     * @param data
-     */
-    sendData = (protocolId: number, data: any) => {
-        console.log("===Request protocol[" + protocolId + "], data:", data)
-        const type = ProtoManager.findReqProto(protocolId)
-        const message = type.create(data)
-        let uint8Array: Uint8Array;
-        try {
-            uint8Array = type.encode(message).finish();
-            const sendMessage = this.sendMessage(protocolId, uint8Array);
-            if (sendMessage !== "") {
-                this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]发送失败, "+sendMessage})
-            }
-        } catch (e) {
-            this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]编码错误"})
-            console.error(e);
+}
+
+
+export class KcpClient extends Client {
+    private session: UDPSession| undefined;
+    protected timer: any;
+    readonly token: string;
+
+
+
+    constructor(openId: string, token: string, host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) {
+        super(openId, host, port, onData)
+        this.token = token;
+    }
+
+    activity = (): boolean => {
+        return this.session !== undefined
+    }
+
+    connect = async (connectListener?:() => void): Promise<Client> => {
+        this.session = DialWithOptions({
+            conv: MathUtil.random(1, 100000),
+            port: this.port,
+            host: this.host,
+            block: undefined,
+            dataShards: 0,
+            parityShards: 0
+        });
+        this.session.setMtu(512);
+        if (connectListener) {
+            connectListener()
         }
 
+        this.session.on("recv", data => {
+            const dis = new ByteInputBuffer(data);
+            const header = ProtocolHeader.createServerHeaderByBytes(dis);
+            const uint8Array = dis.readBytes(header.length);
+            if (header.protocolId === Protocol.CLIENT_PONG) {
+               return;
+            }
+
+            try {
+                const type = this.findRspType(header.protocolId)
+                const message = type.decode(uint8Array);
+                this.onData(this.openId, header.protocolId, message.toJSON())
+            }catch(e) {
+                this.onData(this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
+                console.error(e)
+            }
+        }).on('error', err => {
+            console.error("Connect Errors", err)
+        });
+
+        this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 20000);
+        return this;
     }
+
+    destroy = ():void => {
+        if (! this.session) {
+            return
+        }
+
+        clearTimeout(this.timer)
+        this.session?.close()
+        this.session = undefined;
+    }
+
+    onEvent = (event: EventType, func: (...args: any[]) => void): Client => {
+        this.session?.on(event, func);
+        return this;
+    }
+
     /**
-     * 找到response的 type
+     * 发送消息
      * @param protocolId
+     * @param messageData 已经组装成 protobuf message data 的数据
      */
-    protected findRspType = (protocolId: number) => {
-        return ProtoManager.findRspProto(protocolId)
+    sendMessage = (protocolId: number, messageData: Uint8Array): string => {
+        if (! this.activity) {
+            return "已经断开连接";
+        }
+
+        if (this.session === undefined)  {
+            return "没有创建连接";
+        }
+
+        const header = ProtocolHeader.create(protocolId, crc.buf(messageData));
+
+        let write = this.session.write(Buffer.from(header.toByteArray(messageData)));
+        if (! write) {
+            return "请求失败";
+        }
+        return "";
     }
 }
+
+
+const kcp = new KcpClient("11", "1231231", "localhost", 8880, ((openId, protocolId, obj) => {
+    console.log(obj)
+}));
+
+kcp.connect().then(client => {
+    client.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1})
+});

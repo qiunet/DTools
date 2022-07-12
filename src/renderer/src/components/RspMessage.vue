@@ -1,6 +1,6 @@
 <template>
   <span>&nbsp;&nbsp;[{{props.message.getDtString()}}]&nbsp;
-    (<el-button size="small" type="primary" text @click="showDialog=true">{{props.message.getProtocolInfo()}}</el-button>)
+    (<el-link type="primary" @click="showDialog=true">{{props.message.getProtocolInfo()}}</el-link>)
     &nbsp;&lt;&lt;&lt;&nbsp;{{props.message.getRspString()}}</span><br />
 
     <el-dialog v-model="showDialog" :title="`Response[${props.message.getProtocolInfo()}]内容`" width="70%" >

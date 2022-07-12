@@ -9,7 +9,7 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template #default="scope">
-          <el-button type="primary" text size="small" @click="updateActionParam(scope.row)">编辑</el-button>
+          <el-link type="primary" @click="updateActionParam(scope.row)">编辑</el-link>&nbsp;
         </template>
       </el-table-column>
     </el-table>

@@ -103,9 +103,8 @@ export class ProtoManager {
             const data = ipcRenderer.sendSync('get_request', this.currentPath);
             ProtoManager.init0(data)
         }else {
-            fs.readFile(SettingManager.setting.protoFilePath.current, "utf-8", (err, data) => {
-                ProtoManager.init0(data)
-            });
+            const data = fs.readFileSync(this.currentPath, "utf-8")
+            ProtoManager.init0(data)
         }
         return true;
     }

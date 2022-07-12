@@ -21,15 +21,15 @@
         <el-table-column label="M2" width="70"  prop="m2"/>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button type="primary" text size="small" @click="showGmCommand(scope.row)" >GM命令</el-button>
-            <el-button type="primary" text size="small" @click="showProtoTest(scope.row)">协议联调</el-button>
-            <el-popover :width="250" trigger="click" auto-close="3">
+            <el-link type="primary" @click="showGmCommand(scope.row)" >GM命令</el-link>&nbsp;
+            <el-link type="primary" @click="showProtoTest(scope.row)">协议联调</el-link>&nbsp;
+            <el-popover :width="250" trigger="click">
                 <p><b>是否登出?</b></p>
-                <el-button size="small" type="danger" text @click="brokenConnection(scope.row)">异常登出</el-button>
-                <el-button size="small" type="primary" text @click="brokenAndReconnection(scope.row)">断线重连</el-button>
+                <el-link type="danger" @click="brokenConnection(scope.row)">异常登出</el-link>&nbsp;
+                <el-link type="primary" @click="brokenAndReconnection(scope.row)">断线重连</el-link>&nbsp;
                 <el-button size="small" type="primary" @click="logout(scope.row)">正常登出</el-button>
               <template #reference>
-                <el-button type="primary" text size="small">登出</el-button>
+                <el-link type="primary">登出</el-link>
               </template>
             </el-popover>
           </template>
@@ -44,7 +44,7 @@
         <el-divider content-position="left">
           <el-space :spacer="spacer">
             <div>响应控制台</div>
-            <div><el-button type="primary" text @click="cleanupConsole">清空</el-button></div>
+            <div><el-link type="primary" @click="cleanupConsole">清空</el-link></div>
           </el-space>
         </el-divider>
         <el-scrollbar

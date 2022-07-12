@@ -45,7 +45,7 @@
           </div>
           <template #tip>
             <div class="el-upload__tip">
-              允许上传ejs模板文件!&nbsp;<el-button type="primary" text @click="drawer = true">语法</el-button>
+              允许上传ejs模板文件!&nbsp;<el-link type="primary" @click="drawer = true">语法</el-link>
             </div>
           </template>
         </el-upload>
