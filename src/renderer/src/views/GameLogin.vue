@@ -40,7 +40,7 @@
         <d-tool-command :command-list="gmCommandData.commandList" :send-message="gmCommandData.sendGmCommand"/>
       </el-dialog>
       <el-dialog v-model="protoTestData.showDialog" :title="`玩家[${protoTestData.currPlayer?.openId}]协议测试`" width="75%" @close="protoTestData.close">
-        <v-protocol-test :submit="protoTestData.submit" />
+        <v-protocol-test :submit="protoTestData.submit" :kcpPrepare="protoTestData.currPlayer?.kcpPrepare()" />
         <el-divider content-position="left">
           <el-space :spacer="spacer">
             <div>响应控制台</div>
@@ -104,7 +104,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
       gmCommandData.showDialog = true;
     }, true);
 
-    data.sendData(Protocol.GM_COMMAND_INDEX_REQ, {})
+    data.sendData(Protocol.GM_COMMAND_INDEX_REQ, {}, false)
   }
 
   const gmCommandData = reactive<IGmCommandData>({
@@ -121,7 +121,7 @@ import {ResponseInfo} from "../common/ResponseInfo";
         ElMessage.success("发送命令成功!")
       });
 
-      gmCommandData.currPlayer.sendData(Protocol.GM_COMMAND_REQ, {type: command, params: params});
+      gmCommandData.currPlayer.sendData(Protocol.GM_COMMAND_REQ, {type: command, params: params}, false);
     },
   });
  const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()

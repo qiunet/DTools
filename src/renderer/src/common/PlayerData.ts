@@ -171,6 +171,13 @@ export class PlayerData {
         return false;
     }
 
+    /**
+     * 是否有kcp
+     */
+    kcpPrepare(): boolean {
+        return this.kcpClient !== undefined;
+    }
+
 
     connect() {
         window.client_api.connect(this.loginData.serverHost, this.loginData.serverPort, this.openId, this.loginData.ticket, this.onData)

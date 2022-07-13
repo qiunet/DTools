@@ -24,7 +24,7 @@
         </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="协议类型">
+    <el-form-item label="协议类型" v-show="props.kcpPrepare">
       <el-switch
           width="150"
           active-text="KCP"
@@ -47,6 +47,7 @@ import {reactive, ref} from "vue";
   import {ElMessage} from "element-plus";
 
   const props = defineProps({
+    kcpPrepare: Boolean,
     // 提交协议内容
     submit: {
       required: true,
