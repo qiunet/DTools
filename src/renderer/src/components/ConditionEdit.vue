@@ -5,7 +5,11 @@
       <el-table :data="conditions.conditionArray" style="width: 100%">
         <el-table-column prop="desc" label="条件描述" width="150" />
         <el-table-column prop="attrs_desc" label="内容描述" width="400" />
-        <el-table-column prop="isNot" label="取反" width="80" />
+        <el-table-column prop="isNot" label="取反" width="80">
+          <template #default="scope">
+            <el-switch v-model="scope.row.isNot" disabled/>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="120">
           <template #default="scope">
             <el-link type="primary" @click="deleteCondition(conditions, scope.$index)">删除</el-link>&nbsp;
