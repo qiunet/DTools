@@ -22,6 +22,9 @@ export class Protocol {
     static readonly CLIENT_PING = 700;
     static readonly CLIENT_PONG = 701;
 
+    static readonly CONNECTION_REQ = 705;
+    static readonly CONNECTION_RSP = 706;
+
     static readonly LOGIN_REQ = 1001;
     static readonly LOGIN_RSP = 1001001;
 

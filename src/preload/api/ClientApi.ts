@@ -2,14 +2,14 @@ import {Client, KcpClient, TcpClient} from "../net/Client";
 import {ProtoInfo} from "../utils/ProtoInfo";
 import {ProtoManager} from "../net/Proto";
 import {ProtoTypeInfo} from "../../renderer/src/common/ProtoTypeInfo";
-
+import {ConnectionType} from "../utils/Enums"
 export class ClientAPI {
 
-    connect = (host:string, port:number, openId: string, ticket: string, onData: (openId: string, protocolId: number, obj: any) => void): Promise<Client> => {
+    connect = (host:string, port:number, openId: string, ticket: string, onData: (connType: ConnectionType, openId: string, protocolId: number, obj: any) => void): Promise<Client> => {
         return new TcpClient(openId, host, port, onData).connect();
     }
 
-    kcpConnect = (convId: number, host:string, port:number, openId: string, onData: (openId: string, protocolId: number, obj: any) => void): Promise<Client> => {
+    kcpConnect = (convId: number, host:string, port:number, openId: string, onData: (connType: ConnectionType, openId: string, protocolId: number, obj: any) => void): Promise<Client> => {
         return new KcpClient(convId, openId, host, port, onData).connect();
     }
 

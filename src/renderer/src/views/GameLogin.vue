@@ -131,12 +131,12 @@ import {ResponseInfo} from "../common/ResponseInfo";
     if (protoTestData.currPlayer !== data) {
       protoTestData.currPlayer?.off('server-response');
       protoTestData.protoResponseOutput.splice(0);
-      let responseList: Array<ResponseInfo> = data.responseList;
-      responseList.forEach(val => {
-        protoTestData.protoResponseOutput.push(val)
-      });
-    }
-    protoTestData.currPlayer = data;
+   }
+   let responseList: Array<ResponseInfo> = data.responseList;
+   responseList.forEach(val => {
+     protoTestData.protoResponseOutput.push(val)
+   });
+   protoTestData.currPlayer = data;
     scrollToBottom()
     data.on('server-response', (info: ResponseInfo) => {
       protoTestData.protoResponseOutput.push(info);

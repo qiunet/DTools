@@ -5,6 +5,7 @@ import {Protocol} from "./Protocol";
 import {ref} from "vue";
 import Events from 'onfire.js';
 import {ResponseInfo} from "./ResponseInfo";
+import {ConnectionType} from "../../../preload/utils/Enums";
 
 /**
  * 事件类型
@@ -82,6 +83,7 @@ export class PlayerData {
     reconnect() {
         this._reconnect = true;
         this.tcpClient?.destroy()
+        this.kcpClient?.destroy()
         PlayerManager.logout(this.openId, false)
         this.events.off('server-response');
         setTimeout(() => {
@@ -93,7 +95,7 @@ export class PlayerData {
         this.responseList.splice(0);
     }
 
-    onData = (openId: string, protocolId: number, obj: any) => {
+    onData = (connType: ConnectionType, openId: string, protocolId: number, obj: any):void => {
         // 移动的协议. 不记录. 不打印.
         const ignoreProtocolId = Protocol.IGNORE_PROTOCOL_ID;
         if (ignoreProtocolId.find(id => id === protocolId)) return;
@@ -110,6 +112,9 @@ export class PlayerData {
                 if (obj.needRegister) {
                     this.tcpClient?.sendData(Protocol.RANDOM_NAME_REQ, {gender: 1});
                 }
+                setTimeout(() => {
+                    this.tcpClient?.sendData(Protocol.KCP_TOKEN_REQ, {})
+                }, 500);
                 break
             case Protocol.RANDOM_NAME_RSP:
                 this.tcpClient?.sendData(Protocol.REGISTER_REQ, {name: obj.name});
@@ -126,6 +131,12 @@ export class PlayerData {
                 ElMessage.error("错误码:"+obj.status+" 描述:"+obj.desc)
                 this.events.fire('server-response', protocolId, obj)
                 break;
+
+            case Protocol.CONNECTION_RSP:
+                if (connType === ConnectionType.TCP) {
+                    this.tcpClient?.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
+                }
+                break
             case Protocol.GM_COMMAND_LIST_RSP:
                 this.events.fire('gm-command-list', obj.list);
                 break;
@@ -183,10 +194,7 @@ export class PlayerData {
         window.client_api.connect(this.loginData.serverHost, this.loginData.serverPort, this.openId, this.loginData.ticket, this.onData)
         .then(client => {
             this.tcpClient = client;
-            this.tcpClient?.sendData(Protocol.LOGIN_REQ, {ticket: this.loginData.ticket});
-            setTimeout(() => {
-                this.tcpClient?.sendData(Protocol.KCP_TOKEN_REQ, {})
-            }, 500);
+            this.tcpClient?.sendData(Protocol.CONNECTION_REQ, {idKey: this.openId});
             client.onEvent('connect', () => {
 
             });

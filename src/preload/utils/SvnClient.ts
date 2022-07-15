@@ -70,10 +70,10 @@ export class SvnClient {
         }
 
         return this.info(path).then(str => {
-            return this.cmd("commit", path, "-m 'dTools commit'");
+            return this.cmd("commit", path, "-m 'dTools commit。。。。。'");
         }).catch(str => {
             return this.cmd("add", path).then(str => {
-                return this.cmd("commit", path, "-m 'dTools commit'");
+                return this.cmd("commit", path, "-m 'dTools commit。。。。。'");
             });
         });
     }
