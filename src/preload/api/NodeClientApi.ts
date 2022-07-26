@@ -1,8 +1,10 @@
 import {NodeClient} from "../net/node/NodeClient";
+import {ConnectionType} from "../utils/Enums";
+import {Protocol} from "../../renderer/src/common/Protocol";
 
 export class NodeClientAPI {
 
-    connect = async (host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) => {
+    connect = async (host: string, port: number, onData: (connType: ConnectionType, openId: string, protocolId: number, obj: any) => void) => {
        if (NodeClient.client !== undefined
            && NodeClient.client.port === port
            && NodeClient.client.host === host
@@ -14,7 +16,10 @@ export class NodeClientAPI {
        }
 
         NodeClient.client = new NodeClient(host, port, onData);
-        return NodeClient.client.connect();
+        return NodeClient.client.connect().then(client => {
+            client.sendData(Protocol.CONNECTION_REQ, {idKey: "DTools"});
+            return client;
+        });
     }
 
     destroy = () => {

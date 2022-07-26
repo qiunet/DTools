@@ -94,6 +94,10 @@ export class DToolsSetting {
      */
     cfgPathSelect: SelectSetting = new SelectSetting();
     /**
+     * gm server
+     */
+    gmServerSelect: SelectSetting = new SelectSetting();
+    /**
      * 项目配置路径
      */
     projectPathSelect: SelectSetting = new SelectSetting();
@@ -105,10 +109,6 @@ export class DToolsSetting {
      * ai config.json 文件路径
      */
     aiJsonCfgPathSelect: SelectSetting = new SelectSetting();
-    /**
-     * redis 地址
-     */
-    redisSelect: SelectSetting = new SelectSetting();
     /**
      *  proto 文件路径
      */
@@ -130,9 +130,9 @@ export class DToolsSetting {
         setting.protoFilePath = SelectSetting.valueOf(data.protoFilePath, 'http://git.xf.io/config/meta_server/raw/master/proto/AllInOneProtobufProtocol.proto');
         setting.aiJsonCfgPathSelect = SelectSetting.valueOf(data.aiJsonCfgPathSelect, 'http://git.xf.io/config/meta_server/raw/master/ai/AiConfig.json');
         setting.loginUrl = SelectSetting.valueOf(data.loginUrl, 'http://localhost:8080/login');
-        setting.redisSelect = SelectSetting.valueOf(data.redisSelect, 'localhost:6379');
         setting.projectPathSelect = SelectSetting.valueOf(data.projectPathSelect);
         setting.aiCfgPathSelect = SelectSetting.valueOf(data.aiCfgPathSelect);
+        setting.gmServerSelect = SelectSetting.valueOf(data.gmServerSelect);
         setting.cfgPathSelect = SelectSetting.valueOf(data.cfgPathSelect);
         setting.loginScriptFilePath = SelectSetting.valueOf(data.loginScriptFilePath);
         setting.role = data.role;

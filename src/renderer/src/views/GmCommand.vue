@@ -1,23 +1,9 @@
 <template>
   <el-container style="width: 100%;">
-    <el-aside width="200px">
-      <el-form label-position="top" label-width="200px" :model="dataForm" style="max-width: 200px">
-        <el-form-item label="Redis地址">
-          <v-choice-select :select="setting.redisSelect" :newValCheck="validRedisUrl" :useFunc="reloadRedisServer" :delSelect="reloadRedisServer" placeholder="填入Redis地址以及端口" />
-        </el-form-item>
+    <el-aside width="220px">
+      <el-form label-position="top" label-width="220px" :model="dataForm" style="max-width: 200px">
         <el-form-item label="服务地址">
-          <el-select size="large" v-model="currentServer" value-key="serverId" style="width:500px" @change="changeServer" placeholder="选择服务器">
-            <el-option
-                v-for="item in dataForm.serverPath"
-                :label="item.serverId"
-                :key="item.serverId"
-                :value="item"
-             >
-              <span style="color: cadetblue; font-size: 12px">{{ item.serverId }}</span>
-              &nbsp;
-              <span style="color: grey">{{ item.host }}:{{ item.nodePort }}</span>
-            </el-option>
-          </el-select>
+          <v-choice-select :select="setting.gmServerSelect" :newValCheck="validServerUrl" :useFunc="changeServer" :delSelect="changeServer" placeholder="填入服务器地址以及端口" />
         </el-form-item>
         <el-form-item label="用户列表">
           <el-select size="large" v-model="dataForm.currentUser" value-key="playerId" style="width:500px" placeholder="选择玩家" no-data-text="当前没有用户在线">
@@ -27,8 +13,8 @@
                 :key="item.playerId"
                 :value="item"
             >
-              <span>{{ item.playerId }}</span>
-              <span style="float: right; color: grey">{{ item.openId }}: {{ item.playerId }}</span>
+              <span style="float: left; width: 80px;">{{ item.playerId }}</span>
+              <span style="float: right; width: 120px; color: grey">OPENID: {{ item.openId }}</span>
             </el-option>
           </el-select>
         </el-form-item>
@@ -65,6 +51,7 @@ import {UserInfo} from "../../../preload/net/node/NodeClientResponse";
 import vDToolsCommand from "../components/DToolCommand.vue"
 import vChoiceSelect from "../components/ChoiceSelector.vue";
 import { BrushFilled} from "@element-plus/icons-vue";
+import {ConnectionType} from "../../../preload/utils/Enums";
 
 
   function clearRubbish() {
@@ -78,10 +65,6 @@ import { BrushFilled} from "@element-plus/icons-vue";
     /**
      * 服务器路径
      */
-    serverPath: [] as Array<ServerInfo>,
-    /**
-     * 服务器路径
-     */
     userList: [] as Array<UserInfo>,
     /**
      * 当前用户
@@ -91,13 +74,16 @@ import { BrushFilled} from "@element-plus/icons-vue";
 
 
 /**
- * 校验redis
- * @param url
+ * 校验 serverPath
+ * @param serverPath
  */
-function validRedisUrl(url: string) {
-  const arr = url.split(":");
+function validServerUrl(serverPath: string) {
+  if (serverPath == undefined) {
+    return false;
+  }
+  const arr = serverPath.split(":");
   if (arr.length != 2) {
-    ElMessage.error("请输入Redis地址, 格式: host(地址):port(端口)")
+    ElMessage.error("请输入服务器地址, 格式: host(地址):port(端口)")
     return false;
   }
 
@@ -125,48 +111,45 @@ onUnmounted(() => {
 });
 /**
  * 服务器变更
- * @param item
+ * @param serverPath
  */
-  function changeServer(item: ServerInfo) {
-    window.node_client_api.destroy()
-    window.node_client_api.connect(item.host, item.nodePort, onData)
+  function changeServer() {
+    let serverPath = window.tool_api.setting().gmServerSelect.current;
+    if (serverPath == undefined) {
+      window.node_client_api.destroy()
+      dataForm.userList.splice(0)
+      dataForm.currentUser = undefined;
+      return;
+    }
+
+  const arr = serverPath.split(":");
+  console.log("-----", arr)
+  window.node_client_api.destroy()
+    window.node_client_api.connect(arr[0], parseInt(arr[1]), onData)
     .then(result => {
+      console.log("-=-=-=-=-=-=--------")
       window.node_client_api.getOnlineUser();
       window.node_client_api.getCommandIndex();
     })
   }
 
-  function reloadRedisServer() {
-    dataForm.serverPath = [];
-    currentServer.value = undefined;
-    window.redis_api.changeRedis().then(open => {
-      if (! open) {
-        ElMessage.error("Redis连接失败, 请检查是否Redis是否开启!")
-        return;
-      }
-      window.redis_api.serverList().then(list => {
-        dataForm.serverPath = list;
-      });
-    });
+if (setting.value.gmServerSelect.current !== '') {
+  changeServer(setting.value.gmServerSelect.current)
+}
+
+function refresh() {
+    dataForm.currentUser = undefined;
+    window.node_client_api.getOnlineUser();
   }
 
-  if (setting.value.redisSelect.current !== '') {
-    reloadRedisServer()
-  }
 
-  function refresh() {
-     dataForm.currentUser = undefined;
-     dataForm.serverPath = [];
-     reloadRedisServer()
-  }
-
-  function sendMessage(command: number, params: string[]):string {
+function sendMessage(command: number, params: string[]):string {
     const playerId = dataForm.currentUser.playerId;
     return window.node_client_api.sendCommand(playerId, command, params);
   }
 
   const commandList = ref([]);
-  function onData(openId: string, protocol:number, obj: any){
+  function onData(connType: ConnectionType, openId: string, protocol:number, obj: any){
     console.log("==[",openId,"]Response [",protocol,"] Message:== ", obj)
     switch(protocol) {
       case 613:

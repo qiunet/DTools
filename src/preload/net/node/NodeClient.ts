@@ -1,6 +1,7 @@
 import pb, {Enum, Root, Type} from 'protobufjs';
 import {Client, TcpClient} from "../Client";
 import {ProtoManager} from "../Proto";
+import {ConnectionType} from "../../utils/Enums";
 
 // 从 node_protocol.proto 贴过来
 const protoContent = "syntax=\"proto3\";\n" +
@@ -77,7 +78,7 @@ class NodeProto {
 export class NodeClient extends TcpClient {
     static client: NodeClient|undefined;
 
-    constructor(host: string, port: number, onData: (openId: string, protocolId: number, obj: any) => void) {
+    constructor(host: string, port: number, onData: (connType: ConnectionType, openId: string, protocolId: number, obj: any) => void) {
         super("NodeClient", host, port,  onData, true);
     }
     /**

@@ -171,7 +171,7 @@ export class TcpClient extends Client {
                     return;
                 }
                 const uint8Array = dis.readBytes(header.length);
-                if (header.protocolId === Protocol.CLIENT_PONG) {
+                if (header.protocolId === Protocol.CLIENT_PONG || header.protocolId === Protocol.CLIENT_PING) {
                     continue
                 }
 
