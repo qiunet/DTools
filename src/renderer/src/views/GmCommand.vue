@@ -134,7 +134,7 @@ onUnmounted(() => {
   }
 
 if (setting.value.gmServerSelect.current !== '') {
-  changeServer(setting.value.gmServerSelect.current)
+  changeServer()
 }
 
 function refresh() {
