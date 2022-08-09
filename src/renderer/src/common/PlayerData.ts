@@ -122,7 +122,7 @@ export class PlayerData {
             case Protocol.KCP_TOKEN_RSP:
                 let host: string = this.tcpClient?.host === undefined ? "" : this.tcpClient.host;
                 let port: number = this.tcpClient?.port === undefined ? 0 : this.tcpClient.port;
-                window.client_api.kcpConnect(obj.convId, host, port, openId, this.onData).then(c => {
+                window.client_api.kcpConnect(obj.convId, host, obj.port, openId, this.onData).then(c => {
                     c.sendData(Protocol.KCP_BIND_AUTH_REQ, {playerId: this.playerId, token: obj.token})
                     this.kcpClient = c;
                 })
