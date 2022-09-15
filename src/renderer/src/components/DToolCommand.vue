@@ -115,8 +115,10 @@
 
       const commandId = currentCommand.value.type;
       const arr = [];
-      for (let i = 0; i < currentCommand.value.params.length; i++) {
-        arr.push((gmCommandData.commandData[i]).toString())
+      if (currentCommand.value.params !== undefined) {
+        for (let i = 0; i < currentCommand.value.params.length; i++) {
+          arr.push((gmCommandData.commandData[i]).toString())
+        }
       }
 
       const ret = props.sendMessage(commandId, arr)
