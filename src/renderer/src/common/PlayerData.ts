@@ -141,7 +141,9 @@ export class PlayerData {
                 this.events.fire('gm-command-list', obj.list);
                 break;
             case Protocol.GM_COMMAND_RSP:
-                this.events.fire('gm-command-success');
+                if (obj.status == 1) {
+                    this.events.fire('gm-command-success');
+                }
                 break
             case Protocol.GM_DEBUG_PROTOCOL_RSP:
                 this.events.fire('proto-debug-response')
