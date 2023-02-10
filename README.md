@@ -39,8 +39,9 @@
 ### sheet 规则
 
 1. sheet 如果为end . 后面的内容就不会读取.
-2. sheet 名包含 `c.` 表示仅客户端需要. `s.` 表示仅服务器需要
-3. sheet 名包含其它比如`lua.` 表示客户端需要按照lua输出. 会去 home目录下的`.dTools/ejs` 找对应的ejs模板
+2. sheet 如果开头为 # 该sheet忽略.不读取
+3. sheet 名包含 `c.` 表示仅客户端需要. `s.` 表示仅服务器需要
+4. sheet 名包含其它比如`lua.` 表示客户端需要按照lua输出. 会去 home目录下的`.dTools/ejs` 找对应的ejs模板
 
 
 ### [配置输出模板](https://ejs.co/#docs)
@@ -60,7 +61,7 @@
             ]
         }
     ]
-
+    
     Json.ejs 示例:
     [
     <%_ rows.forEach(function (row, rIndex){ _%>
@@ -72,8 +73,8 @@
     <%_ }); _%>
     ]
 
-
 ### 界面
+
 ![批量登录](img/GameLogin1.png)
 ![协议联调](img/GameLogin2.png)
 ![GM命令](img/GmCommand.png)
