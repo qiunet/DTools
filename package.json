@@ -24,7 +24,7 @@
     "crc-32": "^1.2.2",
     "electron-updater": "^4.6.5",
     "element-plus": "^2.2.9",
-    "excel_to_cfg": "^1.0.55",
+    "excel_to_cfg": "^1.0.56",
     "fast-xml-parser": "^4.0.2",
     "json-tree-view-vue3": "^0.1.16",
     "moment": "^2.29.1",
