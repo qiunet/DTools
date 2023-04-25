@@ -8,7 +8,7 @@
         <el-header height="30px">
           <el-divider class="content-area-title" content-position="left">{{ this.$route.meta.title }}</el-divider>
         </el-header>
-        <el-main style="overflow-y: hidden; padding-top: 20px; margin-left: 10px">
+        <el-main style="overflow-y: hidden; padding-top: 20px;">
           <div id="content">
             <router-view />
           </div>

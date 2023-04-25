@@ -17,23 +17,25 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside id="tools-sidebar" width="250px" style="border-radius: 2px;">
-        <el-input v-model="filterText" placeholder="过滤" />
-        <el-tree
-            style="height: 100%;"
-            ref="treeRef"
-            node-key="fullPath"
-            :data="data.files"
-            class="filter-tree"
-            @node-click="open = false"
-            @node-contextmenu="rightClick"
-            default-expand-all
-            :props="data.defaultProps"
-            :highlight-current="true"
-            @dblclick="openFile"
-            :filter-node-method="filterNode"
-        >
-        </el-tree>
+      <el-aside id="tools-sidebar" width="260px" style="border-radius: 1px;">
+          <el-scrollbar height="613px">
+            <el-input v-model="filterText" placeholder="过滤" />
+            <el-tree
+                    style="height: 100%;"
+                    ref="treeRef"
+                    node-key="fullPath"
+                    :data="data.files"
+                    class="filter-tree"
+                    @node-click="open = false"
+                    @node-contextmenu="rightClick"
+                    default-expand-all
+                    :props="data.defaultProps"
+                    :highlight-current="true"
+                    @dblclick="openFile"
+                    :filter-node-method="filterNode"
+            >
+            </el-tree>
+          </el-scrollbar>
         <vue3-menus :open="open" :event="event" :menus="menus">
           <template #label="{menu, index, activeIndex}">{{ menu.label }}</template>
         </vue3-menus>
