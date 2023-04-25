@@ -155,7 +155,7 @@ export class TcpClient extends Client {
             if (connectListener) {
                 connectListener()
             }
-            this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 20000);
+            this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 5000);
         }).on("data", data => {
             if (data.length < 8) {
                 // 不够header的长度
@@ -281,7 +281,7 @@ export class KcpClient extends Client {
         }).on('error', err => {
             console.error("Connect Errors", err)
         });
-        this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 20000);
+        this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 5000);
         console.log("kcp connected!")
         return this;
     }
