@@ -42,8 +42,14 @@
         <div class="content_area">
           <el-container style="height: 100%">
             <el-header height="22px"><el-divider content-position="left" border-style="color: #324157;">控制台</el-divider></el-header>
-            <el-main>
-              <textarea id="console-content-area" disabled style="padding: 15px 5px 5px 10px; height: 96%; width: 98%; float: bottom; color: darkgray; resize: none; font-size: 16px" v-html="data.consoleContent"></textarea>
+            <el-main style="padding: 15px 5px 5px 10px; ">
+                <el-scrollbar
+                        id="console-content-area"
+                        ref="scrollbarRef"
+                        height="560px"
+                >
+                    <div style="color: darkgray;" v-html="data.consoleContent" ref="innerRef" />
+                </el-scrollbar>
             </el-main>
           </el-container>
         </div>
@@ -55,7 +61,7 @@
 
 <script lang="ts" setup>
 import {reactive, nextTick, ref, watch} from "vue";
-import {ElTree} from "element-plus";
+import {ElScrollbar, ElTree} from "element-plus";
 import {IFileNode} from "../common/IFileNode";
 import {SvnEvent} from "../common/Enums";
 import {RClickMenu} from "../common/RClickMenu";
@@ -71,10 +77,26 @@ import vChoiceSelector from "../components/ChoiceSelector.vue";
       },
     });
 
+    const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
+    const innerRef = ref<HTMLDivElement>()
     function consoleAppend(content: string) {
-      data.consoleContent += (content);
-      let element: any = document.getElementById("console-content-area");
-      element.scrollTop = element.scrollHeight + 500;
+      data.consoleContent += (content + "<br />");
+      scrollToBottom()
+    }
+
+    let timeout: any;
+    /**
+     * 滚到最下面
+     */
+    function scrollToBottom() {
+      if (timeout != null) {
+          return;
+      }
+      timeout = setTimeout(() => {
+          const height = innerRef.value?.clientHeight;
+          scrollbarRef.value?.setScrollTop( (height?height:0) + 50);
+          timeout = null
+      }, 2);
     }
 
     function filterNode(value: string, data: IFileNode) {
