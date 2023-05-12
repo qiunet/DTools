@@ -6,6 +6,7 @@ export class ByteInputBuffer {
 
     private view:Buffer;
     private readIndex: number = 0;
+    private markIndex: number = 0;
 
     constructor(data: Uint8Array) {
         this.view = Buffer.from(data);
@@ -61,6 +62,14 @@ export class ByteInputBuffer {
 
     public lastLength(): number {
         return this.view.length - this.readIndex;
+    }
+
+    public mark(){
+        this.markIndex = this.readIndex;
+    }
+
+    public resetMark(){
+        this.readIndex = this.markIndex;
     }
 }
 
@@ -130,5 +139,42 @@ export class ByteOutputBuffer {
      */
     public toByteArray():Uint8Array{
         return new Uint8Array(this.array);
+    }
+}
+
+export class ByteBuffer {
+    private inputBuffer:ByteInputBuffer = null;
+    private reserveArray:Uint8Array = null;
+    private timer: any;
+
+    public write(data: Uint8Array) {
+        let array = data;
+        if(!!this.reserveArray){
+            array = new Uint8Array(this.reserveArray.length + data.length)
+            array.set(this.reserveArray)
+            array.set(data, this.reserveArray.length)
+            this.reserveArray = null;
+        }
+        this.inputBuffer = new ByteInputBuffer(array); 
+    }
+
+    public reserveBytes(){
+        this.clearTimer()
+        const remainArray = this.inputBuffer?.readBytes(this.inputBuffer?.lastLength())
+        if(remainArray?.length > 0){
+            this.reserveArray = remainArray;
+            this.timer = setTimeout(() => {this.reserveArray = null}, 2000)
+        }else{
+            this.reserveArray = null;
+        }
+    }
+
+    private clearTimer(){
+        this.timer && clearTimeout(this.timer);
+        this.timer = null;
+    }
+
+    public getInputBuffer(){
+        return this.inputBuffer;
     }
 }

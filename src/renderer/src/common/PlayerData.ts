@@ -204,6 +204,9 @@ export class PlayerData {
                 if (! this._reconnect) {
                     PlayerManager.logout(this.openId, false)
                 }
+                
+                this.tcpClient?.destroy()
+                this.kcpClient?.destroy()
             });
         });
     }
