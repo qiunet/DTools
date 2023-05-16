@@ -1,4 +1,4 @@
-import {ByteInputBuffer, ByteOutputBuffer} from "./ByteBuffer";
+import {ByteBuffer, ByteInputBuffer, ByteOutputBuffer} from "./ByteBuffer";
 import {ProtoManager} from "./Proto";
 import {Socket} from "net";
 import crc from 'crc-32'
@@ -133,6 +133,7 @@ export class TcpClient extends Client {
     protected timer: any;
     private readonly nodeClient: boolean;
     protected client: Socket|undefined;
+    protected byteBuffer:ByteBuffer;
 
     constructor(openId: string, host: string, port: number, onData: (connType: ConnectionType, openId: string, protocolId: number, obj: any) => void, nodeClient = false) {
         super(ConnectionType.TCP, openId, host, port, onData)
@@ -145,29 +146,36 @@ export class TcpClient extends Client {
     activity = (): boolean => {
         return this.client !== undefined && this.client.writable;
     }
+
     /**
      * 连接
      * @param onData
      * @param connectListener
      */
     connect = async (connectListener?:() => void): Promise<Client> => {
+        this.byteBuffer = new ByteBuffer()
         this.client = new Socket().connect(this.port, this.host, () => {
             if (connectListener) {
                 connectListener()
             }
             this.timer = setInterval(() => {this.sendMessage(Protocol.CLIENT_PING, new Uint8Array([]))}, 5000);
         }).on("data", data => {
+            this.byteBuffer.write(data)
             if (data.length < 8) {
                 // 不够header的长度
+                this.byteBuffer.reserveBytes()
                 return;
             }
-
-            const dis = new ByteInputBuffer(data);
+            
+            const dis = this.byteBuffer.getInputBuffer();
             while(! dis.isEmpty()) {
+                dis.mark()
                 const header = this.nodeClient ?
                     ProtocolHeader.createNodeHeaderByBytes(dis)
                     : ProtocolHeader.createServerHeaderByBytes(dis);
                 if (dis.lastLength() < header.length) {
+                    dis.resetMark()
+                    this.byteBuffer.reserveBytes()
                     return;
                 }
                 const uint8Array = dis.readBytes(header.length);
@@ -202,11 +210,12 @@ export class TcpClient extends Client {
      * 销毁连接
      */
     destroy = ():void => {
+        clearTimeout(this.timer)
         if (! this.activity()) {
             return;
         }
-        clearTimeout(this.timer)
         this.client?.destroy();
+        this.byteBuffer = null;
     }
     /**
      * 发送消息
