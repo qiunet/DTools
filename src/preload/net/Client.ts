@@ -123,7 +123,7 @@ export abstract class Client {
                 this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]发送失败, "+sendMessage})
             }
         } catch (e) {
-            this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"协议:["+protocolId+"]编码错误"})
+            this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -2, desc:"协议:["+protocolId+"]编码错误"})
             console.error(e);
         }
     }
@@ -188,7 +188,7 @@ export class TcpClient extends Client {
                     const message = type.decode(uint8Array);
                     this.onData(this.connType, this.openId, header.protocolId, message.toJSON())
                 }catch(e) {
-                    this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
+                    this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -3 , desc:"解析protocolId["+header.protocolId+"]错误"})
                     console.error(e)
                 }
             }
@@ -284,7 +284,7 @@ export class KcpClient extends Client {
                 const message = type.decode(uint8Array);
                 this.onData(this.connType, this.openId, header.protocolId, message.toJSON())
             }catch(e) {
-                this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -1, desc:"解析proto错误"})
+                this.onData(this.connType, this.openId, Protocol.ERROR_STATUS_TIPS_RSP, {status: -4, desc:"解析protocolID["+ header.protocolId +"]错误"})
                 console.error(e)
             }
         }).on('error', err => {

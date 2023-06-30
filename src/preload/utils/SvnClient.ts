@@ -22,11 +22,11 @@ export class SvnClient {
             }
             const proc = process.spawn('svn', svnParams, {});
             proc.stdout.on('data', function (data: any) {
-               resultText += (String(data))
+               resultText += ((String(data)) + "<br />")
             });
 
             proc.stderr.on("data", function (data: Buffer) {
-                resultText += String(data);
+                resultText += ((String(data)) + "<br />")
                 reject(resultText);
             });
 
